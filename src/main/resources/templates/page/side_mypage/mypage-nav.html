@@ -1,0 +1,29 @@
+<div class="mypage-nav" th:fragment="mypageNav">
+    <div class="container fluid">
+        <nav>
+            <ul>
+                <li th:classappend="${#httpServletRequest.requestURI.startsWith('/side_mypage/namefix')} ? ' active'">
+                    <a th:href="@{/side_mypage/namefix}">개명처리</a>
+                </li>
+                <li th:classappend="${#httpServletRequest.requestURI.startsWith('/side_mypage/myside')} ? ' active'">
+                    <a th:href="@{/side_mypage/myside}">나의지자체</a>
+                </li>
+                <li th:classappend="${#httpServletRequest.requestURI.startsWith('/side_mypage/result')} ? ' active'">
+                    <a th:href="@{/side_mypage/result}">지원금 신청결과</a>
+                </li>
+                <li th:classappend="${#httpServletRequest.requestURI.startsWith('/side_mypage/history_payment')} ? ' active'">
+                    <a th:href="@{/side_mypage/history_payment}">지원금 내역 조회</a>
+                </li>
+                <li th:classappend="${#httpServletRequest.requestURI.startsWith('/side_mypage/history_details')} ? ' active'">
+                    <a th:href="@{/side_mypage/history_details}">이용내역 조회</a>
+                </li>
+                <li th:classappend="${#httpServletRequest.requestURI.startsWith('/side_mypage/mng_card')} ? ' active'">
+                    <a th:href="@{/side_mypage/mng_card}">카드관리</a>
+                </li>
+                <li th:classappend="${#httpServletRequest.requestURI.startsWith('/side_mypage/mng_account')} ? ' active'">
+                    <a th:href="@{/side_mypage/mng_account}">계좌관리</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>

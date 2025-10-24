@@ -1,0 +1,22 @@
+CREATE TABLE ohxzown.tbhxzm102 (
+    mbrs_id varchar(20) NOT NULL,
+    mbrs_svc_join_dt varchar(8) NOT NULL,
+    tpw_svc_typ_id varchar(7) NOT NULL,
+    tpw_svc_id varchar(7) NOT NULL,
+    card_no varchar(100) NULL,
+    bank_cd varchar(3) NULL,
+    acnt_no varchar(49) NULL,
+    ooa_nm varchar(100) NULL,
+    addo_cd varchar(10) NULL,
+    stdo_cd varchar(10) NULL,
+    mvin_dt varchar(8) NULL,
+    mvot_dt varchar(8) NULL,
+    tpw_mbrs_svc_sta_cd varchar(2) NULL,
+    atfl_mng_no numeric(10) NULL,
+    mbrs_svc_cncn_dt varchar(8) NULL,
+    rgsr_id varchar(20) NULL,
+    rgt_dtm varchar(14) NULL,
+    updr_id varchar(20) NULL,
+    upd_dtm varchar(14) NULL,
+    CONSTRAINT pk_tbhxzm102 PRIMARY KEY (mbrs_id, mbrs_svc_join_dt, tpw_svc_typ_id, tpw_svc_id)
+);

@@ -1,0 +1,7 @@
+
+    <nav class="tabs" th:block th:fragment="loginTabs(activeTab)" aria-label="페이지 이동">
+        <a class="tab"  th:href="@{/login/find_id}" th:classappend="${activeTab == 'id'} ? ' is-active'">아이디 찾기</a>
+        <a class="tab"  th:href="@{/login/find_pw}"
+           th:classappend="${activeTab == 'pwd'} ? ' is-active'">비밀번호 찾기</a>
+    </nav>
+

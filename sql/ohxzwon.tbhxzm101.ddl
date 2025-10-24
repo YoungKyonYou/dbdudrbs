@@ -1,0 +1,32 @@
+CREATE TABLE ohxzown.tbhxzm101 (
+    mbrs_id varchar(20) NOT NULL,
+    mbrs_nm varchar(100) NULL,
+    mail_addr varchar(64) NULL,
+    mbrs_mbph_no varchar(44) NULL,
+    mbrs_tel_no varchar(20) NULL,
+    pwd varchar(64) NULL,
+    mbrs_sta_cd varchar(2) NULL,
+    pwd_err_ncnt numeric(2) NULL,
+    dspf_rgt_inhr_no varchar(20) NULL,
+    vtn_no varchar(50) NULL,
+    tpw_join_typ_cd varchar(2) NULL,
+    tpw_join_rctd_val varchar(20) NULL,
+    scsn_dtm varchar(14) NULL,
+    prsn_auth_ci_enc_val varchar(200) NULL,
+    gndr_cd varchar(1) NULL,
+    mbrs_brdt varchar(8) NULL,
+    mbrs_scsn_dvs_cd varchar(2) NULL,
+    ntfc_yn varchar(1) NULL,
+    mrkg_utlz_agrm_yn varchar(1) NULL,
+    sms_rcv_agrm_yn varchar(1) NULL,
+    mail_rcv_agrm_yn varchar(1) NULL,
+    bztl_rcv_agrm_yn varchar(1) NULL,
+    mbrs_join_dt varchar(8) NULL,
+    rgsr_id varchar(20) NULL,
+    rgt_dtm varchar(14) NULL,
+    updr_id varchar(20) NULL,
+    upd_dtm varchar(14) NULL,
+    CONSTRAINT pk_tbhxzm101 PRIMARY KEY (mbrs_id)
+);
+
+

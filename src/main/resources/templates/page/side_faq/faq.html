@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tmoney 교통복지플랫폼"/>
+    <meta name="keywords" content="Tmoney 교통복지플랫폼"/>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Tmoney 교통복지플랫폼" />
+    <meta property="og:description" content="Tmoney 교통복지플랫폼" />
+
+    <title th:text="${pageTitle} ?: 'Tmoney 교통복지플랫폼'">Tmoney 교통복지플랫폼</title>
+
+    <link rel="stylesheet" th:href="@{/css/vendor/aos.css}" />
+    <link rel="stylesheet" th:href="@{/css/vendor/swiper-bundle.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/index.css}" />
+    <link rel="stylesheet" th:href="@{/css/page/page.css}" />
+</head>
+<body>
+
+<p id="skip-nav">
+    <a href="#contents">본문으로 바로가기</a>
+    <a href="#gnb1">주메뉴 바로가기</a>
+</p>
+
+<th:block th:replace="~{component/header :: siteHeader}"></th:block>
+<th:block th:replace="~{component/breadcrumb :: siteBreadcrumb(${breadcrumb})}"></th:block>
+
+<main id="contents">
+    <section class="section">
+        <div class="container">
+            <div class="title-wrap">
+                <div class="flex justify-space-between">
+                    <h2 class="section-title">자주묻는질문</h2>
+                    <div id="search-box">
+                        <form id="searchbar" role="search" action="/search" method="get">
+                            <input
+                                    class="text-field size-lg"
+                                    name="q"
+                                    placeholder="검색어를 입력해주세요."
+                                    aria-label="검색어"
+                                    autocomplete="off"
+                                    enterkeyhint="search">
+                            <button class="btn icon-only size-lg" type="submit" aria-label="검색">
+                                <i class="icon icon-search" aria-hidden="true"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="tabs" aria-label="페이지 이동">
+                <a class="tab is-active" href="#" aria-current="page">전체</a>
+                <a class="tab" href="#">지원금</a>
+                <a class="tab" href="#">정책</a>
+                <a class="tab" href="#">신청</a>
+                <a class="tab" href="#">홈페이지</a>
+            </nav>
+
+            <div class="accordion" id="faqAccordion" data-behavior="single">
+                <!-- FAQ 반복 시작 -->
+                <div th:each="faq, iterStat : ${faqList}" class="acc-item" th:classappend="${iterStat.index == 0} ? 'is-open'">
+                    <h3 class="acc-header">
+                        <button type="button"
+                                class="acc-trigger"
+                                th:aria-expanded="${iterStat.index == 0}"
+                                th:aria-controls="'acc-panel-' + ${iterStat.index + 1}"
+                                th:id="'acc-trigger-' + ${iterStat.index + 1}">
+                            <span class="acc-badge" aria-hidden="true">Q</span>
+                            <span class="acc-title" th:text="${faq.faqTtlNm}">FAQ 제목</span>
+                            <span class="acc-icon" aria-hidden="true"></span>
+                        </button>
+                    </h3>
+                    <div class="acc-panel"
+                         th:id="'acc-panel-' + ${iterStat.index + 1}"
+                         role="region"
+                         th:aria-labelledby="'acc-trigger-' + ${iterStat.index + 1}"
+                         th:hidden="${iterStat.index != 0}">
+                        <div class="acc-panel-inner">
+                            <span class="acc-badge" aria-hidden="true">A</span>
+                            <span class="acc-content" th:text="${faq.answCtt}">답변 내용</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- FAQ 반복 끝 -->
+            </div>
+
+
+            <!-- 페이지네이션 -->
+            <nav class="pagination" aria-label="페이지네이션" th:fragment="pagination">
+                <ul class="pagination-list" role="list">
+                    <li class="page-ctrl">
+                        <a class="page-btn" href="" aria-label="첫 페이지" aria-disabled="true" tabindex="-1">
+                            <i class="icon icon-arrow-left-end"></i>
+                        </a>
+                    </li>
+                    <li class="page-ctrl">
+                        <a class="page-btn" href="" aria-label="이전 페이지" aria-disabled="true" tabindex="-1">
+                            <i class="icon icon-arrow-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-num is-current"><span aria-current="page">1</span></li>
+                    <li class="page-num"><a href="" aria-label="2페이지">2</a></li>
+                    <li class="page-num"><a href="" aria-label="3페이지">3</a></li>
+                    <li class="page-num"><a href="" aria-label="4페이지">4</a></li>
+                    <li class="page-num"><a href="" aria-label="5페이지">5</a></li>
+                    <li class="page-ctrl">
+                        <a class="page-btn" href="" aria-label="다음 페이지">
+                            <i class="icon icon-arrow-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-ctrl">
+                        <a class="page-btn" href="" aria-label="마지막 페이지">
+                            <i class="icon icon-arrow-right-end"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+    </section>
+</main>
+
+<th:block th:replace="~{component/footer :: siteFooter}"></th:block>
+<th:block th:replace="~{component/topBtn :: siteTop}"></th:block>
+
+<script th:src="@{/js/vendor/aos.js}"></script>
+<script th:src="@{/js/vendor/gsap.min.js}"></script>
+<script th:src="@{/js/vendor/ScrollTrigger.min.js}"></script>
+<script th:src="@{/js/vendor/swiper-bundle.min.js}"></script>
+<script type="module" th:src="@{/js/common.js}"></script>
+
+</body>
+</html>

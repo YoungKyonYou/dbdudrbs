@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tmoney 교통복지플랫폼"/>
+    <meta name="keywords" content="Tmoney 교통복지플랫폼"/>
+    <title th:text="${pageTitle} ?: 'Tmoney 교통복지플랫폼'">Tmoney 교통복지플랫폼</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" th:href="@{/css/vendor/aos.css}" />
+    <link rel="stylesheet" th:href="@{/css/vendor/swiper-bundle.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/index.css}" />
+    <link rel="stylesheet" th:href="@{/css/page/page.css}" />
+</head>
+<body>
+
+<p id="skip-nav">
+    <a href="#contents">본문으로 바로가기</a>
+    <a href="#gnb1">주메뉴 바로가기</a>
+</p>
+
+<th:block th:replace="~{component/header :: siteHeader}"></th:block>
+<th:block th:replace="~{component/breadcrumb :: siteBreadcrumb(${breadcrumb})}"></th:block>
+
+<main id="contents">
+    <section class="section">
+        <div class="container">
+            <div class="title-wrap">
+                <div class="flex justify-space-between">
+                    <h2 class="section-title">공지사항</h2>
+
+                    <div id="search-box">
+                        <form id="searchbar" role="search" onsubmit="event.preventDefault(); reloadList();">
+                            <div class="dropdown size-lg" role="group" aria-labelledby="supportTypeTitle">
+                                <button type="button"
+                                        id="supportTypeDropdownBtn"
+                                        class="dropdown_button"
+                                        aria-haspopup="listbox"
+                                        aria-expanded="false"
+                                        aria-controls="supportTypeDropdownList"
+                                        aria-label="공지사항 유형 선택 드롭다운">
+                                    <span class="dropdown_value" th:text="${selectedType} ?: '전체'">전체</span>
+                                </button>
+
+                                <ul class="dropdown_list"
+                                    id="supportTypeDropdownList"
+                                    role="listbox"
+                                    tabindex="-1"
+                                    aria-labelledby="supportTypeDropdownBtn">
+                                    <li class="dropdown_option" data-value="전체"
+                                        th:attr="aria-selected=${selectedType=='전체'} ? 'true' : 'false'">전체</li>
+                                    <li class="dropdown_option" data-value="타입1"
+                                        th:attr="aria-selected=${selectedType=='타입1'} ? 'true' : 'false'">타입1</li>
+                                    <li class="dropdown_option" data-value="타입2"
+                                        th:attr="aria-selected=${selectedType=='타입2'} ? 'true' : 'false'">타입2</li>
+                                </ul>
+
+                                <input type="hidden" name="supportType" id="supportType" th:value="${selectedType} ?: '전체'">
+                            </div>
+
+                            <input class="text-field size-lg"
+                                   name="q"
+                                   id="searchQuery"
+                                   placeholder="검색어를 입력해주세요."
+                                   aria-label="검색어"
+                                   autocomplete="off"
+                                   enterkeyhint="search"
+                                   th:value="${searchQuery}">
+                            <button class="btn icon-only size-lg" type="submit" aria-label="검색">
+                                <i class="icon icon-search" aria-hidden="true"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="board-list">
+                <h2 class="sr-only">공지 및 게시글 목록</h2>
+                <div class="board-head" role="group" aria-label="목록 컬럼">
+                    <span class="col col-num">번호</span>
+                    <span class="col col-title">제목</span>
+                    <span class="col col-date">등록일</span>
+                </div>
+
+                <ul class="board-body" role="list">
+                    <th:block th:if="${#lists.isEmpty(noticeList)}">
+                        <li class="board-row">
+                            <span class="col col-title">검색 결과가 없습니다.</span>
+                        </li>
+                    </th:block>
+
+                    <th:block th:each="row : ${noticeList}">
+                        <th:block th:replace="~{component/row :: boardRow(
+                            ${{
+                                bltn_no: row.bltn_no,
+                                ntc_mtrr_ttl_nm: row.ntc_mtrr_ttl_nm,
+                                tpw_bltn_rgt_dtm: row.tpw_bltn_rgt_dtm,
+                                notice: row.main_exps_yn == 'Y'
+                            }}
+                        )}"></th:block>
+                    </th:block>
+                </ul>
+            </div>
+
+            <nav class="pagination" aria-label="페이지네이션" th:fragment="pagination">
+                <ul class="pagination-list" role="list">
+                    <li class="page-ctrl">
+                        <a class="page-btn" href="" aria-label="첫 페이지" aria-disabled="true" tabindex="-1">
+                            <i class="icon icon-arrow-left-end"></i>
+                        </a>
+                    </li>
+                    <li class="page-ctrl">
+                        <a class="page-btn" href="" aria-label="이전 페이지" aria-disabled="true" tabindex="-1">
+                            <i class="icon icon-arrow-left"></i>
+                        </a>
+                    </li>
+
+                    <li class="page-num is-current">
+                        <span aria-current="page">1</span>
+                    </li>
+                    <li class="page-num"><a href="" aria-label="2페이지">2</a></li>
+                    <li class="page-num"><a href="" aria-label="3페이지">3</a></li>
+
+                    <li class="page-ctrl">
+                        <a class="page-btn" href="" aria-label="다음 페이지">
+                            <i class="icon icon-arrow-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-ctrl">
+                        <a class="page-btn" href="" aria-label="마지막 페이지">
+                            <i class="icon icon-arrow-right-end"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </section>
+</main>
+
+<th:block th:replace="~{component/footer :: siteFooter}"></th:block>
+<th:block th:replace="~{component/topBtn :: siteTop}"></th:block>
+
+<!-- JS -->
+<script th:src="@{/js/vendor/aos.js}"></script>
+<script th:src="@{/js/vendor/gsap.min.js}"></script>
+<script th:src="@{/js/vendor/ScrollTrigger.min.js}"></script>
+<script th:src="@{/js/vendor/swiper-bundle.min.js}"></script>
+<script type="module" th:src="@{/js/common.js}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (window.AOS && !window.__aosInited) {
+            AOS.init();
+            window.__aosInited = true;
+        }
+    });
+
+    // 드롭다운 선택 시 hidden input 업데이트
+    document.querySelectorAll('.dropdown_option').forEach(option => {
+        option.addEventListener('click', () => {
+            document.getElementById('supportType').value = option.dataset.value;
+            document.querySelector('.dropdown_value').textContent = option.textContent;
+        });
+    });
+
+    /**
+     * AJAX로 공지 목록 갱신
+     */
+    function reloadList() {
+        const query = document.getElementById('searchQuery').value;
+        const type = document.getElementById('supportType').value;
+
+        fetch(`/search/ajax?q=${encodeURIComponent(query)}&supportType=${encodeURIComponent(type)}`)
+            .then(res => res.json())
+            .then(data => {
+                const container = document.querySelector('.board-body');
+                container.innerHTML = '';
+
+                if (data.length === 0) {
+                    container.innerHTML = `<li class="board-row"><span class="col col-title">검색 결과가 없습니다.</span></li>`;
+                    return;
+                }
+
+                data.forEach(row => {
+                    const li = document.createElement('li');
+                    li.className = 'board-row' + (row.main_exps_yn === 'Y' ? ' is-notice' : '');
+                    li.innerHTML = `
+                        <a class="board-item" href="/notice/${row.bltn_no}">
+                            <span class="col col-num" aria-label="번호">
+                                ${row.main_exps_yn === 'Y' ? '<span class="badge badge-notice">공지</span>' : row.bltn_no}
+                            </span>
+                            <span class="col col-title">${row.ntc_mtrr_ttl_nm}</span>
+                            <span class="col col-date">${formatDate(row.tpw_bltn_rgt_dtm)}</span>
+                        </a>
+                    `;
+                    container.appendChild(li);
+                });
+            })
+            .catch(err => console.error(err));
+    }
+
+    function formatDate(dt) {
+        return dt ? dt.slice(0,4) + '.' + dt.slice(4,6) + '.' + dt.slice(6,8) : '';
+    }
+</script>
+
+</body>
+</html>

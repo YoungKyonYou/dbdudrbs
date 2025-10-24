@@ -1,0 +1,21 @@
+<!-- component/row.html -->
+<th:block xmlns:th="http://www.thymeleaf.org">
+
+    <li th:fragment="boardRow(row)"
+        th:class="'board-row' + (${row.notice} ? ' is-notice' : '')">
+        <a class="board-item" th:href="@{'/notice/' + ${row.bltn_no}}">
+
+            <span class="col col-num" aria-label="번호">
+                <th:block th:if="${row.notice}">
+                    <span class="badge badge-notice" aria-label="공지">공지</span>
+                </th:block>
+                <th:block th:unless="${row.notice}" th:text="${row.bltn_no}">번호</th:block>
+            </span>
+
+            <span class="col col-title" th:text="${row.ntc_mtrr_ttl_nm}">제목</span>
+
+            <span class="col col-date" th:text="${#dates.format(#dates.parse(row.tpw_bltn_rgt_dtm, 'yyyyMMddHHmmss'), 'yyyy.MM.dd')}">2025.05.07</span>
+        </a>
+    </li>
+
+</th:block>

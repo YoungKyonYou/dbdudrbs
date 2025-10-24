@@ -1,0 +1,14 @@
+<div th:fragment="siteBreadcrumb(titles)">
+    <div id="breadcrumb">
+        <div class="container">
+            <nav>
+                <ul>
+                    <li th:each="title, iterStat : ${titles}"
+                        th:text="${title}"
+                        th:attr="aria-current=${iterStat.last ? 'page' : null}">
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
