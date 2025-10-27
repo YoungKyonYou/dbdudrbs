@@ -29,7 +29,7 @@ public class MyBatisConfig {
         factoryBean.setDataSource(dataSource);
 
         // 전역 설정 (settings: mapUnderscoreToCamelCase 등)
-        factoryBean.setConfigLocation(new ClassPathResource("dbdudrbs-secret/mybatis/mybatis-config.xml"));
+        factoryBean.setConfigLocation(new ClassPathResource("mybatis/mybatis-config.xml"));
 
         // XML 매퍼들
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
