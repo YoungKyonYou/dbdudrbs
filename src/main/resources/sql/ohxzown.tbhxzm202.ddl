@@ -1,0 +1,37 @@
+-- HXZ_교통복지서비스유형관리
+-- DROP TABLE ohxzown.tbhxzm202;
+
+CREATE TABLE ohxzown.tbhxzm202 (
+                                   tpw_svc_id        varchar(7)   NOT NULL,
+                                   tpw_svc_typ_id    varchar(10)  NOT NULL,
+                                   tpw_svc_typ_sno   numeric(10)  NOT NULL,
+                                   tpw_svc_typ_nm    varchar(100) NOT NULL,
+                                   tpw_svc_typ_stt_dt varchar(8)  NULL,
+                                   tpw_svc_typ_end_dt varchar(8)  NULL,
+                                   tpw_svc_typ_ctt   varchar(2000) NULL,
+                                   tpw_mbrs_typ_cd   varchar(3)   NULL,
+                                   tpw_mntn_cd       varchar(10)  NULL,
+                                   tpw_stlm_cyc_dvs_cd varchar(2) NULL,
+                                   tpw_stlm_ctg_cd   varchar(2)   NULL,
+                                   stlm_ctg_adpt_val numeric(15)  NULL,
+                                   trns_trd_req_yn   varchar(1)   NULL,
+                                   ldgr_trd_req_yn   varchar(1)   NULL,
+                                   taxi_trd_req_yn   varchar(1)   NULL,
+                                   area_trd_req_yn   varchar(1)   NULL,
+                                   tpw_stlm_act_dvs_cd varchar(2) NULL,
+                                   tpw_rsdc_auth_cyc_cd varchar(2) NULL,
+                                   tpw_crov_dvs_cd   varchar(2)   NULL,
+                                   sprt_dplc_yn      varchar(1)   NULL,
+                                   tpw_trd_org_cd    varchar(7)   NULL,
+                                   trns_trd_mlpr_ex_yn varchar(1) NULL,
+                                   aut_apl_yn        varchar(1)   NULL,
+                                   evdn_yn           varchar(1)   NULL,
+                                   frgn_sprt_yn      varchar(1)   NULL,
+                                   trd_ncnt_ltn_adpt_yn varchar(1) NULL,
+                                   use_yn            varchar(1)   NULL,
+                                   rgsr_id           varchar(20)  NULL,
+                                   rgt_dtm           varchar(14)  NULL,
+                                   updr_id           varchar(20)  NULL,
+                                   upd_dtm           varchar(14)  NULL,
+                                   CONSTRAINT pk_tbhxzm202 PRIMARY KEY (tpw_svc_id, tpw_svc_typ_id, tpw_svc_typ_sno)
+);

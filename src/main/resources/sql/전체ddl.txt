@@ -1,0 +1,444 @@
+
+
+CREATE TABLE ohxzown.tbhxzd101 (
+    mbrs_id          VARCHAR(20)   NOT NULL,
+    mbrs_ctg_sno     NUMERIC(10)   NOT NULL,
+    tpw_mbrs_ctg_cd  VARCHAR(2)    NOT NULL,
+    vld_stt_dt       VARCHAR(8)    NOT NULL,
+    vld_end_dt       VARCHAR(8)    NOT NULL,
+    use_yn           VARCHAR(1)    NOT NULL,
+    rgsr_id          VARCHAR(20)   NOT NULL,
+    rgt_dtm          VARCHAR(14)   NOT NULL,
+    updr_id          VARCHAR(20)   NOT NULL,
+    upd_dtm          VARCHAR(14)   NOT NULL,
+    CONSTRAINT pk_tbhxzd101 PRIMARY KEY (mbrs_id, mbrs_ctg_sno, tpw_mbrs_ctg_cd)
+);
+
+
+CREATE TABLE ohxzown.tbhxzh101 (
+    mbrs_id              VARCHAR(20)   NOT NULL,
+    mbrs_inf_mod_dt      VARCHAR(8)    NOT NULL,
+    mbrs_inf_mod_sno     NUMERIC(10)   NOT NULL,
+    mbrs_nm              VARCHAR(100)  NULL,
+    mail_addr            VARCHAR(64)   NULL,
+   mbrs_mbph_no       VARCHAR(44)   NULL,
+    mbrs_tel_no          VARCHAR(20)   NULL,
+    pwd                  VARCHAR(64)   NULL,
+    mbrs_sta_cd          VARCHAR(2)    NULL,
+    pwd_err_ncnt         NUMERIC(2)    NULL,
+    dspr_rgt_inhr_no     VARCHAR(20)   NULL,
+    vtrn_no              VARCHAR(50)   NULL,
+    tpw_join_typ_cd      VARCHAR(2)    NULL,
+    tpw_join_rctd_val    VARCHAR(20)   NULL,
+    scsn_dtm             VARCHAR(14)   NULL,
+    prsn_auth_ci_enc_val VARCHAR(200)  NULL,
+    gndr_cd              VARCHAR(1)    NULL,
+    mbrs_brdt            VARCHAR(8)    NULL,
+    mbrs_scsn_dvs_cd     VARCHAR(2)    NULL,
+    ntfc_yn              VARCHAR(1)    NULL,
+    mrkg_ultz_agrm_yn    VARCHAR(1)    NULL,
+    sms_rcv_agrm_yn      VARCHAR(1)    NULL,
+    mail_rcv_agrm_yn     VARCHAR(1)    NULL,
+    bztl_rcv_agrm_yn     VARCHAR(1)    NULL,
+    mbrs_join_dt         VARCHAR(8)    NULL,
+    mod_rsn_ctt          VARCHAR(2000) NULL,
+    rgsr_id              VARCHAR(20)   NULL,
+    rgt_dtm              VARCHAR(14)   NULL,
+    updr_id              VARCHAR(20)   NULL,
+    upd_dtm              VARCHAR(14)   NULL,
+    CONSTRAINT pk_tbhxzh101 PRIMARY KEY (mbrs_inf_mod_sno, mbrs_inf_mod_dt, mbrs_id)
+);
+
+
+CREATE TABLE ohxzown.tbhxzh102 (
+    mbrs_svc_mod_sno   NUMERIC(10)   NOT NULL,
+    tpw_svc_id         VARCHAR(7)    NOT NULL,
+    mbrs_svc_mod_dt    VARCHAR(8)    NOT NULL,
+    mbrs_id            VARCHAR(20)   NOT NULL,
+    mbrs_svc_join_dt   VARCHAR(8)    NOT NULL,
+    tpw_svc_typ_id     VARCHAR(10)   NOT NULL,
+    tpw_mbrs_svc_sta_cd VARCHAR(2)   NULL,
+    atfl_mng_no        NUMERIC(10)   NULL,
+    mbrs_svc_cncn_dt   VARCHAR(8)    NULL,
+    rgsr_id            VARCHAR(20)   NULL,
+    rgt_dtm            VARCHAR(14)   NULL,
+    updr_id            VARCHAR(20)   NULL,
+    upd_dtm            VARCHAR(14)   NULL,
+    CONSTRAINT pk_tbhxzh102 PRIMARY KEY (
+        mbrs_svc_mod_sno, tpw_svc_id, mbrs_svc_mod_dt, mbrs_id, mbrs_svc_join_dt, tpw_svc_typ_id
+    )
+);
+
+
+CREATE TABLE ohxzown.tbhxzh103 (
+    tpw_svc_id             VARCHAR(7)    NOT NULL,
+    tpw_svc_typ_id         VARCHAR(10)   NOT NULL,
+    mbrs_id                VARCHAR(20)   NOT NULL,
+    tpw_rsdc_auth_ct_dt    VARCHAR(8)    NOT NULL,
+    tpw_rsdc_auth_dt       VARCHAR(8)    NOT NULL,
+    tpw_rsdc_auth_hst_sqno NUMERIC(10)   NOT NULL,
+    addo_cd                VARCHAR(10)   NULL,
+    stdo_cd                VARCHAR(10)   NULL,
+    mvin_dt                VARCHAR(8)    NULL,
+    mvot_dt                VARCHAR(8)    NULL,
+    rgsr_id                VARCHAR(20)   NULL,
+    rgt_dtm                VARCHAR(14)   NULL,
+    updr_id                VARCHAR(20)   NULL,
+    upd_dtm                VARCHAR(14)   NULL,
+    CONSTRAINT pk_tbhxzh103 PRIMARY KEY (
+        tpw_svc_id, tpw_svc_typ_id, mbrs_id, tpw_rsdc_auth_ct_dt, tpw_rsdc_auth_dt, tpw_rsdc_auth_hst_sqno
+    )
+);
+
+
+CREATE TABLE ohxzown.tbhxzh104 (
+    tpw_svc_id varchar(7) NOT NULL,
+    tpw_svc_typ_id varchar(10) NOT NULL,
+    mbrs_id varchar(20) NOT NULL,
+    card_mod_dt varchar(8) NOT NULL,
+    card_mod_sno numeric(10) NOT NULL,
+    card_no varchar(100) NULL,
+    card_stt_dt varchar(8) NULL,
+    card_end_dt varchar(8) NULL,
+    use_yn varchar(1) NULL,
+    rgsr_id varchar(20) NULL,
+    rgt_dtm varchar(14) NULL,
+    updr_id varchar(20) NULL,
+    upd_dtm varchar(14) NULL,
+    CONSTRAINT pk_tbhxzh104 PRIMARY KEY (tpw_svc_id, tpw_svc_typ_id, mbrs_id, card_mod_dt, card_mod_sno)
+);
+
+CREATE TABLE ohxzown.tbhxzh105 (
+    tpw_svc_id varchar(7) NOT NULL,
+    tpw_svc_typ_id varchar(10) NOT NULL,
+    mbrs_id varchar(20) NOT NULL,
+    acnt_rgt_dt varchar(8) NOT NULL,
+    acnt_sno numeric(10) NOT NULL,
+    bnk_cd varchar(3) NULL,
+    acnt_no varchar(49) NULL,
+    ooa_nm varchar(100) NULL,
+    rgsr_id varchar(20) NULL,
+    rgt_dtm varchar(14) NULL,
+    updr_id varchar(20) NULL,
+    upd_dtm varchar(14) NULL,
+    CONSTRAINT pk_tbhxzh105 PRIMARY KEY (tpw_svc_id, tpw_svc_typ_id, mbrs_id, acnt_rgt_dt, acnt_sno)
+);
+
+
+CREATE TABLE ohxzown.tbhxzh106 (
+    mngr_id varchar(20) NOT NULL,
+    mngr_mod_dt varchar(8) NOT NULL,
+    mngr_mod_sno numeric(10) NOT NULL,
+    mngr_name varchar(40) NULL,
+    mngr_atht_id varchar(50) NULL,
+    mngr_atht_upd_dtm varchar(14) NULL,
+    otp_scrt_key_val varchar(100) NULL,
+    pwd varchar(64) NULL,
+    pwd_int_yn varchar(1) NULL,
+    pwd_err_ncnt numeric(2) NULL,
+    mngr_mbph_no varchar(44) NULL,
+    mngr_tel_no varchar(44) NULL,
+    mail_addr varchar(64) NULL,
+    mngr_sta_cd varchar(1) NULL,
+    org_cd varchar(7) NULL,
+    rgsr_id varchar(20) NULL,
+    rgt_dtm varchar(14) NULL,
+    updr_id varchar(20) NULL,
+    upd_dtm varchar(14) NULL,
+    CONSTRAINT pk_tbhxzh106 PRIMARY KEY (mngr_id, mngr_mod_dt, mngr_mod_sno)
+);
+
+CREATE TABLE ohxzown.tbhxzh107 (
+    org_cd varchar(7) NOT NULL,
+    mngr_id varchar(20) NOT NULL,
+    dn_dtm varchar(14) NOT NULL,
+    dn_file_nm varchar(130) NULL,
+    dn_rsn varchar(2000) NULL,
+    rgsr_id varchar(20) NULL,
+    rgt_dtm varchar(14) NULL,
+    updr_id varchar(20) NULL,
+    upd_dtm varchar(14) NULL,
+    CONSTRAINT pk_tbhxzh107 PRIMARY KEY (org_cd, mngr_id, dn_dtm)
+);
+
+
+
+CREATE TABLE ohxzown.tbhxzm101 (
+    mbrs_id varchar(20) NOT NULL,
+    mbrs_nm varchar(100) NULL,
+    mail_addr varchar(64) NULL,
+    mbrs_mbph_no varchar(44) NULL,
+    mbrs_tel_no varchar(20) NULL,
+    pwd varchar(64) NULL,
+    mbrs_sta_cd varchar(2) NULL,
+    pwd_err_ncnt numeric(2) NULL,
+    dspf_rgt_inhr_no varchar(20) NULL,
+    vtn_no varchar(50) NULL,
+    tpw_join_typ_cd varchar(2) NULL,
+    tpw_join_rctd_val varchar(20) NULL,
+    scsn_dtm varchar(14) NULL,
+    prsn_auth_ci_enc_val varchar(200) NULL,
+    gndr_cd varchar(1) NULL,
+    mbrs_brdt varchar(8) NULL,
+    mbrs_scsn_dvs_cd varchar(2) NULL,
+    ntfc_yn varchar(1) NULL,
+    mrkg_utlz_agrm_yn varchar(1) NULL,
+    sms_rcv_agrm_yn varchar(1) NULL,
+    mail_rcv_agrm_yn varchar(1) NULL,
+    bztl_rcv_agrm_yn varchar(1) NULL,
+    mbrs_join_dt varchar(8) NULL,
+    rgsr_id varchar(20) NULL,
+    rgt_dtm varchar(14) NULL,
+    updr_id varchar(20) NULL,
+    upd_dtm varchar(14) NULL,
+    CONSTRAINT pk_tbhxzm101 PRIMARY KEY (mbrs_id)
+);
+
+CREATE TABLE ohxzown.tbhxzm102 (
+    mbrs_id varchar(20) NOT NULL,
+    mbrs_svc_join_dt varchar(8) NOT NULL,
+    tpw_svc_typ_id varchar(7) NOT NULL,
+    tpw_svc_id varchar(7) NOT NULL,
+    card_no varchar(100) NULL,
+    bank_cd varchar(3) NULL,
+    acnt_no varchar(49) NULL,
+    ooa_nm varchar(100) NULL,
+    addo_cd varchar(10) NULL,
+    stdo_cd varchar(10) NULL,
+    mvin_dt varchar(8) NULL,
+    mvot_dt varchar(8) NULL,
+    tpw_mbrs_svc_sta_cd varchar(2) NULL,
+    atfl_mng_no numeric(10) NULL,
+    mbrs_svc_cncn_dt varchar(8) NULL,
+    rgsr_id varchar(20) NULL,
+    rgt_dtm varchar(14) NULL,
+    updr_id varchar(20) NULL,
+    upd_dtm varchar(14) NULL,
+    CONSTRAINT pk_tbhxzm102 PRIMARY KEY (mbrs_id, mbrs_svc_join_dt, tpw_svc_typ_id, tpw_svc_id)
+);
+
+
+
+CREATE TABLE ohxzown.tbhxzm103 (
+    tpw_mbrs_typ_cd varchar(3) NOT NULL,
+    mbrs_typ_ctg_sno numeric(10) NOT NULL,
+    tpw_mbrs_typ_cd_nm varchar(200) NULL,
+    tpw_mbrs_ctg_cd varchar(2) NULL,
+    use_yn varchar(1) NULL,
+    vld_stt_dt varchar(8) NULL,
+    vld_end_dt varchar(8) NULL,
+    rgsr_id varchar(20) NULL,
+    rgt_dtm varchar(14) NULL,
+    updr_id varchar(20) NULL,
+    upd_dtm varchar(14) NULL,
+    CONSTRAINT pk_tbhxzm103 PRIMARY KEY (tpw_mbrs_typ_cd, mbrs_typ_ctg_sno)
+);
+
+
+CREATE TABLE ohxzown.tbhxzm104 (
+    org_cd varchar(7) NOT NULL,
+    tpw_mbrs_typ_cd varchar(3) NOT NULL,
+    mbrs_typ_mng_sno numeric(10) NOT NULL,
+    typ_adpt_min_val numeric(10) NULL,
+    typ_adpt_max_val numeric(10) NULL,
+    use_yn varchar(1) NULL,
+    vld_stt_dt varchar(8) NULL,
+    vld_end_dt varchar(8) NULL,
+    rgsr_id varchar(20) NULL,
+    rgt_dtm varchar(14) NULL,
+    updr_id varchar(20) NULL,
+    upd_dtm varchar(14) NULL,
+    CONSTRAINT pk_tbhxzm104 PRIMARY KEY (org_cd, tpw_mbrs_typ_cd, mbrs_typ_mng_sno)
+);
+
+CREATE TABLE ohxzown.tbhxzm106 (
+    mngr_id varchar(20) NOT NULL,
+    mngr_name varchar(40) NULL,
+    mngr_atht_id varchar(50) NULL,
+    mngr_atht_upd_dtm varchar(14) NULL,
+    otp_scrt_key_val varchar(100) NULL,
+    pwd varchar(64) NULL,
+    pwd_int_yn varchar(1) NULL,
+    pwd_err_ncnt numeric(2) NULL,
+    mngr_mbph_no varchar(44) NULL,
+    mngr_tel_no varchar(44) NULL,
+    mail_addr varchar(64) NULL,
+    mngr_sta_cd varchar(1) NULL,
+    org_cd varchar(7) NULL,
+    rgsr_id varchar(20) NULL,
+    rgt_dtm varchar(14) NULL,
+    updr_id varchar(20) NULL,
+    upd_dtm varchar(14) NULL,
+    CONSTRAINT pk_tbhxzm106 PRIMARY KEY (mngr_id)
+);
+
+CREATE TABLE ohxzown.tbhxzm107 (
+    org_cd varchar(7) NOT NULL,
+    tpw_svc_mngr_id varchar(20) NOT NULL,
+    tpw_svc_mngr_sno numeric(10) NOT NULL,
+    tpw_svc_id varchar(7) NULL,
+    use_yn varchar(1) NULL,
+    rgsr_id varchar(20) NULL,
+    rgt_dtm varchar(14) NULL,
+    updr_id varchar(20) NULL,
+    upd_dtm varchar(14) NULL,
+    CONSTRAINT pk_tbhxzm107 PRIMARY KEY (org_cd, tpw_svc_mngr_id, tpw_svc_mngr_sno)
+);
+
+CREATE TABLE ohxzown.tbhxzm108 (
+    role_id varchar(20) NOT NULL,
+    role_nm varchar(100) NULL,
+    note varchar(2000) NULL,
+    use_yn varchar(1) NULL,
+    rgsr_id varchar(20) NULL,
+    rgt_dtm varchar(14) NULL,
+    updr_id varchar(20) NULL,
+    upd_dtm varchar(14) NULL,
+    CONSTRAINT pk_tbhxzm108 PRIMARY KEY (role_id)
+);
+
+
+CREATE TABLE ohxzown.tbhxzm109 (
+    menu_id varchar(20) NOT NULL,
+    tpw_menu_dvs_cd varchar(2) NOT NULL,
+    menu_lvl_no varchar(3) NOT NULL,
+    menu_seq numeric(5) NOT NULL,
+    menu_nm varchar(100) NULL,
+    menu_desc varchar(500) NULL,
+    menu_url_val varchar(100) NULL,
+    hgrn_menu_id varchar(20) NULL,
+    use_yn varchar(1) NULL,
+    rgsr_id varchar(20) NOT NULL,
+    rgt_dtm varchar(14) NOT NULL,
+    updr_id varchar(20) NULL,
+    upd_dtm varchar(14) NULL,
+    CONSTRAINT pk_tbhxzm109 PRIMARY KEY (menu_id, tpw_menu_dvs_cd, menu_lvl_no, menu_seq)
+);
+
+
+CREATE TABLE ohxzown.tbhxzm110 (
+    role_id varchar(20) NOT NULL,
+    menu_id varchar(20) NOT NULL,
+    menu_atht_mng_sno numeric(10) NOT NULL,
+    inqr_atht_yn varchar(1) NULL,
+    rgsr_id varchar(20) NOT NULL,
+    rgt_dtm varchar(14) NOT NULL,
+    rgt_atht_yn varchar(1) NULL,
+    upd_atht_yn varchar(1) NULL,
+    dlt_atht_yn varchar(1) NULL,
+    use_yn varchar(1) NULL,
+    updr_id varchar(20) NULL,
+    upd_dtm varchar(14) NULL,
+    CONSTRAINT pk_tbhxzm110 PRIMARY KEY (role_id, menu_id, menu_atht_mng_sno)
+);
+
+CREATE TABLE ohxzown.tbhxzm111 (
+    org_cd varchar(7) NOT NULL,
+    user_id varchar(20) NOT NULL,
+    user_dvs_cd varchar(1) NOT NULL,
+    conc_dtm varchar(14) NOT NULL,
+    menu_conc_sno numeric(10) NOT NULL,
+    menu_nm varchar(100) NULL,
+    menu_url_val varchar(100) NULL,
+    user_ip_addr varchar(44) NULL,
+    rgsr_id varchar(20) NULL,
+    rgt_dtm varchar(14) NULL,
+    updr_id varchar(20) NULL,
+    upd_dtm varchar(14) NULL,
+    CONSTRAINT pk_tbhxzm111 PRIMARY KEY (org_cd, user_id, user_dvs_cd, conc_dtm, menu_conc_sno)
+);
+
+CREATE TABLE ohxzown.tbhxzm112 (
+    user_id varchar(20) NOT NULL,
+    user_dvs_cd varchar(1) NOT NULL,
+    conc_dtm varchar(14) NOT NULL,
+    conc_ip_addr varchar(20) NULL,
+    rgsr_id varchar(20) NULL,
+    rgt_dtm varchar(14) NULL,
+    updr_id varchar(20) NULL,
+    upd_dtm varchar(14) NULL,
+    CONSTRAINT pk_tbhxzm112 PRIMARY KEY (user_id, user_dvs_cd, conc_dtm)
+);
+
+CREATE TABLE ohxzown.tbhxzm113 (
+    org_cd varchar(7) NOT NULL,
+    bltn_no varchar(11) NOT NULL,
+    bltn_dvs_cd varchar(1) NOT NULL,
+    tpw_bltn_rgt_dtm varchar(14) NOT NULL,
+    ntc_mtrr_ttl_nm varchar(100) NULL,
+    ntc_mtrr_ctt text NULL,
+    main_exps_yn varchar(1) NULL,
+    main_exps_stt_dt varchar(8) NULL,
+    main_exps_end_dt varchar(8) NULL,
+    inqr_ncnt numeric(6) NULL,
+    use_yn varchar(1) NULL,
+    rgsr_id varchar(20) NULL,
+    rgt_dtm varchar(14) NULL,
+    updr_id varchar(20) NULL,
+    upd_dtm varchar(14) NULL,
+    CONSTRAINT pk_tbhxzm113 PRIMARY KEY (org_cd, bltn_no, bltn_dvs_cd, tpw_bltn_rgt_dtm)
+);
+
+CREATE TABLE ohxzown.tbhxzm114 (
+    bltn_no varchar(11) NOT NULL,
+    faq_ttl_nm varchar(200) NULL,
+    faq_ctt text NULL,
+    answ_ctt varchar(4000) NULL,
+    rgt_dt varchar(8) NULL,
+    inqr_ncnt numeric(6) NULL,
+    use_yn varchar(1) NULL,
+    rgsr_id varchar(20) NULL,
+    rgt_dtm varchar(14) NULL,
+    updr_id varchar(20) NULL,
+    upd_dtm varchar(14) NULL,
+    CONSTRAINT pk_tbhxzm114 PRIMARY KEY (bltn_no)
+);
+
+
+CREATE TABLE ohxzown.tbhxzm115 (
+    org_cd varchar(7) NOT NULL,
+    atfl_mng_no numeric(10) NOT NULL,
+    atfl_nm varchar(100) NULL,
+    orgl_atfl_nm varchar(200) NULL,
+    atfl_path_nm varchar(500) NULL,
+    rgsr_id varchar(20) NOT NULL,
+    rgt_dtm varchar(14) NOT NULL,
+    updr_id varchar(20) NOT NULL,
+    upd_dtm varchar(14) NOT NULL,
+    CONSTRAINT pk_tbhxzm115 PRIMARY KEY (org_cd, atfl_mng_no)
+);
+
+
+CREATE TABLE ohxzown.tbhxzm116 (
+    org_cd varchar(7) NOT NULL,
+    tpw_svc_id varchar(7) NOT NULL,
+    bnr_no varchar(11) NOT NULL,
+    bnr_ttl_nm varchar(130) NULL,
+    atfl_mng_no numeric(10) NULL,
+    bnr_url_val varchar(1000) NULL,
+    use_yn varchar(1) NULL,
+    rgsr_id varchar(20) NOT NULL,
+    rgt_dtm varchar(14) NOT NULL,
+    updr_id varchar(20) NOT NULL,
+    upd_dtm varchar(14) NOT NULL,
+    CONSTRAINT pk_tbhxzm116 PRIMARY KEY (org_cd, tpw_svc_id, bnr_no)
+);
+
+
+
+
+
+
+CREATE TABLE ohxzown.tbhxzm117 (
+    mbrs_id varchar(20) NOT NULL,
+    krn varchar(45) NULL,
+    rgsr_id varchar(20) NULL,
+    rgt_dtm varchar(14) NULL,
+    updr_id varchar(20) NULL,
+    upd_dtm varchar(14) NULL,
+    CONSTRAINT pk_tbhxzm117 PRIMARY KEY (mbrs_id)
+);
+
+
+
+

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tmoney.co.kr.hxz.news.ntcmttr.mapper.NtcMttrMapper">
+
+    <!-- 목록 조회 -->
+    <select id="readNtcMttrList" resultType="tmoney.co.kr.hxz.news.ntcmttr.vo.RspVO" parameterType="tmoney.co.kr.hxz.news.ntcmttr.vo.SrchReqVO">
+        /* sql_id : readNtcMttrList */
+        select org_cd
+             , bltn_no
+             , bltn_dvs_cd
+             , tpw_bltn_rgt_dtm
+             , ntc_mtrr_ttl_nm
+             , main_exps_yn
+             , inqr_ncnt
+             , rgsr_id
+             , rgt_dtm
+          from ohxzown.tbhxzm113
+         where 1=1
+        <if test="req.ntcMttrTtlNm != null and req.ntcMttrTtlNm != ''">
+           and lower(ntc_mttr_ttl_nm) like concat('%', lower(#{req.ntcMttrTtlNm}), '%')
+        </if>
+        <if test="req.ntcMttrCtt != null and req.ntcMttrCtt != ''">
+           and lower(ntc_mttr_ctt) like concat('%', lower(#{req.ntcMttrCtt}), '%')
+        </if>
+         order by #{req.sort} ${req.dir}
+         limit #{req.size}
+        offset #{req.page}
+    </select>
+
+    <!-- 카운트 -->
+    <select id="readNtcMttrListCnt" parameterType="tmoney.co.kr.hxz.news.ntcmttr.vo.SrchReqVO" resultType="long">
+        /* sql_id : readNtcMttrListCnt */
+        select count(1)
+          from tbhxzm113
+         where 1 = 1
+        <if test="req.ntcMttrTtlNm != null and req.ntcMttrTtlNm != ''">
+           and lower(ntc_mttr_ttl_nm) like concat('%', lower(#{req.ntcMttrTtlNm}), '%')
+        </if>
+        <if test="req.ntcMttrCtt != null and req.ntcMttrCtt != ''">
+           and lower(ntc_mttr_ctt) like concat('%', lower(#{req.ntcMttrCtt}), '%')
+        </if>
+    </select>
+</mapper>

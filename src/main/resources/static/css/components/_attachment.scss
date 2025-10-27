@@ -1,0 +1,148 @@
+.attachment-box {
+  border-top: 1px solid var(--border-darken);
+}
+.attachment-top {
+  display: flex;
+  padding: 26px 32px;
+  background-color: var(--gray-200);
+  .col-title {
+    display: flex;
+    gap: 10px;
+    .icon {
+      width: 24px;
+      height: 24px;
+    }
+  }
+  .btn-down {
+    display: flex;
+    gap: 10px;
+    margin-left: auto;
+    .icon {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+.attachment-list {
+  margin-top: 20px;
+  ul {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px;
+  }
+  .file-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    gap: 10px;
+    border: 1px solid #e6e6e6;
+    &:hover {
+      background-color: #fbfbfb;
+      border: 1px solid var(--color-primary);
+      .file-name {
+        color: var(--color-darken);
+      }
+    }
+    .file-icon {
+      width: 36px;
+      height: 36px;
+      display: block;
+      flex-shrink: 0;
+      &::before {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      &.pdf {
+        &:before {
+          background-image: url(../../static/images/icon/icon-pdf.svg);
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
+      }
+      &.xls {
+        &:before {
+          background-image: url(../../static/images/icon/icon-xls.svg);
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
+      }
+      &.doc {
+        &:before {
+          background-image: url(../../static/images/icon/icon-doc.svg);
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
+      }
+      &.jpg {
+        &:before {
+          background-image: url(../../static/images/icon/icon-jpg.svg);
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
+      }
+      &.png {
+        &:before {
+          background-image: url(../../static/images/icon/icon-png.svg);
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
+      }
+      &.hwp {
+        &:before {
+          background-image: url(../../static/images/icon/icon-hwp.svg);
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
+      }
+      &.zip {
+        &:before {
+          background-image: url(../../static/images/icon/icon-zip.svg);
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
+      }
+    }
+    .file-name {
+      @include body-3;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      color: var(--gray-500);
+      max-width: calc(100% - 140px);
+    }
+    div {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .file-size {
+      @include body-3;
+      color: var(--gray-500);
+    }
+  }
+}
+
+
+/* ===== 네번째 분기: 768px ===== */
+@media (max-width: 768px) {
+  .attachment-top {
+    padding: 20px;
+  }
+  .attachment-list {
+    margin-top: 10px;
+    ul {
+      grid-template-columns: repeat(1, 1fr);
+    }
+  }
+}
