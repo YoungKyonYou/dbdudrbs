@@ -433,7 +433,7 @@ hr.type-hide {
 @font-face {
   font-family: "Pretendard";
   font-style: normal;
-  src: url("../../static/css/fonts/Pretendard-Black.woff") format("woff"), url("../../static/css/fonts/Pretendard-Black.woff2") format("woff2");
+  src: url("../../css/fonts/Pretendard-Black.woff") format("woff"), url("../../css/fonts/Pretendard-Black.woff2") format("woff2");
   font-weight: 900;
   font-display: swap;
 }
@@ -441,7 +441,7 @@ hr.type-hide {
 @font-face {
   font-family: "Pretendard";
   font-style: normal;
-  src: url("../../static/css/fonts/Pretendard-ExtraBold.woff") format("woff"), url("../../static/css/fonts/Pretendard-ExtraBold.woff2") format("woff2");
+  src: url("../../css/fonts/Pretendard-ExtraBold.woff") format("woff"), url("../../css/fonts/Pretendard-ExtraBold.woff2") format("woff2");
   font-weight: 800;
   font-display: swap;
 }
@@ -449,7 +449,7 @@ hr.type-hide {
 @font-face {
   font-family: "Pretendard";
   font-style: normal;
-  src: url("../../static/css/fonts/Pretendard-Bold.woff") format("woff"), url("../../static/css/fonts/Pretendard-Bold.woff2") format("woff2");
+  src: url("../../css/fonts/Pretendard-Bold.woff") format("woff"), url("../../css/fonts/Pretendard-Bold.woff2") format("woff2");
   font-weight: 700;
   font-display: swap;
 }
@@ -457,7 +457,7 @@ hr.type-hide {
 @font-face {
   font-family: "Pretendard";
   font-style: normal;
-  src: url("../../static/css/fonts/Pretendard-SemiBold.woff") format("woff"), url("../../static/css/fonts/Pretendard-SemiBold.woff2") format("woff2");
+  src: url("../../css/fonts/Pretendard-SemiBold.woff") format("woff"), url("../../css/fonts/Pretendard-SemiBold.woff2") format("woff2");
   font-weight: 600;
   font-display: swap;
 }
@@ -465,7 +465,7 @@ hr.type-hide {
 @font-face {
   font-family: "Pretendard";
   font-style: normal;
-  src: url("../../static/css/fonts/Pretendard-Medium.woff") format("woff"), url("../../static/css/fonts/Pretendard-Medium.woff2") format("woff2");
+  src: url("../../css/fonts/Pretendard-Medium.woff") format("woff"), url("../../css/fonts/Pretendard-Medium.woff2") format("woff2");
   font-weight: 500;
   font-display: swap;
 }
@@ -473,7 +473,7 @@ hr.type-hide {
 @font-face {
   font-family: "Pretendard";
   font-style: normal;
-  src: url("../../static/css/fonts/Pretendard-Regular.woff") format("woff"), url("../../static/css/fonts/Pretendard-Regular.woff2") format("woff2");
+  src: url("../../css/fonts/Pretendard-Regular.woff") format("woff"), url("../../css/fonts/Pretendard-Regular.woff2") format("woff2");
   font-weight: 400;
   font-display: swap;
 }
@@ -481,7 +481,7 @@ hr.type-hide {
 @font-face {
   font-family: "Pretendard";
   font-style: normal;
-  src: url("../../static/css/fonts/Pretendard-Light.woff") format("woff"), url("../../static/css/fonts/Pretendard-Light.woff2") format("woff2");
+  src: url("../../css/fonts/Pretendard-Light.woff") format("woff"), url("../../css/fonts/Pretendard-Light.woff2") format("woff2");
   font-weight: 300;
   font-display: swap;
 }
@@ -489,7 +489,7 @@ hr.type-hide {
 @font-face {
   font-family: "Pretendard";
   font-style: normal;
-  src: url("../../static/css/fonts/Pretendard-ExtraLight.woff") format("woff"), url("../../static/css/fonts/Pretendard-ExtraLight.woff2") format("woff2");
+  src: url("../../css/fonts/Pretendard-ExtraLight.woff") format("woff"), url("../../css/fonts/Pretendard-ExtraLight.woff2") format("woff2");
   font-weight: 200;
   font-display: swap;
 }
@@ -497,7 +497,7 @@ hr.type-hide {
 @font-face {
   font-family: "Pretendard";
   font-style: normal;
-  src: url("../../static/css/fonts/Pretendard-Thin.woff") format("woff"), url("../../static/css/fonts/Pretendard-Thin.woff2") format("woff2");
+  src: url("../../css/fonts/Pretendard-Thin.woff") format("woff"), url("../../css/fonts/Pretendard-Thin.woff2") format("woff2");
   font-weight: 100;
   font-display: swap;
 }
@@ -4793,49 +4793,49 @@ input[readonly] {
 }
 
 .attachment-list .file-item .file-icon.pdf:before {
-  background-image: url(../../static/images/icon/icon-pdf.svg);
+  background-image: url(../../images/icon/icon-pdf.svg);
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
 }
 
 .attachment-list .file-item .file-icon.xls:before {
-  background-image: url(../../static/images/icon/icon-xls.svg);
+  background-image: url(../../images/icon/icon-xls.svg);
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
 }
 
 .attachment-list .file-item .file-icon.doc:before {
-  background-image: url(../../static/images/icon/icon-doc.svg);
+  background-image: url(../../images/icon/icon-doc.svg);
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
 }
 
 .attachment-list .file-item .file-icon.jpg:before {
-  background-image: url(../../static/images/icon/icon-jpg.svg);
+  background-image: url(../../images/icon/icon-jpg.svg);
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
 }
 
 .attachment-list .file-item .file-icon.png:before {
-  background-image: url(../../static/images/icon/icon-png.svg);
+  background-image: url(../../images/icon/icon-png.svg);
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
 }
 
 .attachment-list .file-item .file-icon.hwp:before {
-  background-image: url(../../static/images/icon/icon-hwp.svg);
+  background-image: url(../../images/icon/icon-hwp.svg);
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
 }
 
 .attachment-list .file-item .file-icon.zip:before {
-  background-image: url(../../static/images/icon/icon-zip.svg);
+  background-image: url(../../images/icon/icon-zip.svg);
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
