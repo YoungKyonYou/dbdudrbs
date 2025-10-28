@@ -64,5 +64,6 @@ public class NtcMttrController {
         model.addAttribute("ntcMttr", ntcMttr);
         model.addAttribute("bltnNo" , bltnNo);
         return "/hxz/news/ntcmttr/ntcMttrDtl";
+
     }
 }

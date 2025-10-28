@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class RspVO {
+
     private String orgCd;           // 기관코드
     private String bltnNo;          // 게시번호
     private String bltnDvsCd;       // 게시구분코드
