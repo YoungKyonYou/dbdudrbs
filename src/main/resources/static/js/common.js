@@ -156,8 +156,13 @@ import './accordion.js';
             for (const sel of swapTargets) { // swapTargets 배열의 각 셀렉터에 대해
                 swap(html, sel); // 가져온 HTML에서 해당 셀렉터의 요소를 찾아 현재 문서의 요소와 교체
             }
-            // TODO: bindPagination(baseUrl) 함수가 정의되어 있지 않음
-            bindPagination(baseUrl); // 페이지네이션 바인딩 (함수 구현 필요)
+
+            bindPagination(baseUrl,{
+                page: 0,
+                size: parseInt(selectSize?.value || '10', 10),
+                dir: inputDir?.value || 'asc',
+                sort: inputSort?.value || defaultSortColumn
+            }); // 페이지네이션 바인딩 (함수 구현 필요)
 
             // 페이지네이션 관련 요소들을 다시 구성
             // size, dir, sort 값을 현재 상태에 맞게 업데이트

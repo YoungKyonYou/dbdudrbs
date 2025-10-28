@@ -1,3 +1,30 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" data-theme="light"
+      th:fragment="layout(content)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tmoney 교통복지플랫폼"/>
+    <meta name="keywords" content="Tmoney 교통복지플랫폼"/>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Tmoney 교통복지플랫폼" />
+    <meta property="og:description" content="Tmoney 교통복지플랫폼" />
+
+    <title th:text="${pageTitle} ?: 'Tmoney 교통복지플랫폼'">Tmoney 교통복지플랫폼</title>
+
+    <link rel="stylesheet" th:href="@{/css/vendor/aos.css}" />
+    <link rel="stylesheet" th:href="@{/css/vendor/swiper-bundle.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/index.css}" />
+    <link rel="stylesheet" th:href="@{/css/page/page.css}" />
+
+
+
+    <script th:src="@{/js/vendor/aos.js}"></script>
+    <script th:src="@{/js/vendor/gsap.min.js}"></script>
+    <script th:src="@{/js/vendor/ScrollTrigger.min.js}"></script>
+    <script th:src="@{/js/vendor/swiper-bundle.min.js}"></script>
+    <script type="module" th:src="@{/js/common.js}"></script>
+
 <header id="header" role="banner" th:fragment="siteHeader">
   <div class="container fluid">
     <div class="accessibility-box" aria-label="접근성 및 보기 설정">
@@ -115,3 +142,9 @@
     </div>
   </div>
 </header>
+
+    <th:block th:replace="${content}">
+
+    </th:block>
+
+</head>

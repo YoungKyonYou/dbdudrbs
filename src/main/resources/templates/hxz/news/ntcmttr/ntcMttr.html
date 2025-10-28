@@ -1,39 +1,23 @@
 <!doctype html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" data-theme="light">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Tmoney 교통복지플랫폼"/>
-    <meta name="keywords" content="Tmoney 교통복지플랫폼"/>
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="Tmoney 교통복지플랫폼" />
-    <meta property="og:description" content="Tmoney 교통복지플랫폼" />
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<!--<body>-->
 
-    <title th:text="${pageTitle} ?: 'Tmoney 교통복지플랫폼'">Tmoney 교통복지플랫폼</title>
+<!--<script>-->
+<!--    document.addEventListener('DOMContentLoaded', function () {-->
+<!--      if (window.AOS && !window.__aosInited) {-->
+<!--        AOS.init(); /* 옵션 필요 시 { duration: 600, once: true } */-->
+<!--        window.__aosInited = true;-->
+<!--      }-->
+<!--    });-->
+<!--</script>-->
 
-    <!-- 정적 리소스: /static/css/** → /css/** -->
-    <link rel="stylesheet" th:href="@{/css/vendor/aos.css}" />
-    <link rel="stylesheet" th:href="@{/css/vendor/swiper-bundle.min.css}" />
-    <link rel="stylesheet" th:href="@{/css/index.css}" />
-    <link rel="stylesheet" th:href="@{/css/page/page.css}" />
-</head>
-<body>
+<!--<p id="skip-nav">-->
+<!--    <a href="#contents">본문으로 바로가기</a>-->
+<!--    <a href="#gnb1">주메뉴 바로가기</a>-->
+<!--</p>-->
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-      if (window.AOS && !window.__aosInited) {
-        AOS.init(); /* 옵션 필요 시 { duration: 600, once: true } */
-        window.__aosInited = true;
-      }
-    });
-</script>
-
-<p id="skip-nav">
-    <a href="#contents">본문으로 바로가기</a>
-    <a href="#gnb1">주메뉴 바로가기</a>
-</p>
-
-<th:block th:replace="~{component/header :: siteHeader}"></th:block>
+<th:block th:replace="~{component/header :: layout(~{::content})}">
+<th:block th:fragment="content">
 
 <div id="breadcrumb">
     <div class="container">
@@ -48,7 +32,7 @@
 </div>
 
 <main id="contents">
-    <section class="section">
+    <section class="section" id="grid">
         <div class="container">
             <div class="title-wrap">
                 <div class="flex justify-space-between">
@@ -83,7 +67,7 @@
                             <!-- 서버 전송용 이름을 의미 있게 -->
                             <input type="hidden" name="supportType" value="">
                         </div>
-                        <form id="searchbar" role="search" action="/search" method="get">
+                        <form id="searchbar" th:object="${req}">
                             <input
                                     class="text-field size-lg"
                                     name="q"
@@ -94,6 +78,9 @@
                             <button class="btn icon-only size-lg" type="submit" aria-label="검색">
                                 <i class="icon icon-search" aria-hidden="true"></i>
                             </button>
+
+                            <input th:field="*{sort}" type="hidden">
+                            <input th:field="*{dir}" type="hidden">
                         </form>
                     </div>
                 </div>
@@ -101,143 +88,82 @@
 
             <div class="board-list">
                 <h2 class="sr-only">공지 및 게시글 목록</h2>
+
                 <div class="board-head" role="group" aria-label="목록 컬럼">
                     <span class="col col-num">번호</span>
                     <span class="col col-title">제목</span>
                     <span class="col col-date">등록일</span>
                 </div>
+
                 <ul class="board-body" role="list">
-                    <li class="board-row is-notice">
-                        <a class="board-item" href="">
-              <span class="col col-num">
-                <span class="badge badge-notice" aria-label="공지">공지</span>
-              </span>
+
+                    <!-- 빈 목록 -->
+                    <li class="board-row" th:if="${pageData == null or #lists.isEmpty(pageData.content)}">
+                        <div class="board-item">
+                            <span class="col col-title">등록된 공지사항이 없습니다.</span>
+                        </div>
+                    </li>
+
+                    <!-- 데이터 목록 -->
+                    <li class="board-row"
+                        th:each="row, stat : ${pageData.content}"
+                        th:classappend="${row.mainExpsYn} == 'Y' ? ' is-notice'">
+                        <a class="board-item" th:href="@{'/news/ntcmttr/detail/' + ${row.bltnNo}}">
+        <span class="col col-num" aria-label="번호"
+              th:text="${pageData.total - (pageData.page * pageData.size) - stat.index}">
+          1
+        </span>
+
                             <span class="col col-title">
-                SKT 해킹사고에 따른 유심 무상교체 시 카드번호 재등록 안내입니다.
-              </span>
-                            <span class="col col-date">2025.05.07</span>
-                        </a>
-                    </li>
-                    <li class="board-row is-notice">
-                        <a class="board-item" href="">
-              <span class="col col-num">
-                <span class="badge badge-notice" aria-label="공지">공지</span>
-              </span>
-                            <span class="col col-title">
-                2025년 07월 11일 SKT 휴대폰 본인확인 시스템 작업 공지 안내입니다.
-              </span>
-                            <span class="col col-date">2025.05.07</span>
-                        </a>
-                    </li>
-                    <li class="board-row">
-                        <a class="board-item" href="">
-                            <span class="col col-num" aria-label="번호">83</span>
-                            <span class="col col-title">LGU+ 휴대폰 본인확인 서비스 PASS인증 시스템 작업 공지 안내</span>
-                            <span class="col col-date">2025.05.07</span>
-                        </a>
-                    </li>
-                    <li class="board-row">
-                        <a class="board-item" href="" aria-current="page">
-                            <span class="col col-num" aria-label="번호">82</span>
-                            <span class="col col-title">회원가입 시 OO은행 계좌 유효성 체크 장애 발생 안내</span>
-                            <span class="col col-date">2025.04.07</span>
-                        </a>
-                    </li>
-                    <li class="board-row">
-                        <a class="board-item" href="">
-                            <span class="col col-num" aria-label="번호">81</span>
-                            <span class="col col-title">티머니 공식 홈페이지 리뉴얼 오픈 안내</span>
-                            <span class="col col-date">2025.02.24</span>
-                        </a>
-                    </li>
-                    <li class="board-row">
-                        <a class="board-item" href="">
-                            <span class="col col-num" aria-label="번호">80</span>
-                            <span class="col col-title">개인정보 처리방침 개정 안내</span>
-                            <span class="col col-date">2025.02.24</span>
-                        </a>
-                    </li>
-                    <li class="board-row">
-                        <a class="board-item" href="">
-                            <span class="col col-num" aria-label="번호">79</span>
-                            <span class="col col-title">일일 시스템 점검 안내</span>
-                            <span class="col col-date">2025.02.24</span>
-                        </a>
-                    </li>
-                    <li class="board-row">
-                        <a class="board-item" href="">
-                            <span class="col col-num" aria-label="번호">78</span>
-                            <span class="col col-title">본인확인서비스(카카오뱅크) 일시 중지 안내</span>
-                            <span class="col col-date">2025.02.24</span>
-                        </a>
-                    </li>
-                    <li class="board-row">
-                        <a class="board-item" href="">
-                            <span class="col col-num" aria-label="번호">77</span>
-                            <span class="col col-title">클라우드 관련 작업 공지 안내</span>
-                            <span class="col col-date">2025.02.24</span>
-                        </a>
-                    </li>
-                    <li class="board-row">
-                        <a class="board-item" href="">
-                            <span class="col col-num" aria-label="번호">76</span>
-                            <span class="col col-title">일일 시스템 점검 안내</span>
-                            <span class="col col-date">2025.02.24</span>
+          <!-- 공지 뱃지 (메인노출/공지성) -->
+          <span class="badge badge-notice" aria-label="공지"
+                th:if="${row.mainExpsYn} == 'Y'">공지</span>
+          <span th:text="${row.ntcMttrTtlNm}">제목</span>
+        </span>
+
+                            <!-- rgtDtm이 yyyyMMdd[HHmmss]면 yyyy.MM.dd로 표기 -->
+                            <span class="col col-date"
+                                  th:text="${row.rgtDtm != null and row.rgtDtm.length() >= 8
+                       ? #strings.substring(row.rgtDtm,0,4) + '.' + #strings.substring(row.rgtDtm,4,6) + '.' + #strings.substring(row.rgtDtm,6,8)
+                       : row.rgtDtm}">
+          2025.05.07
+        </span>
                         </a>
                     </li>
                 </ul>
             </div>
+            <!-- ▲ 여기까지 교체 -->
 
-            <nav class="pagination" aria-label="페이지네이션" th:fragment="pagination">
-                <ul class="pagination-list" role="list">
-                    <!-- 처음/이전 (1페이지 기준 비활성) -->
-                    <li class="page-ctrl">
-                        <a class="page-btn" href="" aria-label="첫 페이지" aria-disabled="true" tabindex="-1">
-                            <i class="icon icon-arrow-left-end"></i>
-                        </a>
-                    </li>
-                    <li class="page-ctrl">
-                        <a class="page-btn" href="" aria-label="이전 페이지" aria-disabled="true" tabindex="-1">
-                            <i class="icon icon-arrow-left"></i>
-                        </a>
-                    </li>
-
-                    <!-- 숫자 -->
-                    <li class="page-num is-current">
-                        <span aria-current="page">1</span>
-                    </li>
-                    <li class="page-num"><a href="" aria-label="2페이지">2</a></li>
-                    <li class="page-num"><a href="" aria-label="3페이지">3</a></li>
-                    <li class="page-num"><a href="" aria-label="4페이지">4</a></li>
-                    <li class="page-num"><a href="" aria-label="5페이지">5</a></li>
-
-                    <!-- 다음/마지막 -->
-                    <li class="page-ctrl">
-                        <a class="page-btn" href="" aria-label="다음 페이지">
-                            <i class="icon icon-arrow-right"></i>
-                        </a>
-                    </li>
-                    <li class="page-ctrl">
-                        <a class="page-btn" href="" aria-label="마지막 페이지">
-                            <i class="icon icon-arrow-right-end"></i>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+            <div id="grid-pager">
+                <th:block th:replace="~{component/pagination :: pager(${pageData})}"></th:block>
+            </div>
         </div>
     </section>
 
 </main>
+<script>
+    (function(){
+        const grid = document.getElementById('grid');
+        const searchForm = grid.querySelector('form');
+        const baseUrl = 'news/ntcmttr/ntcMttr.do';
+        const inputSort = document.getElementById('sort');
+        const inputDir = document.getElementById('dir');
+        const selectSize = searchForm?.querySelector('select[name="size"]');
+
+
+
+        bindPagination(baseUrl, {
+        page: 0,
+        size: parseInt(selectSize?.value || '10',10),
+        dir: inputDir?.value || 'asc',
+        sort: inputSort?.value || 'ntc_mtrr_ttl_nm',
+        });
+    })();
+</script>
 
 <th:block th:replace="~{component/footer :: siteFooter}"></th:block>
 <th:block th:replace="~{component/topBtn :: siteTop}"></th:block>
-
-<script th:src="@{/js/vendor/aos.js}"></script>
-<script th:src="@{/js/vendor/gsap.min.js}"></script>
-<script th:src="@{/js/vendor/ScrollTrigger.min.js}"></script>
-<script th:src="@{/js/vendor/swiper-bundle.min.js}"></script>
-
-<script type="module" th:src="@{/js/common.js}"></script>
-
+</th:block>
+</th:block>
 </body>
 </html>

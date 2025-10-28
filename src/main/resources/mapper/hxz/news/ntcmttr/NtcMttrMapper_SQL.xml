@@ -8,15 +8,15 @@
     <!-- 목록 조회 -->
     <select id="readNtcMttrList" resultType="tmoney.co.kr.hxz.news.ntcmttr.vo.RspVO" parameterType="tmoney.co.kr.hxz.news.ntcmttr.vo.SrchReqVO">
         /* sql_id : readNtcMttrList */
-        select org_cd
-             , bltn_no
-             , bltn_dvs_cd
-             , tpw_bltn_rgt_dtm
-             , ntc_mtrr_ttl_nm
-             , main_exps_yn
-             , inqr_ncnt
-             , rgsr_id
-             , rgt_dtm
+        select org_cd as orgCd
+             , bltn_no as bltnNo
+             , bltn_dvs_cd as bltnDvsCd
+             , tpw_bltn_rgt_dtm as tpwBltnRgtDtm
+             , ntc_mttr_ttl_nm as ntcMttrTtlNm
+             , main_exps_yn as mainExpsYn
+             , inqr_ncnt as inqrNcnt
+             , rgsr_id as rgsrId
+             , rgt_dtm as rgtDtm
           from ohxzown.tbhxzm113
          where 1=1
         <if test="req.ntcMttrTtlNm != null and req.ntcMttrTtlNm != ''">
