@@ -1,108 +1,139 @@
-<!doctype html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<body>
+<!-- component/pagination.html -->
+<nav id="pager" class="pagination" aria-label="페이지네이션" th:fragment="pager(pageData)"
+     th:if="${pageData != null}"
+     th:with="
+        current        = ${pageData.page},
+        totalPages     = ${pageData.totalPages},
+        totalPagesInt  = ${T(java.lang.Math).toIntExact(totalPages)},
+        blockIdx       = ${current / 10},
+        blockStart     = ${blockIdx * 10},
+        blockEnd       = ${T(java.lang.Math).min(blockStart + 9, totalPagesInt - 1)}
+     ">
 
-<!-- 그대로 include해서 쓰는 프래그먼트 -->
-<div th:fragment="pagination">
-    <div id="pagination">
-        <button class="btn-pgn first">
-            <em class="icon icon-doublearrow"></em>
-        </button>
-        <button class="btn-pgn prev">
-            <em class="icon icon-arrow-right"></em>
-        </button>
-        <ul class="num-list">
-            <li class="active"><a href="#url" class="">1</a></li>
-            <li><a href="#url" class="">2</a></li>
-            <li><a href="#url" class="">3</a></li>
-            <li><a href="#url" class="">4</a></li>
-            <li><a href="#url" class="">5</a></li>
-        </ul>
-        <button class="btn-pgn next">
-            <em class="icon icon-arrow-right"></em>
-        </button>
-        <button class="btn-pgn last">
-            <em class="icon icon-doublearrow"></em>
-        </button>
-    </div>
+    <ul class="pagination-list" role="list">
+        <!-- 처음 -->
+        <li class="page-ctrl">
+            <a class="page-btn" href="#" aria-label="첫 페이지"
+               th:attr="data-page=${0}"
+               th:attrappend="aria-disabled=${!pageData.hasPrev} ? 'true' : null,
+                        tabindex=${!pageData.hasPrev} ? '-1' : null">
+                <i class="icon icon-arrow-left-end" aria-hidden="true"></i>
+            </a>
+        </li>
+
+        <!-- 이전 -->
+        <li class="page-ctrl">
+            <a class="page-btn" href="#" aria-label="이전 페이지"
+               th:attr="data-page=${pageData.page - 1}"
+               th:attrappend="aria-disabled=${!pageData.hasPrev} ? 'true' : null,
+                        tabindex=${!pageData.hasPrev} ? '-1' : null">
+                <i class="icon icon-arrow-left" aria-hidden="true"></i>
+            </a>
+        </li>
+
+        <!-- 숫자 -->
+        <li class="page-num"
+            th:each="i : ${#numbers.sequence(blockStart, blockEnd)}"
+            th:classappend="${i == pageData.page} ? ' is-current'">
+            <!-- 현재 페이지 -->
+            <span th:if="${i == pageData.page}"
+                  th:text="${i + 1}"
+                  aria-current="page">1</span>
+
+            <!-- 다른 페이지 -->
+            <a th:if="${i != pageData.page}"
+               href="#"
+               th:text="${i + 1}"
+               th:attr="data-page=${i}"
+               th:aria-label="${i + 1} + '페이지'">1</a>
+        </li>
+
+        <!-- 다음 -->
+        <li class="page-ctrl">
+            <a class="page-btn" href="#" aria-label="다음 페이지"
+               th:attr="data-page=${pageData.page + 1}"
+               th:attrappend="aria-disabled=${!pageData.hasNext} ? 'true' : null,
+                        tabindex=${!pageData.hasNext} ? '-1' : null">
+                <i class="icon icon-arrow-right" aria-hidden="true"></i>
+            </a>
+        </li>
+
+        <!-- 마지막 -->
+        <li class="page-ctrl" th:with="tp=${T(java.lang.Math).toIntExact(pageData.totalPages)}">
+            <a class="page-btn" href="#" aria-label="마지막 페이지"
+               th:attr="data-page=${tp > 0 ? tp - 1 : 0}"
+               th:attrappend="aria-disabled=${!pageData.hasNext} ? 'true' : null,
+                        tabindex=${!pageData.hasNext} ? '-1' : null">
+                <i class="icon icon-arrow-right-end" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
 
     <script>
-        // pagination.js (vanilla JS 버전)
-        function createPagination({ container, totalItems, itemsPerPage, currentPage = 1, onPageChange }) {
-            const totalPages = Math.max(1, Math.ceil((+totalItems || 0) / (+itemsPerPage || 1)));
-            const root = (typeof container === 'string') ? document.querySelector(container) : container;
-            if (!root) return console.warn('createPagination: container not found:', container);
+        // ===== 너가 쓰던 유틸 유지 =====
+        function putParam(params, key, value) {
+          if (value === null || value === undefined || value === '') return;
+          if (Array.isArray(value)) value.forEach(v => putParam(params, key, v));
+          else params.set(key, value);
+        }
 
-            const numList = root.querySelector('.num-list');
-            if (!numList) return console.warn('createPagination: .num-list not found in container');
+        async function fetchAndSwap(u) {
+          const res = await fetch(u.toString(), { headers: { 'X-Requested-With': 'fetch' } });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const html = await res.text();
 
-            // 버튼들을 깔끔히 재바인딩하기 위해 clone 방식 사용(기존 리스너 제거 효과)
-            function resetButton(selector) {
-                const btn = root.querySelector(selector);
-                if (!btn) return null;
-                const clone = btn.cloneNode(true);
-                btn.parentNode.replaceChild(clone, btn);
-                return clone;
-            }
+          const doc = new DOMParser().parseFromString(html, 'text/html');
+          const newTbody = doc.querySelector('#grid-tbody');
+          const newPager = doc.querySelector('#pager');
 
-            // 숫자 목록(ul)도 위임 한 번만 걸면 render마다 리스너 중복이 없음
-            function clearChildren(el) {
-                while (el.firstChild) el.removeChild(el.firstChild);
-            }
+          const curTbody = document.querySelector('#grid-tbody');
+          const curPager = document.querySelector('#pager');
 
-            function render() {
-                clearChildren(numList);
-                for (let i = 1; i <= totalPages; i++) {
-                    const li = document.createElement('li');
-                    if (i === currentPage) li.classList.add('active');
-                    const a = document.createElement('a');
-                    a.setAttribute('href', '#');
-                    a.textContent = String(i);
-                    li.appendChild(a);
-                    numList.appendChild(li);
-                }
+          if (newTbody && curTbody) curTbody.replaceWith(newTbody);
+          if (newPager && curPager) curPager.innerHTML = newPager.innerHTML;
 
-                // 상단/하단 네비 버튼 리스너 재바인딩(중복 방지)
-                const first = resetButton('.first');
-                const prev  = resetButton('.prev');
-                const next  = resetButton('.next');
-                const last  = resetButton('.last');
+          history.pushState(null, '', u.toString());
+        }
 
-                if (first) first.addEventListener('click', () => changePage(1));
-                if (prev)  prev.addEventListener('click',  () => changePage(Math.max(1, currentPage - 1)));
-                if (next)  next.addEventListener('click',  () => changePage(Math.min(totalPages, currentPage + 1)));
-                if (last)  last.addEventListener('click',  () => changePage(totalPages));
-            }
+        // ===== bindPagination 그대로 (퍼블리셔 셀렉터에 맞춤) =====
+        function bindPagination(url, ...args) {
+          const baseUrl  = new URL(url, window.location.origin);
+          const baseArgs = Object.assign({}, ...args);
 
-            // 숫자 클릭은 이벤트 위임(중복 리스너 방지)
-            if (!numList.__bound) {
-                numList.addEventListener('click', (e) => {
-                    const a = e.target.closest('a');
-                    if (!a) return;
-                    e.preventDefault();
-                    const li = a.closest('li');
-                    if (!li) return;
-                    const index = Array.prototype.indexOf.call(numList.children, li) + 1; // 1-based
-                    changePage(index);
-                });
-                numList.__bound = true;
-            }
+          window.addEventListener('popstate', () => {
+            fetchAndSwap(new URL(window.location.href)).catch(console.error);
+          });
 
-            function changePage(newPage) {
-                if (newPage === currentPage) return;
-                currentPage = newPage;
-                render();
-                try {
-                    if (typeof onPageChange === 'function') onPageChange(currentPage);
-                } catch (err) {
-                    console.error('onPageChange error:', err);
-                }
-            }
+          document.addEventListener('click', function (e) {
+            const btn = e.target.closest('.pagination a[data-page]');
+            if (!btn) return;
 
-            render(); // 초기 렌더
+            // aria-disabled 또는 disabled 클래스 대응
+            if (btn.getAttribute('aria-disabled') === 'true' || btn.classList.contains('disabled')) return;
+
+            e.preventDefault();
+
+            const page = Number(btn.dataset.page);
+            if (Number.isNaN(page)) return;
+
+            const u = new URL(baseUrl.toString());
+            const p = new URLSearchParams(u.search);
+
+            const size = baseArgs.size ?? null;   // null이면 생략
+            const dir  = baseArgs.dir  ?? 'asc';
+            const sort = baseArgs.sort ?? null;
+
+            putParam(p, 'size', size);
+            putParam(p, 'page', page); // 0-base
+            putParam(p, 'dir',  dir);
+            if (sort !== null && sort !== undefined && sort !== '') putParam(p, 'sort', sort);
+
+            const skip = new Set(['size','page','dir','sort']);
+            Object.entries(baseArgs).forEach(([k,v]) => { if (!skip.has(k)) putParam(p, k, v); });
+
+            u.search = p.toString();
+            fetchAndSwap(u).catch(console.error);
+          });
         }
     </script>
-</div>
-
-</body>
-</html>
+</nav>

@@ -3,10 +3,12 @@ package tmoney.co.kr.hxz.news.ntcmttr.vo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 public class RspVO {
 
     private String orgCd;           // 기관코드

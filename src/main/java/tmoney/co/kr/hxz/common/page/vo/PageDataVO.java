@@ -13,5 +13,7 @@ public class PageDataVO<T> {
     private int size;
     private long total;
 
-    public long getTotalPage() { return (total + size - 1) / size; }
+    public long getTotalPages() { return (total + size - 1) / size; }
+    public boolean isHasPrev(){return page>0;}
+    public boolean isHasNext(){return page+1<getTotalPages();}
 }
