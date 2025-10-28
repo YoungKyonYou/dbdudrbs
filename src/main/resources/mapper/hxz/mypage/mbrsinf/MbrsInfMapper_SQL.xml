@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tmoney.co.kr.hxz.mypage.mbrsinf.mapper.MbrsInfMapper">
+
+    <select id="readMbrsInf" resultType="tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsInfRspVO" parameterType="String">
+        /* sql_id : readMbrsInf */
+        /*
+        * 1. 파일 : MbrsInfMapper_SQL.xml
+        * 2. 기능 : 회원 정보 상세 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.10.28 - 최중혁 : 최초작성
+        */
+        select mbrs_id              as mbrsId
+             , mbrs_nm              as mbrsNm
+             , mail_addr            as mailAddr
+             , mbrs_mbph_no         as mbrsMbphNo
+             , mbrs_tel_no          as mbrsTelNo
+             , pwd                  as pwd
+             , mbrs_sta_cd          as mbrsStaCd
+             , pwd_err_ncnt          as pwdErrNcnt
+             , dspr_rgt_inhr_no          as dsprRgtInhrNo
+             , vtn_no          as vtnNo
+             , tpw_join_typ_cd          as tpwJoinTypCd
+             , tpw_join_rctd_val          as tpwJoinRctdVal
+             , scsn_dtm          as scsnDtm
+             , prsn_auth_ci_enc_val          as prsnAuthCiEncVal
+             , gndr_cd          as gndrCd
+             , mbrs_brdt          as mbrsBrdt
+             , mbrs_scsn_dvs_cd          as mbrsScsnDvsCd
+             , ntfc_yn          as ntfcYn
+             , mrkg_utlz_agrm_yn          as mrkgUtlzAgrmYn
+             , sms_rcv_agrm_yn          as smsRcvAgrmYn
+             , mail_rcv_agrm_yn          as mailRcvAgrmYn
+             , bztl_rcv_agrm_yn          as bztlRcvAgrmYn
+             , mbrs_join_dt          as mbrsJoinDt
+          from ohxzown.tbhxzm101
+         where mbrs_id = #{mbrsId}
+    </select>
+
+    <update id="updateMbrsInf" parameterType="tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsUpdReqVO">
+        /* sql_id : updateMbrsInf */
+        /*
+        * 1. 파일 : MbrsInfMapper_SQL.xml
+        * 2. 기능 : 회원 정보 수정
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.10.28 - 최중혁 : 최초작성
+        */
+        update ohxzown.tbhxzm101
+           set mbrs_nm = #{req.mbrsNm}
+             , mbrs_brdt = #{req.mbrsBrdt}
+             , mbrs_mbph_no = #{req.mbrsMbphNo}
+             , mbrs_tel_no = #{req.mbrsTelNo}
+             , mail_addr = #{req.mailAddr}
+             , prsn_auth_ci_enc_val = #{req.prsnAuthCiEncVal}
+             , updr_id = #{req.mbrsId}
+             , upd_dtm = to_char(now(), 'YYYYMMDDHH24MISS')
+         where mbrs_id = #{req.mbrsId}
+    </update>
+
+    <insert id="insertMbrsInf" parameterType="tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsInfReqVO">
+        /* sql_id : insertMbrsInf */
+        /*
+        * 1. 파일 : MbrsInfMapper_SQL.xml
+        * 2. 기능 : 회원 정보 변경 이력 추가
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.10.28 - 최중혁 : 최초작성
+        */
+        insert
+          into ohxzown.tbhxzh101
+             ( mbrs_id
+             , mbrs_inf_mod_dt
+             , mbrs_inf_mod_sno
+             , mbrs_nm
+             , mail_addr
+             , mbrs_mbph_no
+             , mbrs_tel_no
+             , pwd
+             , mbrs_sta_cd
+             , pwd_err_ncnt
+             , dspr_rgt_inhr_no
+             , vtrn_no
+             , tpw_join_typ_cd
+             , tpw_join_rctd_val
+             , scsn_dtm
+             , prsn_auth_ci_enc_val
+             , gndr_cd
+             , mbrs_brdt
+             , mbrs_scsn_dvs_cd
+             , ntfc_yn
+             , mrkg_utlz_agrm_yn
+             , sms_rcv_agrm_yn
+             , mail_rcv_agrm_yn
+             , bztl_rcv_agrm_yn
+             , mbrs_join_dt
+             , mod_rsn_ctt
+             , rgsr_id
+             , rgt_dtm
+             , updr_id
+             , upd_dtm
+             )
+        VALUES (
+               #{req.mbrsId}
+             , to_char(now(), 'YYYYMMDD')
+             , coalesce
+               (
+                       (select max(mbrs_inf_mod_sno) + 1
+                          from ohxzown.tbhxzh101
+                         where mbrs_id = #{req.mbrsId}
+                           and mbrs_inf_mod_dt = to_char(now(), 'YYYYMMDD')
+                       ), 1
+               )
+             , #{req.mbrsNm}
+             , #{req.mailAddr}
+             , #{req.mbrsMbphNo}
+             , #{req.mbrsTelNo}
+             , #{req.pwd}
+             , #{req.mbrsStaCd}
+             , #{req.pwdErrNcnt}
+             , #{req.dsprRgtInhrNo}
+             , #{req.vtrnNo}
+             , #{req.tpwJoinTypCd}
+             , #{req.tpwJoinRctdVal}
+             , #{req.scsnDtm}
+             , #{req.prsnAuthCiEncVal}
+             , #{req.gndrCd}
+             , #{req.mbrsBrdt}
+             , #{req.mbrsScsnDvsCd}
+             , #{req.ntfcYn}
+             , #{req.mrkgUtlzAgrmYn}
+             , #{req.smsRcvAgrmYn}
+             , #{req.mailRcvAgrmYn}
+             , #{req.bztlRcvAgrmYn}
+             , #{req.mbrsJoinDt}
+             , '회원 정보 변경'
+             , #{req.mbrsId}
+             , to_char(now(), 'YYYYMMDDHH24MISS')
+             , #{req.mbrsId}
+             , to_char(now(), 'YYYYMMDDHH24MISS')
+        );
+    </insert>
+
+    <update id="updatePwd" parameterType="String">
+        /* sql_id : updatePwd */
+        /*
+        * 1. 파일 : MbrsInfMapper_SQL.xml
+        * 2. 기능 : 회원 정보 수정
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.10.28 - 최중혁 : 최초작성
+        */
+        update ohxzown.tbhxzm101
+           set pwd = #{newPwd}
+             , updr_id = #{mbrsId}
+             , upd_dtm = to_char(now(), 'YYYYMMDDHH24MISS')
+         where mbrs_id = #{mbrsId}
+    </update>
+
+</mapper>

@@ -55,7 +55,6 @@
          </if>
     </select>
 
-    <!-- 목록 조회 -->
     <select id="readFaqDtl" resultType="tmoney.co.kr.hxz.news.faq.vo.FaqRspVO" parameterType="String">
         /* sql_id : readFaqDtl */
         /*
@@ -65,24 +64,22 @@
         * 4. 변경이력 :
         2025.10.28 - 최중혁 : 최초작성
         */
-        select org_cd
-        , bltn_no
-        , bltn_dvs_cd
-        , tpw_bltn_rgt_dtm
-        , ntc_mttr_ttl_nm
-        , ntc_mttr_ctt
-        , main_exps_yn
-        , main_exps_stt_dt
-        , main_exps_end_dt
-        , inqr_ncnt
-        , use_yn
-        , rgsr_id
-        , rgt_dtm
-        from ohxzown.tbhxzm114
-        where 1=1
-        <if test="bltnNo != null and bltnNo != ''">
-            and lower(bltn_no) like concat('%', lower(#{bltnNo}), '%')
-        </if>
+        select bltn_no      as bltnNo
+             , faq_ttl_nm   as faqTtlNm
+             , faq_ctt      as faqCtt
+             , answ_ctt     as answCtt
+             , rgt_dt       as rgtDt
+             , inqr_ncnt    as inqrNcnt
+             , use_yn       as useYn
+             , rgsr_id      as rgsrId
+             , rgt_dtm      as rgtDtm
+             , updr_id      as updrId
+             , upd_dtm      as updDtm
+          from ohxzown.tbhxzm114
+         where 1=1
+         <if test="bltnNo != null and bltnNo != ''">
+           and lower(bltn_no) like concat('%', lower(#{bltnNo}), '%')
+         </if>
     </select>
 
     <update id="updateFaqInqrNcnt" parameterType="String">
@@ -95,10 +92,10 @@
         2025.10.28 - 최중혁 : 최초작성
         */
         update ohxzown.tbhxzm114
-        set inqr_ncnt = coalesce(inqr_ncnt, 0) + 1
-        where 1 = 1
-        <if test="bltnNo != null and bltnNo != ''">
-            and bltn_no = #{bltnNo}
-        </if>
+           set inqr_ncnt = coalesce(inqr_ncnt, 0) + 1
+         where 1 = 1
+         <if test="bltnNo != null and bltnNo != ''">
+           and bltn_no = #{bltnNo}
+         </if>
     </update>
 </mapper>

@@ -25,7 +25,7 @@ CREATE TABLE ohxzown.tbhxzh101 (
     mbrs_brdt            VARCHAR(8)    NULL,
     mbrs_scsn_dvs_cd     VARCHAR(2)    NULL,
     ntfc_yn              VARCHAR(1)    NULL,
-    mrkg_ultz_agrm_yn    VARCHAR(1)    NULL,
+    mrkg_utlz_agrm_yn    VARCHAR(1)    NULL,
     sms_rcv_agrm_yn      VARCHAR(1)    NULL,
     mail_rcv_agrm_yn     VARCHAR(1)    NULL,
     bztl_rcv_agrm_yn     VARCHAR(1)    NULL,
