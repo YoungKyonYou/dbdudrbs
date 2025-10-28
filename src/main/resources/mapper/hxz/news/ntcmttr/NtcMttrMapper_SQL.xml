@@ -5,7 +5,7 @@
 
 <mapper namespace="tmoney.co.kr.hxz.news.ntcmttr.mapper.NtcMttrMapper">
 
-    <select id="readNtcMttrList" resultType="tmoney.co.kr.hxz.news.ntcmttr.vo.RspVO" parameterType="tmoney.co.kr.hxz.news.ntcmttr.vo.SrchReqVO">
+    <select id="readNtcMttrList" resultType="tmoney.co.kr.hxz.news.ntcmttr.vo.NtcMttrRspVO" parameterType="tmoney.co.kr.hxz.news.ntcmttr.vo.NtcMttrSrchReqVO">
         /* sql_id : readNtcMttrList */
         /*
         * 1. 파일 : NtcMttrMapper_SQL.xml
@@ -27,19 +27,20 @@
              , rgsr_id as rgsrId
              , rgt_dtm as rgtDtm
           from ohxzown.tbhxzm113
-         where 1=1
+         where 1 = 1
         <if test="req.ntcMttrTtlNm != null and req.ntcMttrTtlNm != ''">
            and lower(ntc_mttr_ttl_nm) like concat('%', lower(#{req.ntcMttrTtlNm}), '%')
         </if>
         <if test="req.ntcMttrCtt != null and req.ntcMttrCtt != ''">
            and lower(ntc_mttr_ctt) like concat('%', lower(#{req.ntcMttrCtt}), '%')
         </if>
-         order by #{req.sort} ${req.dir}
+         order by main_exps_yn desc
+             , ${req.sort} ${req.dir}
          limit #{req.size}
         offset #{req.page}
     </select>
 
-    <select id="readNtcMttrListCnt" parameterType="tmoney.co.kr.hxz.news.ntcmttr.vo.SrchReqVO" resultType="long">
+    <select id="readNtcMttrListCnt" parameterType="tmoney.co.kr.hxz.news.ntcmttr.vo.NtcMttrSrchReqVO" resultType="long">
         /* sql_id : readNtcMttrListCnt */
         /*
         * 1. 파일 : NtcMttrMapper_SQL.xml
@@ -60,7 +61,7 @@
     </select>
 
     <!-- 목록 조회 -->
-    <select id="readNtcMttrDtl" resultType="tmoney.co.kr.hxz.news.ntcmttr.vo.RspVO" parameterType="String">
+    <select id="readNtcMttrDtl" resultType="tmoney.co.kr.hxz.news.ntcmttr.vo.NtcMttrRspVO" parameterType="String">
         /* sql_id : readNtcMttrDtl */
         /*
         * 1. 파일 : NtcMttrMapper_SQL.xml
@@ -82,10 +83,10 @@
              , use_yn
              , rgsr_id
              , rgt_dtm
-        from ohxzown.tbhxzm113
-        where 1=1
-        <if test="bltnNo != null and bltnNo != ''">
-            and lower(bltn_no) like concat('%', lower(#{bltnNo}), '%')
-        </if>
+          from ohxzown.tbhxzm113
+         where 1 = 1
+         <if test="bltnNo != null and bltnNo != ''">
+           and lower(bltn_no) like concat('%', lower(#{bltnNo}), '%')
+         </if>
     </select>
 </mapper>
