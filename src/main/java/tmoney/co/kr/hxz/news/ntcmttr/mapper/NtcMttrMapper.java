@@ -2,13 +2,13 @@ package tmoney.co.kr.hxz.news.ntcmttr.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import tmoney.co.kr.hxz.annotation.HxzMapper;
+import tmoney.co.kr.hxz.annotation.HxzDb;
 import tmoney.co.kr.hxz.news.ntcmttr.vo.RspVO;
 import tmoney.co.kr.hxz.news.ntcmttr.vo.SrchReqVO;
 
 import java.util.List;
 
-@HxzMapper
+@HxzDb
 @Mapper
 public interface NtcMttrMapper {
     List<RspVO> readNtcMttrList(

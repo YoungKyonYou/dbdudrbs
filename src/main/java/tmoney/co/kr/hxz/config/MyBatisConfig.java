@@ -13,12 +13,13 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import tmoney.co.kr.hxz.annotation.HxzDb;
 
 @Configuration
 // Mapper 인터페이스 패키지 (UserMapper가 있는 위치)
 @MapperScan(
         basePackages = "tmoney.co.kr.hxz",
-        annotationClass = tmoney.co.kr.hxz.annotation.HxzMapper.class
+        annotationClass = HxzDb.class
 )
 public class MyBatisConfig {
 

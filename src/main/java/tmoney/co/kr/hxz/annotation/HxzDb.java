@@ -11,5 +11,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Mapper
-public @interface HxzMapper {
+public @interface HxzDb {
 }
