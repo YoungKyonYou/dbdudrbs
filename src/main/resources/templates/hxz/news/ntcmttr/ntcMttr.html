@@ -1,24 +1,9 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<!--<body>-->
-
-<!--<script>-->
-<!--    document.addEventListener('DOMContentLoaded', function () {-->
-<!--      if (window.AOS && !window.__aosInited) {-->
-<!--        AOS.init(); /* 옵션 필요 시 { duration: 600, once: true } */-->
-<!--        window.__aosInited = true;-->
-<!--      }-->
-<!--    });-->
-<!--</script>-->
-
-<!--<p id="skip-nav">-->
-<!--    <a href="#contents">본문으로 바로가기</a>-->
-<!--    <a href="#gnb1">주메뉴 바로가기</a>-->
-<!--</p>-->
-
 <th:block th:replace="~{component/header :: layout(~{::content})}">
   <th:block th:fragment="content">
 
+    <!-- Breadcrumb -->
     <div id="breadcrumb">
       <div class="container">
         <nav>
@@ -34,48 +19,43 @@
     <main id="contents">
       <section class="section" id="grid">
         <div class="container">
+          <!-- 제목 + 검색 -->
           <div class="title-wrap">
             <div class="flex justify-space-between">
               <h2 class="section-title">공지사항</h2>
+
               <div id="search-box">
-                <div class="dropdown size-lg" data-name="" role="group" aria-labelledby="supportTypeTitle">
-                  <button type="button" id="supportTypeDropdownBtn" class="dropdown_button" aria-haspopup="listbox"
-                    aria-expanded="false" aria-controls="supportTypeDropdownList" aria-label="공지사항 유형 선택 드롭다운">
-                    <!-- placeholder 텍스트는 의미 명확히 -->
-                    <span class="dropdown_value" data-placeholder="전체">전체</span>
-                  </button>
+                <form id="searchbar" th:object="${req}" method="get">
+                  <select id="searchFieldSelect" class="dropdown size-lg" aria-label="검색 구분 선택">
+                    <option value="ntcMttrTtlNm">제목</option>
+                    <option value="ntcMttrCtt">내용</option>
+                  </select>
 
-                  <ul class="dropdown_list" id="supportTypeDropdownList" role="listbox" tabindex="-1"
-                    aria-labelledby="supportTypeDropdownBtn">
-                    <!-- 각 option은 고유 id + aria-selected 하나만 true -->
-                    <li id="supportTypeOptChild" role="option" class="dropdown_option" data-value="전체"
-                      aria-selected="false">전체</li>
-                    <li id="supportTypeOptTeen" role="option" class="dropdown_option" data-value="타입1"
-                      aria-selected="false">타입1</li>
-                    <li id="supportTypeOptSenior" role="option" class="dropdown_option" data-value="타입2"
-                      aria-selected="false">타입2</li>
-                  </ul>
-
-                  <!-- 서버 전송용 이름을 의미 있게 -->
-                  <input type="hidden" name="supportType" value="">
-                </div>
-                <form id="searchbar" th:object="${req}">
-                  <input class="text-field size-lg" name="q" placeholder="검색어를 입력해주세요." aria-label="검색어"
+                  <input id="searchInput" class="text-field size-lg" placeholder="검색어를 입력해주세요." aria-label="검색어"
                     autocomplete="off" enterkeyhint="search">
+
                   <button class="btn icon-only size-lg" type="submit" aria-label="검색">
                     <i class="icon icon-search" aria-hidden="true"></i>
                   </button>
 
+                  <!-- VO 필드 hidden -->
+                  <input id="ntcMttrTtlNm" th:field="*{ntcMttrTtlNm}" type="hidden">
+                  <input id="ntcMttrCtt" th:field="*{ntcMttrCtt}" type="hidden">
                   <input th:field="*{sort}" type="hidden">
                   <input th:field="*{dir}" type="hidden">
                 </form>
               </div>
+
+
+
+
+
             </div>
           </div>
 
+          <!-- 게시판 목록 -->
           <div class="board-list">
             <h2 class="sr-only">공지 및 게시글 목록</h2>
-
             <div class="board-head" role="group" aria-label="목록 컬럼">
               <span class="col col-num">번호</span>
               <span class="col col-title">제목</span>
@@ -83,7 +63,6 @@
             </div>
 
             <ul class="board-body" role="list">
-
               <!-- 빈 목록 -->
               <li class="board-row" th:if="${pageData == null or #lists.isEmpty(pageData.content)}">
                 <div class="board-item">
@@ -91,33 +70,35 @@
                 </div>
               </li>
 
-              <!-- 데이터 목록 -->
-              <li class="board-row" th:each="row, stat : ${pageData.content}"
-                th:classappend="${row.mainExpsYn} == 'Y' ? ' is-notice'">
-                <a class="board-item" th:href="@{'/news/ntcmttr/detail/' + ${row.bltnNo}}">
-                  <span class="col col-num" aria-label="번호"
-                    th:text="${pageData.total - (pageData.page * pageData.size) - stat.index}">
-                    1
-                  </span>
-
+              <!-- 공지사항 먼저 -->
+              <li class="board-row" th:each="row, stat : ${pageData.content}" th:if="${row.mainExpsYn} == 'Y'"
+                th:classappend="is-notice">
+                <a class="board-item" th:href="@{'/news/ntcmttr/ntcMttrDtl/' + ${row.bltnNo}}">
+                  <span class="col col-num"
+                    th:text="${pageData.total - (pageData.page * pageData.size) - stat.index}">1</span>
                   <span class="col col-title">
-                    <!-- 공지 뱃지 (메인노출/공지성) -->
-                    <span class="badge badge-notice" aria-label="공지" th:if="${row.mainExpsYn} == 'Y'">공지</span>
+                    <span class="badge badge-notice">공지</span>
                     <span th:text="${row.ntcMttrTtlNm}">제목</span>
                   </span>
+                  <span class="col col-date"
+                    th:text="${row.rgtDtm != null and row.rgtDtm.length() >= 8 ? #strings.substring(row.rgtDtm,0,4) + '.' + #strings.substring(row.rgtDtm,4,6) + '.' + #strings.substring(row.rgtDtm,6,8) : row.rgtDtm}">2025.05.07</span>
+                </a>
+              </li>
 
-                  <!-- rgtDtm이 yyyyMMdd[HHmmss]면 yyyy.MM.dd로 표기 -->
-                  <span class="col col-date" th:text="${row.rgtDtm != null and row.rgtDtm.length() >= 8
-                       ? #strings.substring(row.rgtDtm,0,4) + '.' + #strings.substring(row.rgtDtm,4,6) + '.' + #strings.substring(row.rgtDtm,6,8)
-                       : row.rgtDtm}">
-                    2025.05.07
-                  </span>
+              <!-- 일반 게시글 -->
+              <li class="board-row" th:each="row, stat : ${pageData.content}" th:if="${row.mainExpsYn} != 'Y'">
+                <a class="board-item" th:href="@{'/news/ntcmttr/ntcMttrDtl/' + ${row.bltnNo}}">
+                  <span class="col col-num"
+                    th:text="${pageData.total - (pageData.page * pageData.size) - stat.index}">1</span>
+                  <span class="col col-title" th:text="${row.ntcMttrTtlNm}">제목</span>
+                  <span class="col col-date"
+                    th:text="${row.rgtDtm != null and row.rgtDtm.length() >= 8 ? #strings.substring(row.rgtDtm,0,4) + '.' + #strings.substring(row.rgtDtm,4,6) + '.' + #strings.substring(row.rgtDtm,6,8) : row.rgtDtm}">2025.05.07</span>
                 </a>
               </li>
             </ul>
           </div>
-          <!-- ▲ 여기까지 교체 -->
 
+          <!-- 페이지네이션 -->
           <div id="grid-pager">
             <th:block th:replace="~{component/pagination :: pager(${pageData})}"></th:block>
           </div>
@@ -125,7 +106,10 @@
       </section>
 
     </main>
-    <script>
+
+    <script type=module src="/js/common.js"></script>
+    <!-- 스크립트 -->
+    <script th:inline="javascript" type="text/javascript">
       (function () {
         const grid = document.getElementById('grid');
         const searchForm = grid.querySelector('form');
@@ -134,21 +118,50 @@
         const inputDir = document.getElementById('dir');
         const selectSize = searchForm?.querySelector('select[name="size"]');
 
+        const form = document.getElementById('searchbar');
+        const select = document.getElementById('searchFieldSelect');
+        const input = document.getElementById('searchInput');
+        const titleField = document.getElementById('ntcMttrTtlNm');
+        const contentField = document.getElementById('ntcMttrCtt');
 
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
 
+          if (select.value === 'ntcMttrTtlNm') {
+            titleField.value = input.value;
+            contentField.value = '';
+          } else {
+            titleField.value = '';
+            contentField.value = input.value;
+          }
+
+          applied = Common.collectFromForm(form);
+
+          Common.reloadList({
+            page: 0,
+            defaultSortColumn: 'bltn_no',
+            swapTargets: ['.board-body', '#grid-pager'],
+            baseUrl,
+            selectSize,
+            inputSort,
+            inputDir,
+            applied
+          });
+        });
         bindPagination(baseUrl, {
           page: 0,
           size: parseInt(selectSize?.value || '10', 10),
           dir: inputDir?.value || 'asc',
-          sort: inputSort?.value || 'ntc_mtrr_ttl_nm',
+          sort: inputSort?.value || 'rgtDtm',
         });
       })();
     </script>
 
+    <!-- Footer / Top Button -->
     <th:block th:replace="~{component/footer :: siteFooter}"></th:block>
     <th:block th:replace="~{component/topBtn :: siteTop}"></th:block>
+
   </th:block>
 </th:block>
-</body>
 
 </html>

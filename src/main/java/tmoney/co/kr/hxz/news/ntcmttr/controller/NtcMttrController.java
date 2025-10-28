@@ -8,14 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import tmoney.co.kr.hxz.common.page.vo.PageDataVO;
 import tmoney.co.kr.hxz.news.ntcmttr.service.NtcMttrService;
-import tmoney.co.kr.hxz.news.ntcmttr.vo.RspVO;
-import tmoney.co.kr.hxz.news.ntcmttr.vo.SrchReqVO;
-
-import java.util.HashMap;
-import java.util.Map;
+import tmoney.co.kr.hxz.news.ntcmttr.vo.NtcMttrRspVO;
+import tmoney.co.kr.hxz.news.ntcmttr.vo.NtcMttrSrchReqVO;
 
 @Controller
 @RequiredArgsConstructor
@@ -37,10 +33,10 @@ public class NtcMttrController {
      */
     @GetMapping(value = "/ntcMttr.do")
     public String readNtcMttrPaging(
-            @ModelAttribute SrchReqVO req,
+            @ModelAttribute NtcMttrSrchReqVO req,
             @ParameterObject Model model
     ) {
-        PageDataVO<RspVO> contents = ntcMttrService.readNtcMttrPaging(req);
+        PageDataVO<NtcMttrRspVO> contents = ntcMttrService.readNtcMttrPaging(req);
 
         model.addAttribute("pageData", contents);
         model.addAttribute("req", req);
@@ -66,7 +62,7 @@ public class NtcMttrController {
             @PathVariable("bltnNo") String bltnNo,
             Model model
     ) {
-        RspVO ntcMttr = ntcMttrService.readNtcMttrDtl(bltnNo);
+        NtcMttrRspVO ntcMttr = ntcMttrService.readNtcMttrDtl(bltnNo);
 
         model.addAttribute("ntcMttr", ntcMttr);
         model.addAttribute("bltnNo" , bltnNo);

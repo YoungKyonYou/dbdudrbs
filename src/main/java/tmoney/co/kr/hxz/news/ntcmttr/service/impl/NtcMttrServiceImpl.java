@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tmoney.co.kr.hxz.news.ntcmttr.service.NtcMttrService;
-import tmoney.co.kr.hxz.news.ntcmttr.vo.RspVO;
-import tmoney.co.kr.hxz.news.ntcmttr.vo.SrchReqVO;
+import tmoney.co.kr.hxz.news.ntcmttr.vo.NtcMttrRspVO;
+import tmoney.co.kr.hxz.news.ntcmttr.vo.NtcMttrSrchReqVO;
 
 import java.util.List;
 
@@ -18,33 +18,33 @@ public class NtcMttrServiceImpl implements NtcMttrService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageDataVO<RspVO> readNtcMttrPaging(SrchReqVO req) {
+    public PageDataVO<NtcMttrRspVO> readNtcMttrPaging(NtcMttrSrchReqVO req) {
         final int offset = req.getPage() * req.getSize();
 
         long total = readNtcMttrListCnt(req);
 
-        SrchReqVO reqVO = new SrchReqVO(req.getOrgCd(), req.getNtcMttrTtlNm(), req.getNtcMttrCtt(), offset, req.getSize(), req.getSort(), req.getDir());
+        NtcMttrSrchReqVO reqVO = new NtcMttrSrchReqVO(req.getOrgCd(), req.getNtcMttrTtlNm(), req.getNtcMttrCtt(), offset, req.getSize(), req.getSort(), req.getDir());
 
-        List<RspVO> content = readNtcMttrList(reqVO);
+        List<NtcMttrRspVO> content = readNtcMttrList(reqVO);
 
         return new PageDataVO<>(content, req.getPage(), req.getSize(), total);
     };
 
     @Override
     @Transactional(readOnly = true)
-    public List<RspVO> readNtcMttrList(SrchReqVO req) {
+    public List<NtcMttrRspVO> readNtcMttrList(NtcMttrSrchReqVO req) {
         return ntcMttrMapper.readNtcMttrList(req);
     };
 
     @Override
     @Transactional(readOnly = true)
-    public long readNtcMttrListCnt(SrchReqVO req) {
+    public long readNtcMttrListCnt(NtcMttrSrchReqVO req) {
         return ntcMttrMapper.readNtcMttrListCnt(req);
     };
 
     @Override
     @Transactional
-    public RspVO readNtcMttrDtl(String bltnNo) {
+    public NtcMttrRspVO readNtcMttrDtl(String bltnNo) {
         return ntcMttrMapper.readNtcMttrDtl(bltnNo);
     }
 

@@ -13,7 +13,7 @@ import javax.validation.constraints.Size;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class SrchReqVO {
+public class NtcMttrSrchReqVO {
     /** 기관코드 */
     private String orgCd;
     /** 공지사항제목명 */
@@ -25,7 +25,7 @@ public class SrchReqVO {
     @Positive(message = "페이지 값은 0보다 커야 합니다.")
     private int size = 10;
     @Size(max = 15, message = "")
-    private String sort = "ntc_mttr_ttl_nm";
+    private String sort = "bltn_no";
 
     private String dir = "asc";
 }

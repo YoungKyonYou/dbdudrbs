@@ -9,7 +9,8 @@ import './fileupload.js';
 import './datepicker.js';
 import './accordion.js';
 
-(function (gSGlobal) {
+(function (global) {
+    'use strict'
 
     var MODAL_ID = 'modal-common';
     var MODAL_BOUND = false;
@@ -126,69 +127,6 @@ import './accordion.js';
         }
     }
 
-    /**
-     * * 현재 페이지를 다시 로드하는 비동기 함수
-     *
-     * @param {현재 페이지} page
-     * @param {디폴트 sort 컬럼} defaultSortColumn
-     * @param {요청된 API 응답을 적용하기 위한 교체할 태그 목록} swapTargets ['#grid-tbody', '#grid-pager']
-     * @param {기본 요청 url} baseUrl
-     * @param {pagination (페이지네이션) size} selectSize
-     * @param {pagination 대상 컬럼} inputSort
-     * @param {sort 방향. 일반적으로 asc 사용} inputDir
-     * @param {pagination 값을 내기 위해 collectFromForm 함수로 리턴받은 값을 넘기면 됨} applied
-     * @returns swapTargets에 해당하는 태그들을 요청한 API 결과값으로 적용
-     */
-    async function reloadList({ page, defaultSortColumn, swapTargets = ['#grid-tbody', '#grid-pager'], baseUrl, selectSize, inputSort, inputDir, applied }) {
-        listAbort?.abort(); // 이전 요청이 있으면 중단
-        listAbort = new AbortController(); // 새로운 AbortController 생성
-        const signal = listAbort.signal; // 중단 신호 가져오기
-
-        // 현재 페이지와 pagination 관련 파라미터를 포함한 상태 객체 생성
-        const params = state({
-            overrides: { page: typeof page === 'number' ? page : activePage() }, // 페이지가 숫자면 해당 페이지, 아니면 현재 활성 페이지 사용
-            selectSize, inputSort, inputDir, defaultSortColumn, applied
-        });
-
-        try {
-            // buildUrl로 URL을 생성하고 fetchHtml로 해당 URL의 HTML을 비동기로 가져옴
-            const html = await fetchHtml(buildUrl(baseUrl, params), { signal }); // 중단 신호 전달
-            for (const sel of swapTargets) { // swapTargets 배열의 각 셀렉터에 대해
-                swap(html, sel); // 가져온 HTML에서 해당 셀렉터의 요소를 찾아 현재 문서의 요소와 교체
-            }
-
-            bindPagination(baseUrl,{
-                page: 0,
-                size: parseInt(selectSize?.value || '10', 10),
-                dir: inputDir?.value || 'asc',
-                sort: inputSort?.value || defaultSortColumn
-            }); // 페이지네이션 바인딩 (함수 구현 필요)
-
-            // 페이지네이션 관련 요소들을 다시 구성
-            // size, dir, sort 값을 현재 상태에 맞게 업데이트
-         if (selectSize) selectSize.value = params.size;
-         if (inputDir) inputDir.value = params.dir;
-         if (inputSort) inputSort.value = params.sort;
-
-        } catch (e) {
-            if (e.name === "AbortError") return; // 요청이 중단되었으면 아무것도 하지 않음
-
-            // HTTP 상태 코드가 400, 422, 409인 경우 (일반적인 오류 응답)
-            if ([400, 422, 409].includes(e.status) && e.payload?.message) {
-                // payload.message가 있으면 해당 메시지를 사용하고, 없으면 기본 메시지
-                const msg = e.payload.message || '요청을 처리할 수 없습니다.';
-                Common.modalShow({
-                    message: msg,
-                    title: '알림',
-                    buttons: 'close'
-                });
-                return;
-            }
-            // 그 외의 모든 오류에 대해 일반적인 오류 메시지 출력
-            alert('목록을 불러오지 못했습니다.');
-            console.error(e);
-        }
-    }
 
     // 안전한 HTTP 요청을 보내는 비동기 함수 (send 함수를 래핑하여 에러 처리 강화)
     // url: 요청할 URL
@@ -244,22 +182,6 @@ import './accordion.js';
         }
     }
 
-    /**
-     * 기존 태그를 새로운 데이터가 들어간 태그로 교체
-     * @param {html} html
-     * @param {교체할 태그를 querySelector로 가져온 값} selector
-     * @returns
-     */
-    const swap = (html, selector) => {
-        if (!html) return; // html이 없으면 아무것도 하지 않음
-
-        const doc = parseHtml(html); // HTML 문자열을 Document 객체로 파싱
-        const next = doc.querySelector(selector); // 파싱된 문서에서 교체할 새 요소 찾기
-        const curr = document.querySelector(selector); // 현재 문서에서 교체될 기존 요소 찾기
-
-        // 새 요소와 기존 요소가 모두 존재하면 기존 요소를 새 요소로 교체
-        if (next && curr) curr.replaceWith(next);
-    };
 
 
 
@@ -474,62 +396,6 @@ import './accordion.js';
         return indexToKey;
     }
 
-    /*
-     * 개체로만 받는 API
-     * @param {Object} param0
-     * @param {string} param0.message 본문 메시지(필수)
-     * @param {string} param0.title 타이틀(없으면 '알림')
-     * @param {string} [param0.buttons='close'] 버튼 구성 ('close'이면 버튼이 ok-close일 때만 유효)
-     * @param {Function} [param0.onOk] 확인 클릭 시 콜백 (버튼이 ok-close일 때만 유효)
-     * @param {Function} [param0.onClose] 닫힘 (ESC/오버레이/취소/닫기) 포함 콜백
-     * @param {string} [param0.okText='확인'] 확인 라벨 ('확인')
-     * @param {string} [param0.closeText='닫기'] 닫기/취소 라벨 ('닫기')
-     */
-    function modalShow({ message, title = '알림', buttons = 'close', onOk, onClose, okText = '확인', closeText = '닫기' }) {
-        if (message == null || message === '') return;
-
-        var m = getModal();
-        modalBindOnce();
-
-        // 타이틀/본문
-        var titleEl = m.querySelector('#modal-title-basic');
-        var bodyEl = m.querySelector('.modal-body');
-        if (titleEl) titleEl.textContent = title;
-        if (bodyEl) bodyEl.textContent = String(message);
-
-        // 버튼 요소
-        var btnCancel = m.querySelector('.modal-footer .btn-dark-line'); // 취소 (회색)
-        var btnOk = m.querySelector('.modal-footer .btn-blue');       // 확인 (파란)
-
-        // 이전 버튼 정리
-        cleanupButtonHandlers(m);
-
-        // 버튼 구성
-        if (buttons === 'close') {
-            // 닫기 버튼만 있을 때
-            if (btnCancel) {
-                btnCancel.style.display = 'none'; // 취소 버튼 숨기기
-            }
-            if (btnOk) {
-                btnOk.textContent = closeText; // 확인 버튼 텍스트를 닫기 텍스트로 변경
-                btnOk.setAttribute('data-dismiss', ''); // data-dismiss 속성 추가 (모달 닫기 기능)
-                btnOk.style.display = ''; // 확인 버튼 표시
-            }
-        } else { // 'ok-close' 버튼 구성일 때
-            if (btnCancel) {
-                btnCancel.textContent = closeText; // 취소 버튼 텍스트를 닫기 텍스트로 변경
-                btnCancel.setAttribute('data-dismiss', ''); // data-dismiss 속성 추가
-                btnCancel.style.display = ''; // 취소 버튼 표시
-            }
-            if (btnOk) {
-                btnOk.textContent = okText; // 확인 버튼 텍스트를 확인 텍스트로 변경
-                btnOk.removeAttribute('data-dismiss'); // data-dismiss 속성 제거 (닫기 기능 없음)
-                btnOk.style.display = ''; // 확인 버튼 표시
-            }
-        }
-        // TODO: 여기에 이벤트 리스너 추가 로직이 필요해 보입니다.
-        // 현재 코드는 버튼만 구성하고 이벤트는 연결하지 않습니다.
-    }// 표시 + 접근성
 
 
 
@@ -769,35 +635,88 @@ import './accordion.js';
     }
 
 
+    /*
+     * 개체로만 받는 API
+     * @param {Object} param0
+     * @param {string} param0.message 본문 메시지(필수)
+     * @param {string} param0.title 타이틀(없으면 '알림')
+     * @param {string} [param0.buttons='close'] 버튼 구성 ('close'이면 버튼이 ok-close일 때만 유효)
+     * @param {Function} [param0.onOk] 확인 클릭 시 콜백 (버튼이 ok-close일 때만 유효)
+     * @param {Function} [param0.onClose] 닫힘 (ESC/오버레이/취소/닫기) 포함 콜백
+     * @param {string} [param0.okText='확인'] 확인 라벨 ('확인')
+     * @param {string} [param0.closeText='닫기'] 닫기/취소 라벨 ('닫기')
+     */
+    function modalShow({ message, title = '알림', buttons = 'close', onOk, onClose, okText = '확인', closeText = '닫기' }) {
+        if (message == null || message === '') return;
 
+        var m = getModal();
+        modalBindOnce();
 
-    m.setAttribute('aria-hidden', 'false'); // 모달이 현재 보이는 상태임을 접근성 도구에 알림
-    m.classList.add('is-open');            // CSS에서 display 처리 (모달을 화면에 표시)
-    document.body.classList.add('modal-open'); // body에 클래스를 추가하여 스크롤 비활성화 등 처리
+        // 타이틀/본문
+        var titleEl = m.querySelector('#modal-title-basic');
+        var bodyEl = m.querySelector('.modal-body');
+        if (titleEl) titleEl.textContent = title;
+        if (bodyEl) bodyEl.textContent = String(message);
 
-    // 포커스
-    MODAL_PREV_ACTIVE = document.activeElement; // 모달이 열리기 전 활성화되어 있던 요소를 저장
-    var container = m.querySelector('.modal-container'); // 모달 컨테이너 요소 찾기
-    (container || m).focus(); // 모달 컨테이너에 포커스 설정 (없으면 모달 자체에 포커스)
+        // 버튼 요소
+        var btnCancel = m.querySelector('.modal-footer .btn-dark-line'); // 취소 (회색)
+        var btnOk = m.querySelector('.modal-footer .btn-blue');       // 확인 (파란)
 
-    // 확인 버튼 핸들러
-    if (buttons === 'ok-close' && btnOk) { // 버튼 구성이 'ok-close'이고 확인 버튼이 있으면
-        var okHandler = function () {
-            try {
-                onOk && onOk(); // onOk 콜백 함수가 존재하면 실행
-            } finally {
-                modalHide(); // onOk 실행 후 모달 숨기기 (오류 발생 여부와 상관없이)
+        // 이전 버튼 정리
+        cleanupButtonHandlers(m);
+
+        // 버튼 구성
+        if (buttons === 'close') {
+            // 닫기 버튼만 있을 때
+            if (btnCancel) {
+                btnCancel.style.display = 'none'; // 취소 버튼 숨기기
             }
-        };
-        btnOk.addEventListener('click', okHandler, { once: true }); // 확인 버튼 클릭 시 okHandler 한 번만 실행
-        rememberHandler(m, btnOk, 'click', okHandler); // 핸들러를 추적하여 나중에 제거할 수 있도록 저장
-    }
+            if (btnOk) {
+                btnOk.textContent = closeText; // 확인 버튼 텍스트를 닫기 텍스트로 변경
+                btnOk.setAttribute('data-dismiss', ''); // data-dismiss 속성 추가 (모달 닫기 기능)
+                btnOk.style.display = ''; // 확인 버튼 표시
+            }
+        } else { // 'ok-close' 버튼 구성일 때
+            if (btnCancel) {
+                btnCancel.textContent = closeText; // 취소 버튼 텍스트를 닫기 텍스트로 변경
+                btnCancel.setAttribute('data-dismiss', ''); // data-dismiss 속성 추가
+                btnCancel.style.display = ''; // 취소 버튼 표시
+            }
+            if (btnOk) {
+                btnOk.textContent = okText; // 확인 버튼 텍스트를 확인 텍스트로 변경
+                btnOk.removeAttribute('data-dismiss'); // data-dismiss 속성 제거 (닫기 기능 없음)
+                btnOk.style.display = ''; // 확인 버튼 표시
+            }
+        }
+        m.setAttribute('aria-hidden', 'false'); // 모달이 현재 보이는 상태임을 접근성 도구에 알림
+        m.classList.add('is-open');            // CSS에서 display 처리 (모달을 화면에 표시)
+        document.body.classList.add('modal-open'); // body에 클래스를 추가하여 스크롤 비활성화 등 처리
 
-    // 닫힘 콜백 등록 (ESC/오버레이/닫기/취소 포함)
-    m._onClose = (typeof onClose === 'function') ? onClose : null; // onClose 콜백 함수가 함수 타입이면 등록, 아니면 null
-    // 이 닫는 중괄호는 이전 `modalShow` 함수의 끝을 나타냅니다.
+        // 포커스
+        MODAL_PREV_ACTIVE = document.activeElement; // 모달이 열리기 전 활성화되어 있던 요소를 저장
+        var container = m.querySelector('.modal-container'); // 모달 컨테이너 요소 찾기
+        (container || m).focus(); // 모달 컨테이너에 포커스 설정 (없으면 모달 자체에 포커스)
 
+        // 확인 버튼 핸들러
+        if (buttons === 'ok-close' && btnOk) { // 버튼 구성이 'ok-close'이고 확인 버튼이 있으면
+            var okHandler = function () {
+                try {
+                    onOk && onOk(); // onOk 콜백 함수가 존재하면 실행
+                } finally {
+                    modalHide(); // onOk 실행 후 모달 숨기기 (오류 발생 여부와 상관없이)
+                }
+            };
+            btnOk.addEventListener('click', okHandler, { once: true }); // 확인 버튼 클릭 시 okHandler 한 번만 실행
+            rememberHandler(m, btnOk, 'click', okHandler); // 핸들러를 추적하여 나중에 제거할 수 있도록 저장
+        }
 
+        // 닫힘 콜백 등록 (ESC/오버레이/닫기/취소 포함)
+        m._onClose = (typeof onClose === 'function') ? onClose : null; // onClose 콜백 함수가 함수 타입이면 등록, 아니면 null
+        // 이 닫는 중괄호는 이전 `modalShow` 함수의 끝을 나타냅니다.
+
+        // TODO: 여기에 이벤트 리스너 추가 로직이 필요해 보입니다.
+        // 현재 코드는 버튼만 구성하고 이벤트는 연결하지 않습니다.
+    }// 표시 + 접근성
     function modalHide() {
         var m = getModal(); // 모달 요소 가져오기
 
@@ -821,6 +740,10 @@ import './accordion.js';
         }
         MODAL_PREV_ACTIVE = null; // 이전 활성화 요소 참조 초기화
     }
+
+
+
+
 
     /**
      * 요청을 위한 baseUrl + queryParams를 붙이는 함수
@@ -848,6 +771,22 @@ import './accordion.js';
      * @returns string 형태를 html 형태로 변환
      */
     const parseHtml = (html) => new DOMParser().parseFromString(html, 'text/html'); // HTML 문자열을 DOM Document 객체로 파싱
+    /**
+        * 기존 태그를 새로운 데이터가 들어간 태그로 교체
+        * @param {html} html
+        * @param {교체할 태그를 querySelector로 가져온 값} selector
+        * @returns
+        */
+    const swap = (html, selector) => {
+        if (!html) return; // html이 없으면 아무것도 하지 않음
+
+        const doc = parseHtml(html); // HTML 문자열을 Document 객체로 파싱
+        const next = doc.querySelector(selector); // 파싱된 문서에서 교체할 새 요소 찾기
+        const curr = document.querySelector(selector); // 현재 문서에서 교체될 기존 요소 찾기
+
+        // 새 요소와 기존 요소가 모두 존재하면 기존 요소를 새 요소로 교체
+        if (next && curr) curr.replaceWith(next);
+    };
 
 
 
@@ -984,6 +923,69 @@ import './accordion.js';
         // 이 함수는 withSortAndSize를 호출하여 최종 상태 객체를 구성합니다.
         ...withSortAndSize(applied, overrides, selectSize, inputSort, inputDir, defaultSortColumn),
     });
+    /**
+     * * 현재 페이지를 다시 로드하는 비동기 함수
+     *
+     * @param {현재 페이지} page
+     * @param {디폴트 sort 컬럼} defaultSortColumn
+     * @param {요청된 API 응답을 적용하기 위한 교체할 태그 목록} swapTargets ['#grid-tbody', '#grid-pager']
+     * @param {기본 요청 url} baseUrl
+     * @param {pagination (페이지네이션) size} selectSize
+     * @param {pagination 대상 컬럼} inputSort
+     * @param {sort 방향. 일반적으로 asc 사용} inputDir
+     * @param {pagination 값을 내기 위해 collectFromForm 함수로 리턴받은 값을 넘기면 됨} applied
+     * @returns swapTargets에 해당하는 태그들을 요청한 API 결과값으로 적용
+     */
+    async function reloadList({ page, defaultSortColumn, swapTargets = ['#grid-tbody', '#grid-pager'], baseUrl, selectSize, inputSort, inputDir, applied }) {
+        listAbort?.abort(); // 이전 요청이 있으면 중단
+        listAbort = new AbortController(); // 새로운 AbortController 생성
+        const signal = listAbort.signal; // 중단 신호 가져오기
+
+        // 현재 페이지와 pagination 관련 파라미터를 포함한 상태 객체 생성
+        const params = state({
+            overrides: { page: typeof page === 'number' ? page : activePage() }, // 페이지가 숫자면 해당 페이지, 아니면 현재 활성 페이지 사용
+            selectSize, inputSort, inputDir, defaultSortColumn, applied
+        });
+
+        try {
+            // buildUrl로 URL을 생성하고 fetchHtml로 해당 URL의 HTML을 비동기로 가져옴
+            const html = await fetchHtml(buildUrl(baseUrl, params), { signal }); // 중단 신호 전달
+            for (const sel of swapTargets) { // swapTargets 배열의 각 셀렉터에 대해
+                swap(html, sel); // 가져온 HTML에서 해당 셀렉터의 요소를 찾아 현재 문서의 요소와 교체
+            }
+
+            bindPagination(baseUrl, {
+                page: 0,
+                size: parseInt(selectSize?.value || '10', 10),
+                dir: inputDir?.value || 'asc',
+                sort: inputSort?.value || defaultSortColumn
+            }); // 페이지네이션 바인딩 (함수 구현 필요)
+
+            // 페이지네이션 관련 요소들을 다시 구성
+            // size, dir, sort 값을 현재 상태에 맞게 업데이트
+            if (selectSize) selectSize.value = params.size;
+            if (inputDir) inputDir.value = params.dir;
+            if (inputSort) inputSort.value = params.sort;
+
+        } catch (e) {
+            if (e.name === "AbortError") return; // 요청이 중단되었으면 아무것도 하지 않음
+
+            // HTTP 상태 코드가 400, 422, 409인 경우 (일반적인 오류 응답)
+            if ([400, 422, 409].includes(e.status) && e.payload?.message) {
+                // payload.message가 있으면 해당 메시지를 사용하고, 없으면 기본 메시지
+                const msg = e.payload.message || '요청을 처리할 수 없습니다.';
+                Common.modalShow({
+                    message: msg,
+                    title: '알림',
+                    buttons: 'close'
+                });
+                return;
+            }
+            // 그 외의 모든 오류에 대해 일반적인 오류 메시지 출력
+            alert('목록을 불러오지 못했습니다.');
+            console.error(e);
+        }
+    }
 
 
 
@@ -1059,48 +1061,48 @@ import './accordion.js';
         // TODO: 여기에 실제 FormData 구성 및 파일 유효성 검사 로직이 추가되어야 합니다.
         // 현재 코드는 파일 선택 및 초기 검증까지만 수행합니다.
         // 예: 파일 크기, 확장자 검증 후 FormData에 추가하는 로직
-    };
-    // --- 검증 ---
-    // 파일 이름 (없으면 'unnamed'로 기본값 설정)
-    const name = fileSel.name || 'unnamed';
-    // 파일 크기 (숫자 타입이 아니면 0으로 설정)
-    const size = typeof fileSel.size === 'number' ? fileSel.size : 0;
-    // 파일 확장자 (이름에 '.'이 있으면 마지막 점 이후 부분을 소문자로 변환, 없으면 빈 문자열)
-    const ext = name.includes('.') ? name.split('.').pop().toLowerCase() : '';
 
-    // 파일이 비어 있고 비어 있는 파일이 허용되지 않는 경우
-    if (DISALLOW_EMPTY && size === 0) {
-        show(`파일 "${name}"은(는) 0바이트로 업로드할 수 없습니다.`);
-        return null;
+        // --- 검증 ---
+        // 파일 이름 (없으면 'unnamed'로 기본값 설정)
+        const name = fileSel.name || 'unnamed';
+        // 파일 크기 (숫자 타입이 아니면 0으로 설정)
+        const size = typeof fileSel.size === 'number' ? fileSel.size : 0;
+        // 파일 확장자 (이름에 '.'이 있으면 마지막 점 이후 부분을 소문자로 변환, 없으면 빈 문자열)
+        const ext = name.includes('.') ? name.split('.').pop().toLowerCase() : '';
+
+        // 파일이 비어 있고 비어 있는 파일이 허용되지 않는 경우
+        if (DISALLOW_EMPTY && size === 0) {
+            show(`파일 "${name}"은(는) 0바이트로 업로드할 수 없습니다.`);
+            return null;
+        }
+
+        // 파일 크기가 최대 허용 크기(MAX_SIZE)를 초과하는 경우
+        if (size > MAX_SIZE) {
+            // fmtBytes 함수는 정의되지 않았지만, 파일 크기를 보기 좋게 포맷하는 함수로 가정
+            show(`파일 "${name}"의 용량이 20MB를 초과했습니다. (현재: ${fmtBytes(size)})`);
+            return null;
+        }
+
+        // 허용되는 확장자 목록이 있고, 현재 파일의 확장자가 목록에 포함되지 않는 경우
+        if (normExts.length && !normExts.includes(ext)) {
+            show(`허용되지 않은 파일 형식입니다.\n허용 확장자: ${allowedLabel}\n파일: ${name}`);
+            return null;
+        }
+
+        // --- FormData 구성 ---
+        // src 객체에서 files 속성을 제외한 모든 속성을 meta 객체로 복사
+        const meta = { ...src };
+        delete meta.files; // files 속성 제거
+
+        const fd = new FormData(); // 새로운 FormData 객체 생성
+        // 'data' 필드에 meta 객체를 JSON 문자열로 변환하여 Blob 형태로 추가
+        fd.append('data', new Blob([JSON.stringify(meta)], { type: 'application/json' }));
+        // 'file' 필드에 선택된 파일(fileSel)과 파일 이름(name)을 추가
+        fd.append('file', fileSel, name);
+
+        return fd; // 구성된 FormData 객체 반환
+        ; // 이 닫는 중괄호는 `toMultiPart` 함수의 끝을 나타냅니다.
     }
-
-    // 파일 크기가 최대 허용 크기(MAX_SIZE)를 초과하는 경우
-    if (size > MAX_SIZE) {
-        // fmtBytes 함수는 정의되지 않았지만, 파일 크기를 보기 좋게 포맷하는 함수로 가정
-        show(`파일 "${name}"의 용량이 20MB를 초과했습니다. (현재: ${fmtBytes(size)})`);
-        return null;
-    }
-
-    // 허용되는 확장자 목록이 있고, 현재 파일의 확장자가 목록에 포함되지 않는 경우
-    if (normExts.length && !normExts.includes(ext)) {
-        show(`허용되지 않은 파일 형식입니다.\n허용 확장자: ${allowedLabel}\n파일: ${name}`);
-        return null;
-    }
-
-    // --- FormData 구성 ---
-    // src 객체에서 files 속성을 제외한 모든 속성을 meta 객체로 복사
-    const meta = { ...src };
-    delete meta.files; // files 속성 제거
-
-    const fd = new FormData(); // 새로운 FormData 객체 생성
-    // 'data' 필드에 meta 객체를 JSON 문자열로 변환하여 Blob 형태로 추가
-    fd.append('data', new Blob([JSON.stringify(meta)], { type: 'application/json' }));
-    // 'file' 필드에 선택된 파일(fileSel)과 파일 이름(name)을 추가
-    fd.append('file', fileSel, name);
-
-    return fd; // 구성된 FormData 객체 반환
-    ; // 이 닫는 중괄호는 `toMultiPart` 함수의 끝을 나타냅니다.
-
 
 
     // 바이트를 사람이 읽기 쉬운 문자열로 변환
@@ -1269,8 +1271,10 @@ import './accordion.js';
 
     // 글로벌 common 객체 정의: 자주 사용되는 함수들을 Object.freeze로 동결하여 불변성 보장
     // 이 객체는 Excel 내보내기, 재로딩, 안전한 요청, 스왑, 모달 등 다양한 유틸리티 함수 포함
-    global.common = Object.freeze({
+    global.Common = Object.freeze({
         // Excel 파일 내보내기 함수 (bindExcelExport)
+        collectFromForm,
+
         bindExcelExport,
 
         // 재로딩 함수 (reloadList)
@@ -1311,5 +1315,5 @@ import './accordion.js';
 
         // JSON 수집 함수 (collectAsJson)
         collectAsJson
-    });
-})();
+    })
+})(window);

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{component/header :: layout(~{::content})}">
+    <th:block th:fragment="content">
+
+        <!-- Breadcrumb -->
+        <div id="breadcrumb">
+            <div class="container">
+                <nav>
+                    <ul>
+                        <li>홈</li>
+                        <li>소식</li>
+                        <li aria-current="page">자주묻는질문</li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <main id="contents">
+            <section class="section" id="grid">
+                <div class="container">
+                    <!-- 제목 + 검색 -->
+                    <div class="title-wrap">
+                        <div class="flex justify-space-between">
+                            <h2 class="section-title">자주묻는질문</h2>
+
+                            <div id="search-box">
+                                <form id="searchbar" th:object="${req}" method="get">
+                                    <select id="searchFieldSelect" class="dropdown size-lg" aria-label="검색 구분 선택">
+                                        <option value="faqTtlNm">제목</option>
+                                    </select>
+
+                                    <input id="searchInput" class="text-field size-lg" placeholder="검색어를 입력해주세요."
+                                        aria-label="검색어" autocomplete="off" enterkeyhint="search">
+
+                                    <button class="btn icon-only size-lg" type="submit" aria-label="검색">
+                                        <i class="icon icon-search" aria-hidden="true"></i>
+                                    </button>
+
+                                    <!-- VO 필드 hidden -->
+                                    <input id="faqTtlNm" th:field="*{faqTtlNm}" type="hidden">
+                                    <input th:field="*{sort}" type="hidden">
+                                    <input th:field="*{dir}" type="hidden">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 목록 -->
+                    <div class="accordion" id="faqAccordion" data-behavior="single">
+                        <div class="acc-item" th:each="faq, iterStat : ${pageData.content}"
+                            th:classappend="${iterStat.index == 0} ? 'is-open'">
+                            <h3 class="acc-header">
+                                <button type="button" class="acc-trigger"
+                                    th:attr="aria-controls='acc-panel-' + ${iterStat.index + 1}"
+                                    th:id="'acc-trigger-' + ${iterStat.index + 1}">
+                                    <span class="acc-badge" aria-hidden="true">Q</span>
+                                    <span class="acc-title" th:text="${faq.faqTtlNm}">FAQ 제목</span>
+                                    <span class="acc-icon" aria-hidden="true"></span>
+                                </button>
+                            </h3>
+                            <div class="acc-panel"  role="region"
+
+                                th:attr="hidden=${iterStat.index != 0}">
+                                <div class="acc-panel-inner">
+                                    <span class="acc-badge" aria-hidden="true">A</span>
+                                    <span class="acc-content" th:text="${faq.answCtt}">답변 내용</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ가 없을 때 -->
+                        <div class="acc-item" th:if="${pageData == null or #lists.isEmpty(pageData.content)}">
+                            <h3 class="acc-header">
+                                <span class="acc-title">등록된 FAQ가 없습니다.</span>
+                            </h3>
+                        </div>
+                    </div>
+
+                    <!-- 페이지네이션 -->
+                    <div id="grid-pager">
+                        <th:block th:replace="~{component/pagination :: pager(${pageData})}"></th:block>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <script type="module" src="/js/common.js"></script>
+        <script th:inline="javascript" type="text/javascript">
+            (function () {
+                const grid = document.getElementById('grid');
+                const form = document.getElementById('searchbar');
+                const select = document.getElementById('searchFieldSelect');
+                const input = document.getElementById('searchInput');
+                const titleField = document.getElementById('faqTtlNm');
+                const baseUrl = '/news/faq.do';
+                const inputSort = document.getElementById('sort');
+                const inputDir = document.getElementById('dir');
+                const selectSize = form?.querySelector('select[name="size"]');
+
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    if (select.value === 'faqTtlNm') {
+                        titleField.value = input.value;
+                        contentField.value = '';
+                    } else {
+                        titleField.value = '';
+                        contentField.value = input.value;
+                    }
+
+                    const applied = Common.collectFromForm(form);
+
+                    Common.reloadList({
+                        page: 0,
+                        defaultSortColumn: 'faq_no',
+                        swapTargets: ['.accordion', '#grid-pager'],
+                        baseUrl,
+                        selectSize,
+                        inputSort,
+                        inputDir,
+                        applied
+                    });
+                });
+
+                bindPagination(baseUrl, {
+                    page: 0,
+                    size: parseInt(selectSize?.value || '10', 10),
+                    dir: inputDir?.value || 'asc',
+                    sort: inputSort?.value || 'rgtDtm',
+                });
+            })();
+        </script>
+
+        <!-- Footer / Top Button -->
+        <th:block th:replace="~{component/footer :: siteFooter}"></th:block>
+        <th:block th:replace="~{component/topBtn :: siteTop}"></th:block>
+
+    </th:block>
+</th:block>
+
+</html>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tmoney.co.kr.hxz.news.faq.mapper.FaqMapper">
+
+    <select id="readFaqList" resultType="tmoney.co.kr.hxz.news.faq.vo.FaqRspVO" parameterType="tmoney.co.kr.hxz.news.faq.vo.FaqSrchReqVO">
+        /* sql_id : readFaqList */
+        /*
+        * 1. 파일 : FaqMapper_SQL.xml
+        * 2. 기능 : 자주하는 질문 목록 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.10.27 - 최중혁 : 최초작성
+        */
+        select bltn_no      as bltnNo
+             , faq_ttl_nm   as faqTtlNm
+             , faq_ctt      as faqCtt
+             , answ_ctt     as answCtt
+             , rgt_dt       as rgtDt
+             , inqr_ncnt    as inqrNcnt
+             , use_yn       as useYn
+             , rgsr_id      as rgsrId
+             , rgt_dtm      as rgtDtm
+             , updr_id      as updrId
+             , upd_dtm      as updDtm
+          from ohxzown.tbhxzm114
+         where 1=1
+         <if test="req.faqTtlNm != null and req.faqTtlNm != ''">
+           and lower(faq_ttl_nm) like concat('%', lower(#{req.faqTtlNm}), '%')
+         </if>
+         <if test="req.useYn != null and req.useYn != ''">
+           and lower(use_yn) = lower(#{req.useYn})
+         </if>
+         order by #{req.sort} ${req.dir}
+         limit #{req.size}
+        offset #{req.page}
+    </select>
+
+    <select id="readFaqListCnt" parameterType="tmoney.co.kr.hxz.news.faq.vo.FaqSrchReqVO" resultType="long">
+        /* sql_id : readFaqListCnt */
+        /*
+        * 1. 파일 : FaqMapper_SQL.xml
+        * 2. 기능 : 자주하는 질문 목록 카운트 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.10.27 - 최중혁 : 최초작성
+        */
+        select count(1)
+          from tbhxzm114
+         where 1 = 1
+         <if test="req.faqTtlNm != null and req.faqTtlNm != ''">
+           and lower(faq_ttl_nm) like concat('%', lower(#{req.faqTtlNm}), '%')
+         </if>
+    </select>
+
+    <!-- 목록 조회 -->
+    <select id="readFaqDtl" resultType="tmoney.co.kr.hxz.news.faq.vo.FaqRspVO" parameterType="String">
+        /* sql_id : readFaqDtl */
+        /*
+        * 1. 파일 : FaqMapper_SQL.xml
+        * 2. 기능 : 자주하는 질문 상세 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.10.28 - 최중혁 : 최초작성
+        */
+        select org_cd
+        , bltn_no
+        , bltn_dvs_cd
+        , tpw_bltn_rgt_dtm
+        , ntc_mttr_ttl_nm
+        , ntc_mttr_ctt
+        , main_exps_yn
+        , main_exps_stt_dt
+        , main_exps_end_dt
+        , inqr_ncnt
+        , use_yn
+        , rgsr_id
+        , rgt_dtm
+        from ohxzown.tbhxzm114
+        where 1=1
+        <if test="bltnNo != null and bltnNo != ''">
+            and lower(bltn_no) like concat('%', lower(#{bltnNo}), '%')
+        </if>
+    </select>
+</mapper>
