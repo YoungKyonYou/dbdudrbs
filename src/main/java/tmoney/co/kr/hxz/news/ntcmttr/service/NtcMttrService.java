@@ -14,4 +14,6 @@ public interface NtcMttrService {
     long readNtcMttrListCnt(NtcMttrSrchReqVO req);
 
     NtcMttrRspVO readNtcMttrDtl(String bltnNo);
+
+    void updateNtcInqrNcnt(String bltnNo);
 }

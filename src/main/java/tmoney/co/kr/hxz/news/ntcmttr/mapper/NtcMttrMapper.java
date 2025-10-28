@@ -18,4 +18,6 @@ public interface NtcMttrMapper {
     long readNtcMttrListCnt(@Param("req") NtcMttrSrchReqVO req);
 
     NtcMttrRspVO readNtcMttrDtl(@Param("bltnNo") String bltnNo);
+
+    void updateNtcInqrNcnt(@Param("bltnNo") String bltnNo);
 }

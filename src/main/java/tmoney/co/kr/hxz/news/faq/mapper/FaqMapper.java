@@ -18,4 +18,6 @@ public interface FaqMapper {
     long readFaqListCnt(@Param("req") FaqSrchReqVO req);
 
     FaqRspVO readFaqDtl(@Param("bltnNo") String bltnNo);
+
+    void updateFaqInqrNcnt(@Param("bltnNo") String bltnNo);
 }

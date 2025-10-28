@@ -63,7 +63,7 @@ public class NtcMttrController {
             Model model
     ) {
         NtcMttrRspVO ntcMttr = ntcMttrService.readNtcMttrDtl(bltnNo);
-
+        ntcMttrService.updateNtcInqrNcnt(bltnNo);
         model.addAttribute("ntcMttr", ntcMttr);
         model.addAttribute("bltnNo" , bltnNo);
         return "/hxz/news/ntcmttr/ntcMttrDtl";

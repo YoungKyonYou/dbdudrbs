@@ -27,7 +27,7 @@
              , rgsr_id as rgsrId
              , rgt_dtm as rgtDtm
           from ohxzown.tbhxzm113
-         where 1 = 1
+         where bltn_dvs_cd = '0'
         <if test="req.ntcMttrTtlNm != null and req.ntcMttrTtlNm != ''">
            and lower(ntc_mttr_ttl_nm) like concat('%', lower(#{req.ntcMttrTtlNm}), '%')
         </if>
@@ -89,4 +89,21 @@
            and lower(bltn_no) like concat('%', lower(#{bltnNo}), '%')
          </if>
     </select>
+
+    <update id="updateNtcInqrNcnt" parameterType="String">
+        /* sql_id : updateNtcInqrNcnt */
+        /*
+        * 1. 파일 : NtcMttrMapper_SQL.xml
+        * 2. 기능 : 공지사항 조회 건수 수정
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.10.28 - 최중혁 : 최초작성
+        */
+        update ohxzown.tbhxzm113
+           set inqr_ncnt = coalesce(inqr_ncnt, 0) + 1
+         where 1 = 1
+         <if test="bltnNo != null and bltnNo != ''">
+           and bltn_no = #{bltnNo}
+         </if>
+    </update>
 </mapper>
