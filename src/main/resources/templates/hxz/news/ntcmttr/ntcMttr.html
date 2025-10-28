@@ -25,12 +25,19 @@
               <h2 class="section-title">공지사항</h2>
 
               <div id="search-box">
-                <form id="searchbar" th:object="${req}" method="get">
-                  <select id="searchFieldSelect" class="dropdown size-lg" aria-label="검색 구분 선택">
-                    <option value="ntcMttrTtlNm">제목</option>
-                    <option value="ntcMttrCtt">내용</option>
-                  </select>
+                <form id="searchbar" th:object="${req}" method="get" role="search">
 
+                  <!-- 검색 구분 선택 -->
+                  <div class="dropdown size-lg" role="group" aria-label="검색 구분 선택">
+                    <select id="searchFieldSelect" class="text-field size-lg" aria-label="검색 구분 선택">
+                      <option value="ntcMttrTtlNm" selected>제목</option>
+                      <option value="ntcMttrCtt">내용</option>
+                    </select>
+                    <!-- 서버 전송용 hidden input -->
+                    <input type="hidden" id="searchField" name="searchField" value="ntcMttrTtlNm">
+                  </div>
+
+                  <!-- 검색 입력 -->
                   <input id="searchInput" class="text-field size-lg" placeholder="검색어를 입력해주세요." aria-label="검색어"
                     autocomplete="off" enterkeyhint="search">
 
@@ -41,14 +48,12 @@
                   <!-- VO 필드 hidden -->
                   <input id="ntcMttrTtlNm" th:field="*{ntcMttrTtlNm}" type="hidden">
                   <input id="ntcMttrCtt" th:field="*{ntcMttrCtt}" type="hidden">
-                  <input th:field="*{sort}" type="hidden">
-                  <input th:field="*{dir}" type="hidden">
+                  <input id="sort" th:field="*{sort}" type="hidden">
+                  <input id="dir" th:field="*{dir}" type="hidden">
+                  <input id="page" th:field="*{page}" type="hidden" value="0">
+                  <input id="size" th:field="*{size}" type="hidden" value="10">
                 </form>
               </div>
-
-
-
-
 
             </div>
           </div>
@@ -62,71 +67,74 @@
               <span class="col col-date">등록일</span>
             </div>
 
-            <ul class="board-body" role="list">
-              <!-- 빈 목록 -->
+            <ul id="grid-tbody" class="board-body" role="list">
               <li class="board-row" th:if="${pageData == null or #lists.isEmpty(pageData.content)}">
                 <div class="board-item">
+                  <span class="col col-num">
+                    <span class="badge badge-notice" aria-label="공지">공지</span>
+                  </span>
+
                   <span class="col col-title">등록된 공지사항이 없습니다.</span>
+
+                  <span class="col col-date">-</span>
                 </div>
               </li>
 
-              <!-- 공지사항 먼저 -->
-              <li class="board-row" th:each="row, stat : ${pageData.content}" th:if="${row.mainExpsYn} == 'Y'"
-                th:classappend="is-notice">
-                <a class="board-item" th:href="@{'/news/ntcmttr/ntcMttrDtl/' + ${row.bltnNo}}">
-                  <span class="col col-num"
-                    th:text="${pageData.total - (pageData.page * pageData.size) - stat.index}">1</span>
-                  <span class="col col-title">
-                    <span class="badge badge-notice">공지</span>
-                    <span th:text="${row.ntcMttrTtlNm}">제목</span>
-                  </span>
-                  <span class="col col-date"
-                    th:text="${row.rgtDtm != null and row.rgtDtm.length() >= 8 ? #strings.substring(row.rgtDtm,0,4) + '.' + #strings.substring(row.rgtDtm,4,6) + '.' + #strings.substring(row.rgtDtm,6,8) : row.rgtDtm}">2025.05.07</span>
-                </a>
-              </li>
 
-              <!-- 일반 게시글 -->
-              <li class="board-row" th:each="row, stat : ${pageData.content}" th:if="${row.mainExpsYn} != 'Y'">
-                <a class="board-item" th:href="@{'/news/ntcmttr/ntcMttrDtl/' + ${row.bltnNo}}">
+              <li class="board-row" th:each="row, stat : ${pageData.content}"
+                th:classappend="${row.mainExpsYn} == 'Y' ? 'is-notice'">
+                <div class="board-item">
                   <span class="col col-num"
-                    th:text="${pageData.total - (pageData.page * pageData.size) - stat.index}">1</span>
-                  <span class="col col-title" th:text="${row.ntcMttrTtlNm}">제목</span>
+                    th:text="${row.mainExpsYn == 'Y' ? row.bltnNo : pageData.total - (pageData.page * pageData.size) - stat.index}">1</span>
+
+                  <span class="col col-title">
+                    <span th:if="${row.mainExpsYn == 'Y'}" class="badge badge-notice">공지</span>
+                    <button type="button" data-garget="detail" th:attr="data-id=${row.bltnNo}" class="link-button"
+                      th:text="${row.ntcMttrTtlNm}">제목</button>
+                  </span>
+
                   <span class="col col-date"
                     th:text="${row.rgtDtm != null and row.rgtDtm.length() >= 8 ? #strings.substring(row.rgtDtm,0,4) + '.' + #strings.substring(row.rgtDtm,4,6) + '.' + #strings.substring(row.rgtDtm,6,8) : row.rgtDtm}">2025.05.07</span>
-                </a>
+                </div>
               </li>
             </ul>
           </div>
 
           <!-- 페이지네이션 -->
-          <div id="grid-pager">
+          <div id="grid-pager" th:if="${pageData != null and pageData.total > 0}">
             <th:block th:replace="~{component/pagination :: pager(${pageData})}"></th:block>
           </div>
+
         </div>
       </section>
-
     </main>
 
     <!-- 스크립트 -->
     <script th:inline="javascript" type="text/javascript">
       (function () {
-        const grid = document.getElementById('grid');
-        const searchForm = grid.querySelector('form');
-        const baseUrl = 'news/ntcmttr/ntcMttr.do';
-        const inputSort = document.getElementById('sort');
-        const inputDir = document.getElementById('dir');
-        const selectSize = searchForm?.querySelector('select[name="size"]');
-
         const form = document.getElementById('searchbar');
-        const select = document.getElementById('searchFieldSelect');
+        const grid = document.getElementById('grid');
         const input = document.getElementById('searchInput');
         const titleField = document.getElementById('ntcMttrTtlNm');
         const contentField = document.getElementById('ntcMttrCtt');
+        const inputPage = document.getElementById('page');
+        const inputSize = document.getElementById('size');
+        const inputSort = document.getElementById('sort');
+        const inputDir = document.getElementById('dir');
+        const searchFieldSelect = document.getElementById('searchFieldSelect');
+        const searchFieldInput = document.getElementById('searchField');
+        const baseUrl = '/news/ntcmttr/ntcMttr.do';
 
+        // 선택값 hidden input에 반영
+        searchFieldSelect.addEventListener('change', function () {
+          searchFieldInput.value = this.value;
+        });
+
+        // 검색 submit
         form.addEventListener('submit', function (e) {
           e.preventDefault();
 
-          if (select.value === 'ntcMttrTtlNm') {
+          if (searchFieldInput.value === 'ntcMttrTtlNm') {
             titleField.value = input.value;
             contentField.value = '';
           } else {
@@ -134,25 +142,40 @@
             contentField.value = input.value;
           }
 
-          applied = Common.collectFromForm(form);
+          inputPage.value = 0;
+
+          const applied = Common.collectFromForm(form);
 
           Common.reloadList({
-            page: 0,
+            page: parseInt(inputPage.value),
             defaultSortColumn: 'bltn_no',
-            swapTargets: ['.board-body', '#grid-pager'],
+            swapTargets: ['.board-list', '#grid-pager'],
             baseUrl,
-            selectSize,
+            selectSize: inputSize,
             inputSort,
             inputDir,
             applied
           });
         });
+
+        // 페이지네이션
         bindPagination(baseUrl, {
-          page: 0,
-          size: parseInt(selectSize?.value || '10', 10),
-          dir: inputDir?.value || 'asc',
-          sort: inputSort?.value || 'rgtDtm',
+          page: parseInt(inputPage.value || '0'),
+          size: parseInt(inputSize.value || '10'),
+          sort: inputSort.value || 'rgtDtm',
+          dir: inputDir.value || 'asc'
         });
+
+        grid.addEventListener('click', (e) => {
+          const sendBtn = e.target.closest('button[data-garget="detail"]');
+          if (!sendBtn) return;
+          let rowId = sendBtn.dataset.id;
+          if (rowId) {
+            window.location.href = '/news/ntcmttr/ntcMttrDtl/' + rowId;
+          }
+        });
+
+
       })();
     </script>
 
