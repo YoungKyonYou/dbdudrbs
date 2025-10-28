@@ -16,4 +16,6 @@ public interface NtcMttrMapper {
     );
 
     long readNtcMttrListCnt(@Param("req") SrchReqVO req);
+
+    RspVO readNtcMttrDtl(@Param("bltnNo") String bltnNo);
 }

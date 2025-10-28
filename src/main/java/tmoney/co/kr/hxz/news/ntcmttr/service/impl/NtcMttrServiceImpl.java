@@ -42,4 +42,10 @@ public class NtcMttrServiceImpl implements NtcMttrService {
         return ntcMttrMapper.readNtcMttrListCnt(req);
     };
 
+    @Override
+    @Transactional
+    public RspVO readNtcMttrDtl(String bltnNo) {
+        return ntcMttrMapper.readNtcMttrDtl(bltnNo);
+    }
+
 }
