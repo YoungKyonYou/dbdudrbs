@@ -12,4 +12,6 @@ public interface NtcMttrService {
     List<RspVO> readNtcMttrList(SrchReqVO req);
 
     long readNtcMttrListCnt(SrchReqVO req);
+
+    RspVO readNtcMttrDtl(String bltnNo);
 }
