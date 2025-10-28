@@ -1,13 +1,3 @@
-import './theme.js';
-import './header.js';
-import './footer.js';
-import './dropdown.js';
-import './checkbox.js';
-import './tabs.js';
-import './modal.js';
-import './fileupload.js';
-import './datepicker.js';
-import './accordion.js';
 
 (function (global) {
     'use strict'
@@ -268,80 +258,6 @@ import './accordion.js';
         }
     }
 
-    // ** spin-loader start ** //
-    var box = document.getElementById('page-loader');
-    if (!box) return;
-
-    // 로딩 표시 함수
-    function show() {
-        box.classList.remove('fade-out'); // 사라짐 효과 제거
-        box.classList.add('show');        // 표시 클래스 추가
-        document.documentElement.setAttribute('aria-busy', 'true'); // 문서 상태를 '로딩 중'으로 설정
-    }
-
-    // 로딩 숨김 함수
-    function hide() {
-        box.classList.add('fade-out'); // 사라짐 효과 추가
-        setTimeout(function () {
-            box.classList.remove('show', 'fade-out'); // 표시 및 사라짐 클래스 제거
-            document.documentElement.removeAttribute('aria-busy'); // 문서 상태 초기화
-        }, 150); // 애니메이션 시간 (150ms 후 제거)
-    }
-    // ====== 단순 전역 ref-count ======
-    var inFlight = 0;
-
-    // 로딩 시작 시 호출
-    function start() {
-        if (++inFlight === 1) show();
-    }
-
-    // 로딩 종료 시 호출
-    function end() {
-        if (inFlight > 0 && --inFlight === 0) hide();
-    }
-
-    // 1) 페이지 전환: 진짜 네비게이션일 때만 beforeunload에서 감지
-    window.addEventListener('beforeunload', function () {
-        start();
-    });
-
-    // 2) 새 문서 로드되면 반드시 감춤 (완전 새로고침 등)
-    document.addEventListener('DOMContentLoaded', hide, { once: true });
-    window.addEventListener('load', hide, { once: true });
-    window.addEventListener('pageshow', function (e) {
-        if (e.persisted) hide(); // bfcache 복원 시에도 감춤
-    });
-
-    // 3) AJAX 전역: fetch + XHR 모두 감싼다 (클릭/submit 등의 구체적 이벤트와 무관)
-    if (window.fetch) {
-        var _fetch = window.fetch.bind(window);
-        window.fetch = function () {
-            start(); // 로딩 시작
-            return _fetch.apply(this, arguments).finally(end); // 완료 시 로딩 종료
-        };
-    }
-
-    if (window.XMLHttpRequest) {
-        var _open = XMLHttpRequest.prototype.open;
-        var _send = XMLHttpRequest.prototype.send;
-
-        // open() 오버라이드
-        XMLHttpRequest.prototype.open = function () {
-            this.__useLoader = true; // 필요하면 요청별로 false로 끌 수 있음
-            return _open.apply(this, arguments);
-        };
-
-        // send() 오버라이드
-        XMLHttpRequest.prototype.send = function () {
-            if (this.__useLoader) {
-                start(); // 로딩 시작
-                this.addEventListener('loadend', end, { once: true }); // 로딩 종료
-            }
-            return _send.apply(this, arguments);
-        };
-    }
-
-    // ** spin-loader end ** //
 
     /**
      * 문자열 정규화
