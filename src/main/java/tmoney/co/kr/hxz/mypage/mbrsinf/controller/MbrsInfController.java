@@ -5,9 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import tmoney.co.kr.hxz.error.exception.DomainExceptionCode;
 import tmoney.co.kr.hxz.mypage.mbrsinf.service.MbrsInfService;
 import tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsInfReqVO;
 import tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsInfRspVO;
+import tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsUpdReqVO;
 
 import javax.validation.Valid;
 
@@ -28,14 +30,14 @@ public class MbrsInfController {
      * @param model
      * @return
      */
-    @GetMapping("/{mbrsId}")
+    @GetMapping("/{mbrsId}/mbrsInf.do")
     public String readMbrsInf(
             @PathVariable("mbrsId") String mbrsId,
             Model model
     ) {
         MbrsInfRspVO mbrsInf = mbrsInfService.readMbrsInf(mbrsId);
         model.addAttribute("mbrsInf", mbrsInf);
-        return "/hxz/mypage/mbrsinf/mbrsInf.html";
+        return "/hxz/mypage/mbrsinf/mbrsInf";
     }
 
     /**
@@ -51,12 +53,36 @@ public class MbrsInfController {
      * @param req
      * @return
      */
-    @PostMapping("/update")
+    @PostMapping("/")
     @ResponseBody
     public ResponseEntity<?> updateMbrsInf(
-            @Valid @RequestBody MbrsInfReqVO req
+            @Valid @RequestBody MbrsUpdReqVO req
     ) {
         mbrsInfService.updateMbrsInf(req);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 비밀번호 변경 페이지
+     *
+     * @return
+     */
+    @GetMapping("/pwdForm.do")
+    public String pwdForm() {
+        return "/hxz/mypage/mbrsinf/pwdForm";
+    }
+
+    /**
+     * 비밀번호 변경 처리
+     */
+    @PostMapping("/pwd/{mbrsId}")
+    @ResponseBody
+    public ResponseEntity<?> updatePwd(
+            @RequestParam String newPwd,
+            @RequestParam String cfmPwd,
+            @PathVariable("mbrsId") String mbrsId
+    ) {
+        mbrsInfService.updatePwd(mbrsId, newPwd, cfmPwd);
         return ResponseEntity.ok().build();
     }
 }
