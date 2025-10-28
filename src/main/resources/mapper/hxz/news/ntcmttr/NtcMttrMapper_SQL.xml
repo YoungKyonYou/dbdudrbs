@@ -60,7 +60,6 @@
         </if>
     </select>
 
-    <!-- 목록 조회 -->
     <select id="readNtcMttrDtl" resultType="tmoney.co.kr.hxz.news.ntcmttr.vo.NtcMttrRspVO" parameterType="String">
         /* sql_id : readNtcMttrDtl */
         /*
@@ -70,19 +69,18 @@
         * 4. 변경이력 :
         2025.10.28 - 최중혁 : 최초작성
         */
-        select org_cd
-             , bltn_no
-             , bltn_dvs_cd
-             , tpw_bltn_rgt_dtm
-             , ntc_mttr_ttl_nm
-             , ntc_mttr_ctt
-             , main_exps_yn
-             , main_exps_stt_dt
-             , main_exps_end_dt
-             , inqr_ncnt
-             , use_yn
-             , rgsr_id
-             , rgt_dtm
+        select org_cd as orgCd
+             , bltn_no as bltnNo
+             , bltn_dvs_cd as bltnDvsCd
+             , tpw_bltn_rgt_dtm as tpwBltnRgtDtm
+             , ntc_mttr_ttl_nm as ntcMttrTtlNm
+             , main_exps_yn as mainExpsYn
+             , main_exps_stt_dt as mainExpsSttDt
+             , main_exps_end_dt as mainExpsEndDt
+             , use_yn as useYn
+             , inqr_ncnt as inqrNcnt
+             , rgsr_id as rgsrId
+             , rgt_dtm as rgtDtm
           from ohxzown.tbhxzm113
          where 1 = 1
          <if test="bltnNo != null and bltnNo != ''">

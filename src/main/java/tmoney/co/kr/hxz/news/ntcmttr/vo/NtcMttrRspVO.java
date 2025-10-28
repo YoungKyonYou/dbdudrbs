@@ -32,6 +32,8 @@ public class NtcMttrRspVO {
     private Integer inqrNcnt;
     /** 사용여부 */
     private String useYn;
+    /** 등록자ID */
+    private String rgsrId;
     /** 등록일시 */
     private String rgtDtm;
 }

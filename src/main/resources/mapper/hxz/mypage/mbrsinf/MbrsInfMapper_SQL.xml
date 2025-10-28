@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tmoney.co.kr.hxz.mypage.mbrsinf.mapper.MbrsInfMapper">
+
+    <select id="readMbrsInf" resultType="tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsInfRspVO" parameterType="String">
+        /* sql_id : readMbrsInf */
+        /*
+        * 1. 파일 : MbrsInfMapper_SQL.xml
+        * 2. 기능 : 회원 정보 상세 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.10.28 - 최중혁 : 최초작성
+        */
+        select mbrs_id              as mbrsId
+             , mbrs_nm              as mbrsNm
+             , mail_addr            as mailAddr
+             , mbrs_mbph_no         as mbrsMbphNo
+             , mbrs_tel_no          as mbrsTelNo
+             , pwd                  as pwd
+             , mbrs_sta_cd          as mbrsStaCd
+             , prsn_auth_ci_enc_val as prsnAuthCiEncVal
+             , mbrs_brdt            as mbrsBrdt
+          from ohxzown.tbhxzm101
+         where mbrs_id = #{mbrsId}
+    </select>
+
+    <update id="updateMbrsInf" parameterType="tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsInfReqVO">
+        /* sql_id : updateFaqInqrNcnt */
+        /*
+        * 1. 파일 : NtcMttrMapper_SQL.xml
+        * 2. 기능 : 회원 정보 수정
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.10.28 - 최중혁 : 최초작성
+        */
+        update ohxzown.tbhxzm101
+           set mbrs_nm = #{mbrsNm}
+             , mbrs_brdt = #{mbrsBrdt}
+             , mbrs_mbph_no = #{mbrsMbphNo}
+             , mbrs_tel_no = #{mbrsTelNo}
+             , mail_addr = #{mailAddr}
+             , pwd = #{pwd}
+             , updr_id = #{updrId}
+             , upd_dtm = to_char(now(), 'YYYYMMDDHH24MISS')
+         where mbrs_id = #{mbrsId}
+    </update>
+
+</mapper>
