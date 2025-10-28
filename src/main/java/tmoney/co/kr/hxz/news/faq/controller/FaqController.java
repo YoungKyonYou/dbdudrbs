@@ -60,7 +60,7 @@ public class FaqController {
             Model model
     ) {
         FaqRspVO faq = faqService.readFaqDtl(bltnNo);
-
+        faqService.updateFaqInqrNcnt(bltnNo);
         model.addAttribute("faq", faq);
         model.addAttribute("bltnNo" , bltnNo);
         return "/hxz/news/faq/faqDtl";

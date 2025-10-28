@@ -14,4 +14,6 @@ public interface FaqService {
     long readFaqListCnt(FaqSrchReqVO req);
 
     FaqRspVO readFaqDtl(String bltnNo);
+
+    void updateFaqInqrNcnt(String bltnNo);
 }

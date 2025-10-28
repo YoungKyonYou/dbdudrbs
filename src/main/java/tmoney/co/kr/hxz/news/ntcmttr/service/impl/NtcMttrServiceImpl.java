@@ -43,9 +43,14 @@ public class NtcMttrServiceImpl implements NtcMttrService {
     };
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public NtcMttrRspVO readNtcMttrDtl(String bltnNo) {
         return ntcMttrMapper.readNtcMttrDtl(bltnNo);
     }
 
+    @Override
+    @Transactional
+    public void updateNtcInqrNcnt(String bltnNo) {
+        ntcMttrMapper.updateNtcInqrNcnt(bltnNo);
+    }
 }

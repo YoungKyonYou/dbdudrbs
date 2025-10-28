@@ -43,8 +43,14 @@ public class FaqServiceImpl implements FaqService {
     };
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public FaqRspVO readFaqDtl(String bltnNo) {
         return faqMapper.readFaqDtl(bltnNo);
+    }
+
+    @Override
+    @Transactional
+    public void updateFaqInqrNcnt(String bltnNo) {
+        faqMapper.updateFaqInqrNcnt(bltnNo);
     }
 }
