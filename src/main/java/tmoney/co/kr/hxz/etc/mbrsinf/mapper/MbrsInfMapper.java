@@ -1,11 +1,11 @@
-package tmoney.co.kr.hxz.mypage.mbrsinf.mapper;
+package tmoney.co.kr.hxz.etc.mbrsinf.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import tmoney.co.kr.hxz.annotation.HxzDb;
-import tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsInfReqVO;
-import tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsInfRspVO;
-import tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsUpdReqVO;
+import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsInfReqVO;
+import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsInfRspVO;
+import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsUpdReqVO;
 
 @HxzDb
 @Mapper

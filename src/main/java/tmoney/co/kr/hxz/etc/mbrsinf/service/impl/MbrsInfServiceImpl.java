@@ -1,14 +1,14 @@
-package tmoney.co.kr.hxz.mypage.mbrsinf.service.impl;
+package tmoney.co.kr.hxz.etc.mbrsinf.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tmoney.co.kr.hxz.error.exception.DomainExceptionCode;
-import tmoney.co.kr.hxz.mypage.mbrsinf.mapper.MbrsInfMapper;
-import tmoney.co.kr.hxz.mypage.mbrsinf.service.MbrsInfService;
-import tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsInfReqVO;
-import tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsInfRspVO;
-import tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsUpdReqVO;
+import tmoney.co.kr.hxz.etc.mbrsinf.mapper.MbrsInfMapper;
+import tmoney.co.kr.hxz.etc.mbrsinf.service.MbrsInfService;
+import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsInfReqVO;
+import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsInfRspVO;
+import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsUpdReqVO;
 
 @RequiredArgsConstructor
 @Service
@@ -61,8 +61,6 @@ public class MbrsInfServiceImpl implements MbrsInfService {
         mbrsInfMapper.insertMbrsInf(req);
     }
 
-
-
     @Override
     @Transactional
     public void updatePwd(String mbrsId, String newPwd, String cfmPwd) {
@@ -81,5 +79,32 @@ public class MbrsInfServiceImpl implements MbrsInfService {
         }
 
         mbrsInfMapper.updatePwd(mbrsId, newPwd);
+        MbrsInfRspVO rspVO = readMbrsInf(mbrsId);
+        MbrsInfReqVO reqVO = new MbrsInfReqVO(
+                rspVO.getMbrsId(),
+                rspVO.getMbrsNm(),
+                rspVO.getMailAddr(),
+                rspVO.getMbrsMbphNo(),
+                rspVO.getMbrsTelNo(),
+                newPwd,
+                rspVO.getMbrsStaCd(),
+                rspVO.getPwdErrNcnt(),
+                rspVO.getDsprRgtInhrNo(),
+                rspVO.getVtrnNo(),
+                rspVO.getTpwJoinTypCd(),
+                rspVO.getTpwJoinRctdVal(),
+                rspVO.getScsnDtm(),
+                rspVO.getPrsnAuthCiEncVal(),
+                rspVO.getGndrCd(),
+                rspVO.getMbrsBrdt(),
+                rspVO.getMbrsScsnDvsCd(),
+                rspVO.getNtfcYn(),
+                rspVO.getMrkgUtlzAgrmYn(),
+                rspVO.getSmsRcvAgrmYn(),
+                rspVO.getMailRcvAgrmYn(),
+                rspVO.getBztlRcvAgrmYn(),
+                rspVO.getMbrsJoinDt()
+        );
+        insertMbrsInf(reqVO);
     }
 }

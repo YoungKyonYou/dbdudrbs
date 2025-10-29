@@ -1,8 +1,8 @@
-package tmoney.co.kr.hxz.mypage.mbrsinf.service;
+package tmoney.co.kr.hxz.etc.mbrsinf.service;
 
-import tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsInfReqVO;
-import tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsInfRspVO;
-import tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsUpdReqVO;
+import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsInfReqVO;
+import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsInfRspVO;
+import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsUpdReqVO;
 
 public interface MbrsInfService {
     MbrsInfRspVO readMbrsInf(String mbrsId);
