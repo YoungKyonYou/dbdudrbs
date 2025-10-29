@@ -1,4 +1,4 @@
-package tmoney.co.kr.hxz.mypage.mbrsinf.vo;
+package tmoney.co.kr.hxz.etc.mbrsinf.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
