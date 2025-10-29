@@ -112,7 +112,7 @@
     <!-- 스크립트 -->
     <script th:inline="javascript" type="text/javascript">
       (function () {
-        const form = document.getElementById('searchbar');
+        const searchForm = document.getElementById('searchbar');
         const grid = document.getElementById('grid');
         const input = document.getElementById('searchInput');
         const titleField = document.getElementById('ntcMttrTtlNm');
@@ -131,7 +131,7 @@
         });
 
         // 검색 submit
-        form.addEventListener('submit', function (e) {
+        searchForm.addEventListener('submit', function (e) {
           e.preventDefault();
 
           if (searchFieldInput.value === 'ntcMttrTtlNm') {
@@ -144,7 +144,7 @@
 
           inputPage.value = 0;
 
-          const applied = Common.collectFromForm(form);
+          const applied = Common.collectFromForm(searchForm);
 
           Common.reloadList({
             page: parseInt(inputPage.value),

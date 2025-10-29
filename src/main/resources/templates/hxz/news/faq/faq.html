@@ -35,8 +35,9 @@
                                         <i class="icon icon-search" aria-hidden="true"></i>
                                     </button>
                                     <input id="faqTtlNm" th:field="*{faqTtlNm}" type="hidden">
-                                    <input th:field="*{sort}" type="hidden">
-                                    <input th:field="*{dir}" type="hidden">
+                                    <input id="sort" th:field="*{sort}" type="hidden">
+                                    <input id="dir" th:field="*{dir}" type="hidden">
+                                    <input id="selectSize" type="hidden" value="10">
                                 </form>
                             </div>
                         </div>
@@ -79,10 +80,9 @@
             </section>
         </main>
 
-        <!-- JS: 부드러운 아코디언 + 검색/페이지네이션 -->
         <script th:inline="javascript">
             (function () {
-                const form = document.getElementById('searchbar');
+                const searchForm = document.getElementById('searchbar');
                 const input = document.getElementById('searchInput');
                 const titleField = document.getElementById('faqTtlNm');
                 const baseUrl = '/news/faq/faq.do';
@@ -90,73 +90,78 @@
                 const inputDir = document.getElementById('dir');
                 const selectSize = 10;
                 const accordion = document.getElementById('faqAccordion');
+                const selectSizeInput = document.getElementById('selectSize');
 
-                // 검색 submit
-                form.addEventListener('submit', function (e) {
+                searchForm.addEventListener('submit', function (e) {
                     e.preventDefault();
-                    titleField.value = input.value;
 
-                    const applied = Common.collectFromForm(form);
 
+                    titleField.value = input.value.trim();
+
+                    const applied = Common.collectFromForm(searchForm);
                     Common.reloadList({
                         page: 0,
                         defaultSortColumn: 'faq_no',
                         swapTargets: ['.accordion', '#grid-pager'],
                         baseUrl,
-                        selectSize,
-                        inputSort,
-                        inputDir,
+                        selectSize: selectSizeInput,      // 숫자가 아니라 DOM input 전달
+                        inputSort: document.getElementById('sort'),
+                        inputDir: document.getElementById('dir'),
                         applied
                     });
                 });
 
-                // 페이지네이션
-                bindPagination(baseUrl, {
-                    page: 0,
-                    size: selectSize,
-                    dir: inputDir?.value || 'asc',
-                    sort: inputSort?.value || 'rgtDtm'
-                });
+                // ✅ 페이지네이션 초기화
+                if (typeof bindPagination === 'function') {
+                    bindPagination(baseUrl, {
+                        page: 0,
+                        size: selectSize,
+                        dir: inputDir?.value || 'asc',
+                        sort: inputSort?.value || 'rgtDtm'
+                    });
+                } else {
+                    console.warn('⚠️ bindPagination 함수가 정의되어 있지 않습니다.');
+                }
 
-                // 아코디언 열고 닫기 (애니메이션)
-                accordion.querySelectorAll('.acc-trigger').forEach(trigger => {
-                    const item = trigger.closest('.acc-item');
-                    const panel = item.querySelector('.acc-panel');
+                // ✅ 아코디언 열고 닫기 (애니메이션)
+                if (accordion) {
+                    accordion.querySelectorAll('.acc-trigger').forEach(trigger => {
+                        const item = trigger.closest('.acc-item');
+                        const panel = item.querySelector('.acc-panel');
+                        panel.removeAttribute('hidden');
 
-                    // hidden 제거
-                    panel.removeAttribute('hidden');
-
-                    // 초기 상태
-                    if (item.classList.contains('is-open')) {
-                        panel.style.maxHeight = panel.scrollHeight + 'px';
-                    } else {
-                        panel.style.maxHeight = '0';
-                    }
-
-                    trigger.addEventListener('click', function () {
-                        const isOpen = item.classList.contains('is-open');
-
-                        if (accordion.dataset.behavior === 'single') {
-                            accordion.querySelectorAll('.acc-item.is-open').forEach(i => {
-                                if (i !== item) {
-                                    i.classList.remove('is-open');
-                                    const p = i.querySelector('.acc-panel');
-                                    p.style.maxHeight = '0';
-                                }
-                            });
-                        }
-
-                        if (!isOpen) {
-                            item.classList.add('is-open');
+                        if (item.classList.contains('is-open')) {
                             panel.style.maxHeight = panel.scrollHeight + 'px';
                         } else {
-                            item.classList.remove('is-open');
                             panel.style.maxHeight = '0';
                         }
+
+                        trigger.addEventListener('click', function () {
+                            const isOpen = item.classList.contains('is-open');
+
+                            if (accordion.dataset.behavior === 'single') {
+                                accordion.querySelectorAll('.acc-item.is-open').forEach(i => {
+                                    if (i !== item) {
+                                        i.classList.remove('is-open');
+                                        const p = i.querySelector('.acc-panel');
+                                        p.style.maxHeight = '0';
+                                    }
+                                });
+                            }
+
+                            if (!isOpen) {
+                                item.classList.add('is-open');
+                                panel.style.maxHeight = panel.scrollHeight + 'px';
+                            } else {
+                                item.classList.remove('is-open');
+                                panel.style.maxHeight = '0';
+                            }
+                        });
                     });
-                });
+                }
             })();
         </script>
+
 
         <!-- Footer / Top Button -->
         <th:block th:replace="~{component/footer :: siteFooter}"></th:block>

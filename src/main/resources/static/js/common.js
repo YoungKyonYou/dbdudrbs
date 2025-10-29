@@ -145,9 +145,7 @@
                 // 모달 에러 메시지 생성: payload.message가 있으면 사용, 아니면 clientErrorMsg
                 const msg = (e.payload && e.payload.message) ? e.payload.message : clientErrorMsg;
 
-                // 에러 모달 표시 (title: '경고', message: msg, buttons: ['닫기'])
-                // showModal은 외부 함수로 가정
-                showModal({
+                modalShow({
                     title: '경고',
                     message: msg,
                     buttons: ['닫기']
@@ -161,7 +159,7 @@
             console.error(e);
 
             // 에러 모달 표시 (title: '오류', message: otherErrorMsg, buttons: ['닫기'])
-            showModal({
+            modalShow({
                 title: '오류',
                 message: otherErrorMsg,
                 buttons: ['닫기']
@@ -877,8 +875,6 @@
                 sort: inputSort?.value || defaultSortColumn
             }); // 페이지네이션 바인딩 (함수 구현 필요)
 
-            // 페이지네이션 관련 요소들을 다시 구성
-            // size, dir, sort 값을 현재 상태에 맞게 업데이트
             if (selectSize) selectSize.value = params.size;
             if (inputDir) inputDir.value = params.dir;
             if (inputSort) inputSort.value = params.sort;
@@ -1202,7 +1198,7 @@
         // 스왑 함수 (swap)
         swap,
 
-        // 모달 표시 함수 (showModal)
+        // 모달 표시 함수 (modalShow)
         modalShow,
 
         // 다중 파트 처리 함수 (multipart)
