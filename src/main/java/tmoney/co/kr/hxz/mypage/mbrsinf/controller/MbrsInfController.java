@@ -72,6 +72,9 @@ public class MbrsInfController {
         @PathVariable("mbrsId") String mbrsId,
         Model model
     ) {
+        MbrsInfRspVO mbrsInf = mbrsInfService.readMbrsInf(mbrsId);
+
+        model.addAttribute("mbrsInf", mbrsInf);
         model.addAttribute("mbrsId", mbrsId);
         return "/hxz/mypage/mbrsinf/pwdForm";
     }
