@@ -22,7 +22,8 @@
                             <h2 class="section-title">비밀번호 재설정</h2>
                         </div>
                         <div class="form-box">
-                            <form id="pwdForm" novalidate>
+                            <!-- th:object 추가 -->
+                            <form id="pwdForm" th:object="${mbrsId}" novalidate>
                                 <fieldset>
                                     <legend class="sr-only">비밀번호 변경</legend>
 
@@ -78,6 +79,9 @@
                 const pwInput = form.querySelector('input[name="newPassword"]');
                 const pwConfirmInput = form.querySelector('input[name="newPasswordConfirm"]');
                 const pwMismatch = document.getElementById('pwMismatch');
+
+                // Thymeleaf에서 mbrsId 가져오기
+                const mbrsId = /*[[${mbrsId}]]*/ '';
 
                 // 취소
                 cancelBtn.addEventListener('click', () => history.back());
