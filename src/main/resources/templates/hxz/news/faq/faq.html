@@ -1,347 +1,168 @@
 <!doctype html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" data-theme="light">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Tmoney 교통복지플랫폼"/>
-    <meta name="keywords" content="Tmoney 교통복지플랫폼"/>
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="Tmoney 교통복지플랫폼" />
-    <meta property="og:description" content="Tmoney 교통복지플랫폼" />
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{component/header :: layout(~{::content})}">
+    <th:block th:fragment="content">
 
-    <title th:text="${pageTitle} ?: 'Tmoney 교통복지플랫폼'">Tmoney 교통복지플랫폼</title>
-
-    <!-- 정적 리소스: /static/css/** → /css/** -->
-    <link rel="stylesheet" th:href="@{/css/vendor/aos.css}" />
-    <link rel="stylesheet" th:href="@{/css/vendor/swiper-bundle.min.css}" />
-    <link rel="stylesheet" th:href="@{/css/index.css}" />
-    <link rel="stylesheet" th:href="@{/css/page/page.css}" />
-</head>
-<body>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-      if (window.AOS && !window.__aosInited) {
-        AOS.init(); /* 옵션 필요 시 { duration: 600, once: true } */
-        window.__aosInited = true;
-      }
-    });
-</script>
-
-<p id="skip-nav">
-    <a href="#contents">본문으로 바로가기</a>
-    <a href="#gnb1">주메뉴 바로가기</a>
-</p>
-
-<!-- 헤더에 header-jn 클래스 추가할 것 -->
-<th:block th:replace="~{component/header :: siteHeader}"></th:block>
-
-<div id="breadcrumb">
-    <div class="container">
-        <nav>
-            <ul>
-                <li>홈</li>
-                <li>소식</li>
-                <li aria-current="page">자주묻는질문</li>
-            </ul>
-        </nav>
-    </div>
-</div>
-
-<main id="contents">
-    <section class="section">
-        <div class="container">
-            <div class="title-wrap">
-                <div class="flex justify-space-between">
-                    <h2 class="section-title">자주묻는질문</h2>
-                    <div id="search-box">
-                        <form id="searchbar" role="search" action="/search" method="get">
-                            <input
-                                    class="text-field size-lg"
-                                    name="q"
-                                    placeholder="검색어를 입력해주세요."
-                                    aria-label="검색어"
-                                    autocomplete="off"
-                                    enterkeyhint="search">
-                            <button class="btn icon-only size-lg" type="submit" aria-label="검색">
-                                <i class="icon icon-search" aria-hidden="true"></i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
+        <!-- Breadcrumb -->
+        <div id="breadcrumb">
+            <div class="container">
+                <nav>
+                    <ul>
+                        <li>홈</li>
+                        <li>소식</li>
+                        <li aria-current="page">자주묻는질문</li>
+                    </ul>
+                </nav>
             </div>
-
-            <nav class="tabs" aria-label="페이지 이동">
-                <a class="tab is-active" href="#" aria-current="page">전체</a>
-                <a class="tab" href="#" >지원금</a>
-                <a class="tab" href="#" >정책</a>
-                <a class="tab" href="#" >신청</a>
-                <a class="tab" href="#" >홈페이지</a>
-            </nav>
-
-            <div class="accordion" id="faqAccordion" data-behavior="single">
-                <!-- item 1 (open) -->
-                <div class="acc-item is-open">
-                    <h3 class="acc-header">
-                        <button type="button"
-                                class="acc-trigger"
-                                aria-expanded="true"
-                                aria-controls="acc-panel-1"
-                                id="acc-trigger-1">
-                            <span class="acc-badge" aria-hidden="true">Q</span>
-                            <span class="acc-title">지원대상은 누구인가요?</span>
-                            <span class="acc-icon" aria-hidden="true"></span>
-                        </button>
-                    </h3>
-                    <div class="acc-panel" id="acc-panel-1" role="region" aria-labelledby="acc-trigger-1">
-                        <div class="acc-panel-inner">
-                            <span class="acc-badge" aria-hidden="true">A</span>
-                            <span class="acc-content">대한민국 국적이 아닌 자(외국인, 외국국적동포 등)는 지원 대상에서 제외됩니다.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- item 2 -->
-                <div class="acc-item">
-                    <h3 class="acc-header">
-                        <button type="button"
-                                class="acc-trigger"
-                                aria-expanded="false"
-                                aria-controls="acc-panel-2"
-                                id="acc-trigger-2">
-                            <span class="acc-badge" aria-hidden="true">Q</span>
-                            <span class="acc-title">서울 종로구에 거주하는 외국인도 지원 받을 수 있나요?</span>
-                            <span class="acc-icon" aria-hidden="true"></span>
-                        </button>
-                    </h3>
-                    <div class="acc-panel" id="acc-panel-2" role="region" aria-labelledby="acc-trigger-2" hidden>
-                        <div class="acc-panel-inner">
-                            <span class="acc-badge" aria-hidden="true">A</span>
-                            <span class="acc-content">답변이 들어갑니다.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- item 3 -->
-                <div class="acc-item">
-                    <h3 class="acc-header">
-                        <button type="button"
-                                class="acc-trigger"
-                                aria-expanded="false"
-                                aria-controls="acc-panel-3"
-                                id="acc-trigger-3">
-                            <span class="acc-badge" aria-hidden="true">Q</span>
-                            <span class="acc-title">지원금액은 얼마인가요?</span>
-                            <span class="acc-icon" aria-hidden="true"></span>
-                        </button>
-                    </h3>
-                    <div class="acc-panel" id="acc-panel-3" role="region" aria-labelledby="acc-trigger-3" hidden>
-                        <div class="acc-panel-inner">
-                            <span class="acc-badge" aria-hidden="true">A</span>
-                            <span class="acc-content">답변이 들어갑니다.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- item 4 -->
-                <div class="acc-item">
-                    <h3 class="acc-header">
-                        <button type="button"
-                                class="acc-trigger"
-                                aria-expanded="false"
-                                aria-controls="acc-panel-4"
-                                id="acc-trigger-4">
-                            <span class="acc-badge" aria-hidden="true">Q</span>
-                            <span class="acc-title">신청하면 교통비는 언제, 어떻게 지원 받나요?</span>
-                            <span class="acc-icon" aria-hidden="true"></span>
-                        </button>
-                    </h3>
-                    <div class="acc-panel" id="acc-panel-4" role="region" aria-labelledby="acc-trigger-4" hidden>
-                        <div class="acc-panel-inner">
-                            <span class="acc-badge" aria-hidden="true">A</span>
-                            <span class="acc-content">답변이 들어갑니다.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- item 5 -->
-                <div class="acc-item">
-                    <h3 class="acc-header">
-                        <button type="button"
-                                class="acc-trigger"
-                                aria-expanded="false"
-                                aria-controls="acc-panel-5"
-                                id="acc-trigger-5">
-                            <span class="acc-badge" aria-hidden="true">Q</span>
-                            <span class="acc-title">현금으로 지급하나요?</span>
-                            <span class="acc-icon" aria-hidden="true"></span>
-                        </button>
-                    </h3>
-                    <div class="acc-panel" id="acc-panel-5" role="region" aria-labelledby="acc-trigger-5" hidden>
-                        <div class="acc-panel-inner">
-                            <span class="acc-badge" aria-hidden="true">A</span>
-                            <span class="acc-content">답변이 들어갑니다.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- item 6 -->
-                <div class="acc-item">
-                    <h3 class="acc-header">
-                        <button type="button"
-                                class="acc-trigger"
-                                aria-expanded="false"
-                                aria-controls="acc-panel-6"
-                                id="acc-trigger-6">
-                            <span class="acc-badge" aria-hidden="true">Q</span>
-                            <span class="acc-title">시흥시에 거주하는 외국인도 지원 받을 수 있나요?</span>
-                            <span class="acc-icon" aria-hidden="true"></span>
-                        </button>
-                    </h3>
-                    <div class="acc-panel" id="acc-panel-6" role="region" aria-labelledby="acc-trigger-6" hidden>
-                        <div class="acc-panel-inner">
-                            <span class="acc-badge" aria-hidden="true">A</span>
-                            <span class="acc-content">답변이 들어갑니다.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- item 7 -->
-                <div class="acc-item">
-                    <h3 class="acc-header">
-                        <button type="button"
-                                class="acc-trigger"
-                                aria-expanded="false"
-                                aria-controls="acc-panel-7"
-                                id="acc-trigger-7">
-                            <span class="acc-badge" aria-hidden="true">Q</span>
-                            <span class="acc-title">카드 신청이 가능한가요?</span>
-                            <span class="acc-icon" aria-hidden="true"></span>
-                        </button>
-                    </h3>
-                    <div class="acc-panel" id="acc-panel-7" role="region" aria-labelledby="acc-trigger-7" hidden>
-                        <div class="acc-panel-inner">
-                            <span class="acc-badge" aria-hidden="true">A</span>
-                            <span class="acc-content">답변이 들어갑니다.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- item 8 -->
-                <div class="acc-item">
-                    <h3 class="acc-header">
-                        <button type="button"
-                                class="acc-trigger"
-                                aria-expanded="false"
-                                aria-controls="acc-panel-8"
-                                id="acc-trigger-8">
-                            <span class="acc-badge" aria-hidden="true">Q</span>
-                            <span class="acc-title">지원 방법은 어떻게 되나요?</span>
-                            <span class="acc-icon" aria-hidden="true"></span>
-                        </button>
-                    </h3>
-                    <div class="acc-panel" id="acc-panel-8" role="region" aria-labelledby="acc-trigger-8" hidden>
-                        <div class="acc-panel-inner">
-                            <span class="acc-badge" aria-hidden="true">A</span>
-                            <span class="acc-content">답변이 들어갑니다.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- item 9 -->
-                <div class="acc-item">
-                    <h3 class="acc-header">
-                        <button type="button"
-                                class="acc-trigger"
-                                aria-expanded="false"
-                                aria-controls="acc-panel-9"
-                                id="acc-trigger-9">
-                            <span class="acc-badge" aria-hidden="true">Q</span>
-                            <span class="acc-title">가족 대신에 신청 가능한가요?</span>
-                            <span class="acc-icon" aria-hidden="true"></span>
-                        </button>
-                    </h3>
-                    <div class="acc-panel" id="acc-panel-9" role="region" aria-labelledby="acc-trigger-9" hidden>
-                        <div class="acc-panel-inner">
-                            <span class="acc-badge" aria-hidden="true">A</span>
-                            <span class="acc-content">답변이 들어갑니다.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- item 10 -->
-                <div class="acc-item">
-                    <h3 class="acc-header">
-                        <button type="button"
-                                class="acc-trigger"
-                                aria-expanded="false"
-                                aria-controls="acc-panel-10"
-                                id="acc-trigger-10">
-                            <span class="acc-badge" aria-hidden="true">Q</span>
-                            <span class="acc-title">중복 신청 가능한가요?</span>
-                            <span class="acc-icon" aria-hidden="true"></span>
-                        </button>
-                    </h3>
-                    <div class="acc-panel" id="acc-panel-10" role="region" aria-labelledby="acc-trigger-10" hidden>
-                        <div class="acc-panel-inner">
-                            <span class="acc-badge" aria-hidden="true">A</span>
-                            <span class="acc-content">답변이 들어갑니다.</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <nav class="pagination" aria-label="페이지네이션" th:fragment="pagination">
-                <ul class="pagination-list" role="list">
-                    <!-- 처음/이전 (1페이지 기준 비활성) -->
-                    <li class="page-ctrl">
-                        <a class="page-btn" href="" aria-label="첫 페이지" aria-disabled="true" tabindex="-1">
-                            <i class="icon icon-arrow-left-end"></i>
-                        </a>
-                    </li>
-                    <li class="page-ctrl">
-                        <a class="page-btn" href="" aria-label="이전 페이지" aria-disabled="true" tabindex="-1">
-                            <i class="icon icon-arrow-left"></i>
-                        </a>
-                    </li>
-
-                    <!-- 숫자 -->
-                    <li class="page-num is-current">
-                        <span aria-current="page">1</span>
-                    </li>
-                    <li class="page-num"><a href="" aria-label="2페이지">2</a></li>
-                    <li class="page-num"><a href="" aria-label="3페이지">3</a></li>
-                    <li class="page-num"><a href="" aria-label="4페이지">4</a></li>
-                    <li class="page-num"><a href="" aria-label="5페이지">5</a></li>
-
-                    <!-- 다음/마지막 -->
-                    <li class="page-ctrl">
-                        <a class="page-btn" href="" aria-label="다음 페이지">
-                            <i class="icon icon-arrow-right"></i>
-                        </a>
-                    </li>
-                    <li class="page-ctrl">
-                        <a class="page-btn" href="" aria-label="마지막 페이지">
-                            <i class="icon icon-arrow-right-end"></i>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
         </div>
-    </section>
 
-</main>
+        <main id="contents">
+            <section class="section" id="grid">
+                <div class="container">
 
-<th:block th:replace="~{component/footer_jn :: siteFooterJn}"></th:block>
-<th:block th:replace="~{component/topBtn :: siteTop}"></th:block>
+                    <!-- 제목 + 검색 -->
+                    <div class="title-wrap">
+                        <div class="flex justify-space-between">
+                            <h2 class="section-title">자주묻는질문</h2>
+                            <div id="search-box">
+                                <form id="searchbar" th:object="${req}" method="get">
+                                    <select id="searchFieldSelect" class="dropdown size-lg" aria-label="검색 구분 선택">
+                                        <option value="faqTtlNm">제목</option>
+                                    </select>
+                                    <input id="searchInput" class="text-field size-lg" placeholder="검색어를 입력해주세요."
+                                        aria-label="검색어" autocomplete="off" enterkeyhint="search">
+                                    <button class="btn icon-only size-lg" type="submit" aria-label="검색">
+                                        <i class="icon icon-search" aria-hidden="true"></i>
+                                    </button>
+                                    <input id="faqTtlNm" th:field="*{faqTtlNm}" type="hidden">
+                                    <input th:field="*{sort}" type="hidden">
+                                    <input th:field="*{dir}" type="hidden">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
 
-<script th:src="@{/js/vendor/aos.js}"></script>
-<script th:src="@{/js/vendor/gsap.min.js}"></script>
-<script th:src="@{/js/vendor/ScrollTrigger.min.js}"></script>
-<script th:src="@{/js/vendor/swiper-bundle.min.js}"></script>
+                    <!-- FAQ 목록 -->
+                    <div class="accordion" id="faqAccordion" data-behavior="single">
+                        <div class="acc-item" th:each="faq, iterStat : ${pageData.content}"
+                            th:classappend="${iterStat.index == 0} ? 'is-open'">
+                            <h3 class="acc-header">
+                                <button type="button" class="acc-trigger"
+                                    th:attr="aria-controls='acc-panel-' + ${iterStat.index + 1}"
+                                    th:id="'acc-trigger-' + ${iterStat.index + 1}">
+                                    <span class="acc-badge" aria-hidden="true">Q</span>
+                                    <span class="acc-title" th:text="${faq.faqTtlNm}">FAQ 제목</span>
+                                    <span class="acc-icon" aria-hidden="true"></span>
+                                </button>
+                            </h3>
+                            <div class="acc-panel" role="region" th:attr="hidden=${iterStat.index != 0}"
+                                style="overflow: hidden; transition: max-height 0.3s ease;">
+                                <div class="acc-panel-inner">
+                                    <span class="acc-badge" aria-hidden="true">A</span>
+                                    <span class="acc-content" th:text="${faq.answCtt}">답변 내용</span>
+                                </div>
+                            </div>
+                        </div>
 
-<script type="module" th:src="@{/js/common.js}"></script>
+                        <div class="acc-item" th:if="${pageData == null or #lists.isEmpty(pageData.content)}">
+                            <h3 class="acc-header">
+                                <span class="acc-title">등록된 FAQ가 없습니다.</span>
+                            </h3>
+                        </div>
+                    </div>
 
-</body>
+                    <!-- 페이지네이션 -->
+                    <div id="grid-pager" th:if="${pageData != null and pageData.total > 0}">
+                        <th:block th:replace="~{component/pagination :: pager(${pageData})}"></th:block>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- JS: 부드러운 아코디언 + 검색/페이지네이션 -->
+        <script th:inline="javascript">
+            (function () {
+                const form = document.getElementById('searchbar');
+                const input = document.getElementById('searchInput');
+                const titleField = document.getElementById('faqTtlNm');
+                const baseUrl = '/news/faq/faq.do';
+                const inputSort = document.getElementById('sort');
+                const inputDir = document.getElementById('dir');
+                const selectSize = 10;
+                const accordion = document.getElementById('faqAccordion');
+
+                // 검색 submit
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    titleField.value = input.value;
+
+                    const applied = Common.collectFromForm(form);
+
+                    Common.reloadList({
+                        page: 0,
+                        defaultSortColumn: 'faq_no',
+                        swapTargets: ['.accordion', '#grid-pager'],
+                        baseUrl,
+                        selectSize,
+                        inputSort,
+                        inputDir,
+                        applied
+                    });
+                });
+
+                // 페이지네이션
+                bindPagination(baseUrl, {
+                    page: 0,
+                    size: selectSize,
+                    dir: inputDir?.value || 'asc',
+                    sort: inputSort?.value || 'rgtDtm'
+                });
+
+                // 아코디언 열고 닫기 (애니메이션)
+                accordion.querySelectorAll('.acc-trigger').forEach(trigger => {
+                    const item = trigger.closest('.acc-item');
+                    const panel = item.querySelector('.acc-panel');
+
+                    // hidden 제거
+                    panel.removeAttribute('hidden');
+
+                    // 초기 상태
+                    if (item.classList.contains('is-open')) {
+                        panel.style.maxHeight = panel.scrollHeight + 'px';
+                    } else {
+                        panel.style.maxHeight = '0';
+                    }
+
+                    trigger.addEventListener('click', function () {
+                        const isOpen = item.classList.contains('is-open');
+
+                        if (accordion.dataset.behavior === 'single') {
+                            accordion.querySelectorAll('.acc-item.is-open').forEach(i => {
+                                if (i !== item) {
+                                    i.classList.remove('is-open');
+                                    const p = i.querySelector('.acc-panel');
+                                    p.style.maxHeight = '0';
+                                }
+                            });
+                        }
+
+                        if (!isOpen) {
+                            item.classList.add('is-open');
+                            panel.style.maxHeight = panel.scrollHeight + 'px';
+                        } else {
+                            item.classList.remove('is-open');
+                            panel.style.maxHeight = '0';
+                        }
+                    });
+                });
+            })();
+        </script>
+
+        <!-- Footer / Top Button -->
+        <th:block th:replace="~{component/footer :: siteFooter}"></th:block>
+        <th:block th:replace="~{component/topBtn :: siteTop}"></th:block>
+
+    </th:block>
+</th:block>
+
 </html>
