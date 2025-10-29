@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{component/header :: layout(~{::content})}">
+  <th:block th:fragment="content">
+    <div id="breadcrumb">
+      <div class="container">
+        <nav>
+          <ul>
+            <li>홈</li>
+            <li>플랫폼소개</li>
+            <li aria-current="page">사업제휴문의</li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+
+    <main id="contents">
+      <section class="section">
+        <div class="container">
+          <div class="page-wrap">
+            <div class="page-header">
+              <h2 class="section-title">사업제휴문의</h2>
+            </div>
+            <div class="flex dir-col gap24">
+              <div class="visual-box">
+                <p>교통비 지원 포털은 지자체 정책 맞춤형 교통비 지원사업을 <br />
+                  수행할 수 있도록 최적의 서비스를 제공합니다.</p>
+                <img src="/images/sub/img-intro-business1.jpg" alt="교통비 지원 포털 서비스 소개 이미지" loading="lazy"
+                  decoding="async">
+              </div>
+              <div class="table-wrap type-row">
+                <table>
+                  <caption class="sr-only">사업제휴 문의 연락 수단</caption>
+                  <colgroup>
+                    <col style="width:30%">
+                    <col>
+                  </colgroup>
+                  <tbody>
+                    <tr>
+                      <th scope="row">유선 문의</th>
+                      <td class="text-left">1588-0000</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">이메일 문의</th>
+                      <td class="text-left">cardbusiness@tmoney.co.kr</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="process-box">
+              <h3 class="section-sub-title">사업(제휴) 프로세스</h3>
+              <ol class="process">
+                <li class="box step1">
+                  <i class="icon" aria-hidden="true"></i>
+                  <strong>사업(제휴) 문의접수</strong>
+                  <div>유선 or 이메일 접수</div>
+                </li>
+                <li class="box step2">
+                  <i class="icon" aria-hidden="true"></i>
+                  <strong>검토 및 회신</strong>
+                  <div>담당 부서(일주일 내)</div>
+                </li>
+                <li class="box step3">
+                  <i class="icon" aria-hidden="true"></i>
+                  <strong>대면 미팅</strong>
+                  <div>1개월 내</div>
+                </li>
+                <li class="box step4">
+                  <i class="icon" aria-hidden="true"></i>
+                  <strong>시스템 구축 및 운영</strong>
+                  <div>6개월 내</div>
+                </li>
+              </ol>
+            </div>
+          </div>
+        </div>
+        <div class="container fluid">
+          <div class="page-wrap">
+            <div class="bg-box">
+              <p class="bg-text">BUSINESS PROCESS</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+
+    <script th:inline="javascript" type="text/javascript">
+      (function () {
+
+      })();
+    </script>
+
+  </th:block>
+</th:block>
+
+</html>
