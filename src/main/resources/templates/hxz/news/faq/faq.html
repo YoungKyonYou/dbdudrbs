@@ -24,26 +24,36 @@
                     <div class="title-wrap">
                         <div class="flex justify-space-between">
                             <h2 class="section-title">자주묻는질문</h2>
+
                             <div id="search-box">
-                                <form id="searchbar" th:object="${req}" method="get">
-                                    <select id="searchFieldSelect" class="dropdown size-lg" aria-label="검색 구분 선택">
-                                        <option value="faqTtlNm">제목</option>
-                                    </select>
+                                <form id="searchbar" th:object="${req}" method="get" role="search">
+
+                                    <div class="dropdown size-lg" role="group" aria-label="검색 구분 선택">
+                                        <select id="searchFieldSelect" class="text-field size-lg" aria-label="검색 구분 선택">
+                                            <option value="faqTtlNm">제목</option>
+                                        </select>
+                                        <input type="hidden" id="searchField" name="searchField" value="faqTtlNm">
+                                    </div>
+
                                     <input id="searchInput" class="text-field size-lg" placeholder="검색어를 입력해주세요."
                                         aria-label="검색어" autocomplete="off" enterkeyhint="search">
+
                                     <button class="btn icon-only size-lg" type="submit" aria-label="검색">
                                         <i class="icon icon-search" aria-hidden="true"></i>
                                     </button>
+
+                                    <!-- VO 필드 hidden -->
                                     <input id="faqTtlNm" th:field="*{faqTtlNm}" type="hidden">
                                     <input id="sort" th:field="*{sort}" type="hidden">
                                     <input id="dir" th:field="*{dir}" type="hidden">
-                                    <input id="selectSize" type="hidden" value="10">
+                                    <input id="page" th:field="*{page}" type="hidden" value="0">
+                                    <input id="size" th:field="*{size}" type="hidden" value="10">
                                 </form>
                             </div>
+
                         </div>
                     </div>
 
-                    <!-- FAQ 목록 -->
                     <div class="accordion" id="faqAccordion" data-behavior="single">
                         <div class="acc-item" th:each="faq, iterStat : ${pageData.content}"
                             th:classappend="${iterStat.index == 0} ? 'is-open'">
@@ -72,7 +82,6 @@
                         </div>
                     </div>
 
-                    <!-- 페이지네이션 -->
                     <div id="grid-pager" th:if="${pageData != null and pageData.total > 0}">
                         <th:block th:replace="~{component/pagination :: pager(${pageData})}"></th:block>
                     </div>
@@ -111,7 +120,6 @@
                     });
                 });
 
-                // ✅ 페이지네이션 초기화
                 if (typeof bindPagination === 'function') {
                     bindPagination(baseUrl, {
                         page: 0,
@@ -123,7 +131,6 @@
                     console.warn('⚠️ bindPagination 함수가 정의되어 있지 않습니다.');
                 }
 
-                // ✅ 아코디언 열고 닫기 (애니메이션)
                 if (accordion) {
                     accordion.querySelectorAll('.acc-trigger').forEach(trigger => {
                         const item = trigger.closest('.acc-item');
@@ -162,10 +169,6 @@
             })();
         </script>
 
-
-        <!-- Footer / Top Button -->
-        <th:block th:replace="~{component/footer :: siteFooter}"></th:block>
-        <th:block th:replace="~{component/topBtn :: siteTop}"></th:block>
 
     </th:block>
 </th:block>

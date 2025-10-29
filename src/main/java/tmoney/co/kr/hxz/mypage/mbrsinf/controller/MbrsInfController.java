@@ -67,8 +67,12 @@ public class MbrsInfController {
      *
      * @return
      */
-    @GetMapping("/pwdForm.do")
-    public String pwdForm() {
+    @GetMapping("/{mbrsId}/pwdForm.do")
+    public String pwdForm(
+        @PathVariable("mbrsId") String mbrsId,
+        Model model
+    ) {
+        model.addAttribute("mbrsId", mbrsId);
         return "/hxz/mypage/mbrsinf/pwdForm";
     }
 
@@ -84,6 +88,16 @@ public class MbrsInfController {
     ) {
         mbrsInfService.updatePwd(mbrsId, newPwd, cfmPwd);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 회원 탈퇴 페이지
+     *
+     * @return
+     */
+    @GetMapping("/mbrsScsn.do")
+    public String mbrsScsn() {
+        return "/hxz/mypage/mbrsinf/mbrsScsn";
     }
 }
 

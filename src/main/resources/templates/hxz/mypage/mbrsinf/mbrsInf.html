@@ -27,21 +27,17 @@
                                     <legend class="sr-only">개인정보</legend>
                                     <h3 class="form-title">개인정보</h3>
 
-                                    <!-- 이름 -->
                                     <div>
                                         <p class="field-title" id="ft-name">이름</p>
                                         <input type="text" class="text-field size-lg" th:field="*{mbrsNm}" readonly
                                             aria-labelledby="ft-name">
                                     </div>
 
-                                    <!-- 생년월일 -->
                                     <div>
                                         <p class="field-title" id="ft-bday">생년월일</p>
                                         <input type="text" class="text-field size-lg" th:field="*{mbrsBrdt}"
                                             inputmode="numeric" readonly aria-labelledby="ft-bday">
                                     </div>
-
-                                    <!-- 휴대전화 -->
                                     <div>
                                         <p class="field-title" id="ft-mobile">휴대전화번호</p>
                                         <div class="flex align-center gap8" role="group" aria-labelledby="ft-mobile">
@@ -94,13 +90,10 @@
                                     <legend class="sr-only">가입정보</legend>
                                     <h3 class="form-title">가입정보</h3>
 
-                                    <!-- 아이디 -->
                                     <div>
                                         <p class="field-title" id="ft-uid">아이디</p>
                                         <input type="text" class="text-field size-lg" th:field="*{mbrsId}" readonly>
                                     </div>
-
-                                    <!-- 비밀번호 -->
                                     <div>
                                         <p class="field-title" id="ft-pw">비밀번호</p>
                                         <button type="button" class="btn btn-darkgray size-lg fluid" id="pwdResetBtn">
@@ -182,8 +175,6 @@
             })();
         </script>
 
-        <th:block th:replace="~{component/footer :: siteFooter}"></th:block>
-        <th:block th:replace="~{component/topBtn :: siteTop}"></th:block>
     </th:block>
 </th:block>
 

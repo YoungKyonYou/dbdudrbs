@@ -125,12 +125,10 @@
         const searchFieldInput = document.getElementById('searchField');
         const baseUrl = '/news/ntcmttr/ntcMttr.do';
 
-        // 선택값 hidden input에 반영
         searchFieldSelect.addEventListener('change', function () {
           searchFieldInput.value = this.value;
         });
 
-        // 검색 submit
         searchForm.addEventListener('submit', function (e) {
           e.preventDefault();
 
@@ -158,7 +156,6 @@
           });
         });
 
-        // 페이지네이션
         bindPagination(baseUrl, {
           page: parseInt(inputPage.value || '0'),
           size: parseInt(inputSize.value || '10'),
@@ -179,9 +176,6 @@
       })();
     </script>
 
-    <!-- Footer / Top Button -->
-    <th:block th:replace="~{component/footer :: siteFooter}"></th:block>
-    <th:block th:replace="~{component/topBtn :: siteTop}"></th:block>
 
   </th:block>
 </th:block>
