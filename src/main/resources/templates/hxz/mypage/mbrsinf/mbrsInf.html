@@ -15,7 +15,7 @@
         </div>
 
         <main id="contents">
-            <section class="section">
+            <section class="section" id="grid">
                 <div class="container size-xsm">
                     <div class="mypage-wrap">
                         <div class="mypage-header">
@@ -96,7 +96,8 @@
                                     </div>
                                     <div>
                                         <p class="field-title" id="ft-pw">비밀번호</p>
-                                        <button type="button" class="btn btn-darkgray size-lg fluid" id="pwdResetBtn">
+                                        <button data-target="detail" th:attr="data-id=${mbrsInf.mbrsId}" type="button"
+                                            class="btn btn-darkgray size-lg fluid" id="pwdResetBtn">
                                             비밀번호 재설정
                                         </button>
                                     </div>
@@ -122,7 +123,7 @@
                 const editForm = document.getElementById('mbrsForm');
                 const saveBtn = document.getElementById('save-btn');
                 const hrefBtn = document.getElementById('pwdResetBtn')
-
+                const grid = document.getElementById('grid');
                 document.querySelectorAll('.edit-btn').forEach(button => {
                     button.addEventListener('click', function () {
                         const parent = this.closest('div');
@@ -136,10 +137,14 @@
                         }
                     });
                 });
+                grid.addEventListener('click', (e) => {
+                    const sendBtn = e.target.closest('button[data-target="detail"]');
+                    if (!sendBtn) return;
 
-                // 비밀번호 재설정
-                hrefBtn.addEventListener('click', () => {
-                    window.location.href = '/mypage/mbrsinf/pwdForm.do';
+                    const rowId = sendBtn.dataset.id;
+                    if (rowId) {
+                        window.location.href = `/mypage/mbrsinf/${rowId}/pwdForm.do`;
+                    }
                 });
 
 

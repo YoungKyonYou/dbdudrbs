@@ -21,9 +21,9 @@
                         <div class="mypage-header">
                             <h2 class="section-title">비밀번호 재설정</h2>
                         </div>
+
                         <div class="form-box">
-                            <!-- th:object 추가 -->
-                            <form id="pwdForm" th:object="${mbrsId}" novalidate>
+                            <form id="pwdForm" novalidate>
                                 <fieldset>
                                     <legend class="sr-only">비밀번호 변경</legend>
 
@@ -62,7 +62,8 @@
 
                                 <div class="btn-wrap">
                                     <button type="button" class="btn btn-darken-line size-lg" id="cancelBtn">취소</button>
-                                    <button type="button" class="btn btn-primary size-lg" id="saveBtn">비밀번호 변경</button>
+                                    <button type="button" class="btn btn-primary size-lg" id="saveBtn"
+                                        th:attr="data-id=${mbrsInf.mbrsId}">비밀번호 변경</button>
                                 </div>
                             </form>
                         </div>
@@ -80,46 +81,70 @@
                 const pwConfirmInput = form.querySelector('input[name="newPasswordConfirm"]');
                 const pwMismatch = document.getElementById('pwMismatch');
 
-                // Thymeleaf에서 mbrsId 가져오기
-                const mbrsId = /*[[${mbrsId}]]*/ '';
-
-                // 취소
+                // 취소 버튼 클릭
                 cancelBtn.addEventListener('click', () => history.back());
 
-                saveBtn.addEventListener('click', async (e) => {
-                    e.preventDefault();
+                // 저장 버튼 클릭
+                saveBtn.addEventListener('click', async () => {
                     pwMismatch.hidden = true;
+
+                    const rowId = saveBtn.dataset.id;
                     const newPw = pwInput.value.trim();
                     const confirmPw = pwConfirmInput.value.trim();
-                    if (newPw !== confirmPw) {
-                        pwMismatch.hidden = false;
-                        pwInput.focus();
+
+                    // 필수 입력 확인
+                    if (!newPw || !confirmPw) {
+                        Common.modalShow({ title: '알림', message: '비밀번호를 모두 입력해주세요.', buttons: 'close' });
                         return;
                     }
+
+                    // 비밀번호 일치 확인
+                    if (newPw !== confirmPw) {
+                        pwMismatch.hidden = false;
+                        pwConfirmInput.focus();
+                        return;
+                    }
+
+                    // 회원 ID 확인
+                    if (!rowId) {
+                        Common.modalShow({ title: '오류', message: '회원 정보가 없습니다. 다시 시도해주세요.', buttons: 'close' });
+                        return;
+                    }
+
+                    // 확인 모달
                     Common.modalShow({
                         title: '알림',
                         message: '비밀번호를 변경하시겠습니까?',
                         buttons: 'ok-close',
                         onOk: async function () {
-                            const payload = {
-                                newPassword: newPw
-                            };
+                            try {
+                                const formData = new FormData();
+                                formData.append('newPwd', newPw);
+                                formData.append('cfmPwd', confirmPw);
 
-                            const res = await Common.sendSafe(
-                                `/mypage/mbrsinf/pwd/${mbrsId}`,
-                                'POST',
-                                JSON.stringify(payload),
-                                undefined,
-                                { 'Content-Type': 'application/json' }
-                            );
+                                const res = await Common.sendSafe(
+                                    `/mypage/mbrsinf/pwd/${rowId}`,
+                                    'POST',
+                                    formData,
+                                    undefined,
+                                    undefined,
+                                    'text'
+                                );
 
-                            if (res && res.ok) {
-                                Common.modalShow({
-                                    title: '완료',
-                                    message: '비밀번호가 변경되었습니다.',
-                                    buttons: 'close'
-                                });
-                                form.reset();
+                                if (res && (res.ok || res.success)) {
+                                    Common.modalShow({
+                                        title: '완료',
+                                        message: '비밀번호가 변경되었습니다.',
+                                        buttons: 'close',
+                                        onClose: () => history.back()
+                                    });
+                                    form.reset();
+                                } else {
+                                    Common.modalShow({ title: '오류', message: '비밀번호 변경에 실패했습니다. 다시 시도해주세요.', buttons: 'close' });
+                                }
+                            } catch (err) {
+                                console.error('[비밀번호 변경] 예외 발생:', err);
+                                Common.modalShow({ title: '오류', message: '요청 중 문제가 발생했습니다.', buttons: 'close' });
                             }
                         }
                     });
@@ -127,6 +152,8 @@
             })();
         </script>
 
+        <th:block th:replace="~{component/footer :: siteFooter}"></th:block>
+        <th:block th:replace="~{component/topBtn :: siteTop}"></th:block>
     </th:block>
 </th:block>
 
