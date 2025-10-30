@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{component/header :: layout(~{::content})}">
+  <th:block th:fragment="content">
+    <main id="contents">
+      <section class="section">
+        <div class="container fluid">
+          <div class="join-wrap">
+            <div class="join-header">
+              <h2 class="section-title">회원가입</h2>
+              <ol class="step-box" role="list" aria-label="회원가입 단계">
+                <li>
+                  <div class="circle" aria-hidden="true">
+                    <span>1</span>
+                    <i class="icon document"></i>
+                  </div>
+                  <p>약관동의</p>
+                </li>
+                <li>
+                  <div class="circle" aria-hidden="true">
+                    <span>2</span>
+                    <i class="icon lock"></i>
+                  </div>
+                  <p>본인인증</p>
+                </li>
+                <li>
+                  <div class="circle" aria-hidden="true">
+                    <span>3</span>
+                    <i class="icon write"></i>
+                  </div>
+                  <p>정보입력</p>
+                </li>
+                <li aria-current="step" class="active">
+                  <div class="circle" aria-hidden="true">
+                    <span>4</span>
+                    <i class="icon check"></i>
+                  </div>
+                  <p>가입완료 <span class="sr-only">(현재 단계)</span></p>
+                </li>
+              </ol>
+            </div>
+          </div>
+        </div>
+        <div class="container size-sm">
+          <div class="join-wrap">
+            <div class="fin-box">
+              <div class="gray-outer">
+                <div class="step4-box" role="status" aria-live="polite">
+                  <p class="complete-msg">
+                    <strong class="color-blue">김지원</strong>
+                    <span>님, 회원가입이 완료되었습니다.</span>
+                  </p>
+
+                  <div class="btn-wrap">
+                    <a href="" class="btn btn-primary size-lg" id="" role="button">
+                      지원 사업 가입하기
+                    </a>
+                    <a href="" class="btn btn-darken-link size-lg" id="" role="button">
+                      로그인
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </th:block>
+</th:block>
+
+</html>

@@ -38,11 +38,14 @@
                                         <input type="text" class="text-field size-lg" th:field="*{mbrsBrdt}"
                                             inputmode="numeric" readonly aria-labelledby="ft-bday">
                                     </div>
+
+                                    <!-- 휴대전화번호 -->
                                     <div>
                                         <p class="field-title" id="ft-mobile">휴대전화번호</p>
                                         <div class="flex align-center gap8" role="group" aria-labelledby="ft-mobile">
                                             <input type="tel" class="text-field size-lg editable-field"
-                                                th:field="*{mbrsMbphNo}" readonly>
+                                                th:field="*{mbrsMbphNo}" readonly pattern="^01[016789]-\d{3,4}-\d{4}$"
+                                                title="휴대전화번호 형식에 맞게 입력해주세요. 예: 010-1234-5678">
                                             <button type="button" class="btn btn-darkgray size-lg edit-btn"
                                                 data-target="mbrsMbphNo">
                                                 수정<span class="sr-only"> - 휴대전화번호</span>
@@ -55,7 +58,8 @@
                                         <p class="field-title" id="ft-phone">전화번호</p>
                                         <div class="flex align-center gap8" role="group" aria-labelledby="ft-phone">
                                             <input type="tel" class="text-field size-lg editable-field"
-                                                th:field="*{mbrsTelNo}" readonly>
+                                                th:field="*{mbrsTelNo}" readonly pattern="^\d{2,3}-\d{3,4}-\d{4}$"
+                                                title="전화번호 형식에 맞게 입력해주세요. 예: 02-123-4567, 031-1234-5678">
                                             <button type="button" class="btn btn-darkgray size-lg edit-btn"
                                                 data-target="mbrsTelNo">
                                                 수정<span class="sr-only"> - 전화번호</span>
@@ -71,13 +75,16 @@
                                                 name="emailLocal" inputmode="email" autocapitalize="off"
                                                 spellcheck="false" aria-labelledby="ft-email"
                                                 th:value="${mbrsInf.mailAddr != null ? #strings.substringBefore(mbrsInf.mailAddr, '@') : ''}"
-                                                readonly />
+                                                readonly pattern="^[a-zA-Z0-9._%+-]+$"
+                                                title="이메일 사용자명에는 영문, 숫자, 일부 특수문자(. _ % + -)만 사용할 수 있습니다.">
                                             <span class="flex-bar" aria-hidden="true">@</span>
                                             <input class="text-field size-lg editable-field" type="text"
                                                 id="emailDomain" name="emailDomain" inputmode="email"
                                                 autocapitalize="off" spellcheck="false" aria-labelledby="ft-email"
                                                 th:value="${mbrsInf.mailAddr != null ? #strings.substringAfter(mbrsInf.mailAddr, '@') : ''}"
-                                                readonly />
+                                                readonly pattern="^[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$"
+                                                title="도메인 형식에 맞게 입력해주세요. 예: naver.com, example.co.kr">
+
                                             <button type="button" class="btn btn-darkgray size-lg edit-btn"
                                                 data-target="email">
                                                 수정<span class="sr-only"> - 이메일</span>
@@ -109,7 +116,8 @@
                                 </div>
 
                                 <div class="flex justify-end">
-                                    <a href="#" class="color-red underline">회원탈퇴</a>
+                                    <a data-target="detail" th:attr="data-id=${mbrsInf.mbrsId}"
+                                        class="color-red underline">회원탈퇴</a>
                                 </div>
                             </form>
                         </div>
@@ -122,8 +130,10 @@
             (function () {
                 const editForm = document.getElementById('mbrsForm');
                 const saveBtn = document.getElementById('save-btn');
-                const hrefBtn = document.getElementById('pwdResetBtn')
                 const grid = document.getElementById('grid');
+                const deleteBtn = document.querySelector('a[data-target="detail"]');
+
+                // 수정 버튼
                 document.querySelectorAll('.edit-btn').forEach(button => {
                     button.addEventListener('click', function () {
                         const parent = this.closest('div');
@@ -137,45 +147,83 @@
                         }
                     });
                 });
+
+                // 비밀번호 재설정
                 grid.addEventListener('click', (e) => {
                     const sendBtn = e.target.closest('button[data-target="detail"]');
                     if (!sendBtn) return;
-
                     const rowId = sendBtn.dataset.id;
                     if (rowId) {
                         window.location.href = `/mypage/mbrsinf/${rowId}/pwdForm.do`;
                     }
                 });
 
+                // 회원탈퇴
+                deleteBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.location.href = `/mypage/mbrsinf/mbrsScsn.do`;
+                });
 
-
+                // 저장
                 saveBtn.addEventListener('click', async (e) => {
                     e.preventDefault();
 
-                    const applied = Common.collectFromForm(editForm);
-
-                    if (applied.emailLocal && applied.emailDomain) {
-                        applied.mailAddr = `${applied.emailLocal}@${applied.emailDomain}`;
-                        delete applied.emailLocal;
-                        delete applied.emailDomain;
+                    const inputs = editForm.querySelectorAll('input.editable-field:not([readonly])');
+                    for (let input of inputs) {
+                        if (!input.checkValidity()) {
+                            Common.modalShow({ title: '입력 오류', message: input.title, buttons: 'close' });
+                            input.focus();
+                            return;
+                        }
                     }
 
+                    const emailLocal = editForm.querySelector('#emailLocal');
+                    const emailDomain = editForm.querySelector('#emailDomain');
+
+                    // 이메일 도메인 점 포함 검사
+                    const domainPattern = /^[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/;
+                    if (!domainPattern.test(emailDomain.value)) {
+                        Common.modalShow({
+                            title: '입력 오류',
+                            message: '도메인은 naver.com, example.co.kr처럼 반드시 "."이 포함되어야 합니다.',
+                            buttons: 'close'
+                        });
+                        emailDomain.focus();
+                        return;
+                    }
+
+                    const applied = Common.collectFromForm(editForm);
+                    applied.mailAddr = `${emailLocal.value}@${emailDomain.value}`;
+                    delete applied.emailLocal;
+                    delete applied.emailDomain;
+
+                    // 저장 확인 모달
                     Common.modalShow({
                         message: '저장하시겠습니까?',
                         title: '알림',
                         buttons: 'ok-close',
-                        onOk: saveOne
-                    })
+                        onOk: async function saveOne() {
+                            try {
+                                const res = await Common.sendSafe(
+                                    '/mypage/mbrsinf/',
+                                    'POST',
+                                    JSON.stringify(applied),
+                                    undefined,
+                                    { 'Content-Type': 'application/json' }
+                                );
 
-                    async function saveOne() {
-                        const res = await Common.sendSafe(
-                            '/mypage/mbrsinf/',
-                            'POST',
-                            JSON.stringify(applied),
-                            undefined,
-                            { 'Content-Type': 'application/json' } // headers
-                        );
-                    }
+                                if (res && (res.ok || res.success)) {
+                                    Common.modalShow({ title: '완료', message: '변경 되었습니다.', buttons: 'close' });
+                                    editForm.querySelectorAll('input.editable-field').forEach(input => input.setAttribute('readonly', true));
+                                } else {
+                                    Common.modalShow({ title: '오류', message: '저장에 실패했습니다.', buttons: 'close' });
+                                }
+                            } catch (error) {
+                                Common.modalShow({ title: '오류', message: '서버 요청 중 오류가 발생했습니다.', buttons: 'close' });
+                                console.error(error);
+                            }
+                        }
+                    });
                 });
             })();
         </script>

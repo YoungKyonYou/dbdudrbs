@@ -29,21 +29,26 @@
 
                                     <!-- 신규 비밀번호 -->
                                     <div>
-                                        <p class="field-title" id="ft-newpw">신규 비밀번호 <span class="color-red">*</span>
+                                        <p class="field-title" id="ft-newpw">
+                                            신규 비밀번호 <span class="color-red">*</span>
                                         </p>
                                         <input type="password" class="text-field size-lg" name="newPassword"
                                             placeholder="비밀번호를 입력해주세요." autocomplete="new-password" minlength="8"
                                             maxlength="20" required aria-required="true" aria-labelledby="ft-newpw"
                                             aria-describedby="pwHelp1 pwHelp2" autocapitalize="off" spellcheck="false"
                                             pattern="^(?=.*[A-Za-z])(?=.*(\d|[^A-Za-z0-9]))[^\s]{8,20}$">
-                                        <p class="guide-text" id="pwHelp1">영문은 반드시 포함하고, 숫자 또는 특수문자 중 하나 이상을 함께 사용하여
-                                            8~20자로 입력하세요.</p>
-                                        <p class="guide-text" id="pwHelp2">아이디가 포함된 비밀번호는 사용하실 수 없습니다.</p>
+                                        <p class="guide-text" id="pwHelp1">
+                                            영문은 반드시 포함하고, 숫자 또는 특수문자 중 하나 이상을 함께 사용하여 8~20자로 입력하세요.
+                                        </p>
+                                        <p class="guide-text" id="pwHelp2">
+                                            아이디가 포함된 비밀번호는 사용하실 수 없습니다.
+                                        </p>
                                     </div>
 
                                     <!-- 비밀번호 확인 -->
                                     <div>
-                                        <p class="field-title" id="ft-newpw2">비밀번호 확인 <span class="color-red">*</span>
+                                        <p class="field-title" id="ft-newpw2">
+                                            비밀번호 확인 <span class="color-red">*</span>
                                         </p>
                                         <input type="password" class="text-field size-lg" name="newPasswordConfirm"
                                             placeholder="비밀번호를 한번 더 입력해주세요." autocomplete="new-password" minlength="8"
@@ -51,11 +56,17 @@
                                             aria-describedby="pwHelp1b pwHelp2b pwHelp3b pwMismatch"
                                             aria-errormessage="pwMismatch" autocapitalize="off" spellcheck="false"
                                             pattern="^(?=.*[A-Za-z])(?=.*(\d|[^A-Za-z0-9]))[^\s]{8,20}$">
-                                        <p class="guide-text" id="pwHelp1b">영문은 반드시 포함하고, 숫자 또는 특수문자 중 하나 이상을 함께 사용하여
-                                            8~20자로 입력하세요.</p>
-                                        <p class="guide-text" id="pwHelp2b">아이디가 포함된 비밀번호는 사용하실 수 없습니다.</p>
-                                        <p class="guide-text" id="pwHelp3b">비밀번호 기입 후 저장하면 비밀번호가 수정됩니다.</p>
-                                        <p class="caution-text" id="pwMismatch" role="alert" hidden>입력한 비밀번호가 일치하지 않습니다.
+                                        <p class="guide-text" id="pwHelp1b">
+                                            영문은 반드시 포함하고, 숫자 또는 특수문자 중 하나 이상을 함께 사용하여 8~20자로 입력하세요.
+                                        </p>
+                                        <p class="guide-text" id="pwHelp2b">
+                                            아이디가 포함된 비밀번호는 사용하실 수 없습니다.
+                                        </p>
+                                        <p class="guide-text" id="pwHelp3b">
+                                            비밀번호 기입 후 저장하면 비밀번호가 수정됩니다.
+                                        </p>
+                                        <p class="caution-text" id="pwMismatch" role="alert" hidden>
+                                            입력한 비밀번호가 일치하지 않습니다.
                                         </p>
                                     </div>
                                 </fieldset>
@@ -81,10 +92,8 @@
                 const pwConfirmInput = form.querySelector('input[name="newPasswordConfirm"]');
                 const pwMismatch = document.getElementById('pwMismatch');
 
-                // 취소 버튼 클릭
                 cancelBtn.addEventListener('click', () => history.back());
 
-                // 저장 버튼 클릭
                 saveBtn.addEventListener('click', async () => {
                     pwMismatch.hidden = true;
 
@@ -92,44 +101,39 @@
                     const newPw = pwInput.value.trim();
                     const confirmPw = pwConfirmInput.value.trim();
 
-                    // 필수 입력 확인
                     if (!newPw || !confirmPw) {
                         Common.modalShow({ title: '알림', message: '비밀번호를 모두 입력해주세요.', buttons: 'close' });
                         return;
                     }
 
-                    // 비밀번호 일치 확인
                     if (newPw !== confirmPw) {
                         pwMismatch.hidden = false;
                         pwConfirmInput.focus();
                         return;
                     }
 
-                    // 회원 ID 확인
                     if (!rowId) {
                         Common.modalShow({ title: '오류', message: '회원 정보가 없습니다. 다시 시도해주세요.', buttons: 'close' });
                         return;
                     }
 
-                    // 확인 모달
                     Common.modalShow({
                         title: '알림',
                         message: '비밀번호를 변경하시겠습니까?',
                         buttons: 'ok-close',
                         onOk: async function () {
                             try {
-                                const formData = new FormData();
-                                formData.append('newPwd', newPw);
-                                formData.append('cfmPwd', confirmPw);
+                                const payload = new URLSearchParams();
+                                payload.append('newPwd', newPw);
+                                payload.append('cfmPwd', confirmPw);
 
-                                const res = await Common.sendSafe(
-                                    `/mypage/mbrsinf/pwd/${rowId}`,
-                                    'POST',
-                                    formData,
-                                    undefined,
-                                    undefined,
-                                    'text'
-                                );
+                                const res = await fetch(`/mypage/mbrsinf/pwd/${rowId}`, {
+                                    method: 'POST',
+                                    headers: {
+                                        "Content-Type": "application/x-www-form-urlencoded"
+                                    },
+                                    body: payload.toString()   // << 꼭 toString() 호출
+                                });
 
                                 if (res && (res.ok || res.success)) {
                                     Common.modalShow({
@@ -143,7 +147,7 @@
                                     Common.modalShow({ title: '오류', message: '비밀번호 변경에 실패했습니다. 다시 시도해주세요.', buttons: 'close' });
                                 }
                             } catch (err) {
-                                console.error('[비밀번호 변경] 예외 발생:', err);
+                                console.error(err);
                                 Common.modalShow({ title: '오류', message: '요청 중 문제가 발생했습니다.', buttons: 'close' });
                             }
                         }
@@ -152,8 +156,6 @@
             })();
         </script>
 
-        <th:block th:replace="~{component/footer :: siteFooter}"></th:block>
-        <th:block th:replace="~{component/topBtn :: siteTop}"></th:block>
     </th:block>
 </th:block>
 

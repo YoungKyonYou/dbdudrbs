@@ -1162,10 +1162,256 @@
             return payload; // JSON
         }
 
+        // expect가 'text'이거나 JSON이 아닌 경우 텍스트 반환
+        if (expect === 'text' || !ct.includes('application/json')) {
+            return text;
+        }
 
+        // JSON 기대 시 파싱된 객체 반환
+        return JSON.parse(text);
 
+        // catch (text); // 텍스트 반환? (오타나 불완전한 부분으로 보임, 실제로는 throw나 return 필요)
+    }
 
+    // 전역 상태 및 기본값 정의
+    const MiniSPAState = {
+        bound: false,
+        opts: {},
+        onClick: null,
+        onPopstate: null,
+    };
 
+    const DEFAULTS = {
+        asideSelector: 'aside',  // aside 선택자 (링크가 있는 사이드바)
+        containerSelector: 'main',  // 콘텐츠 컨테이너 선택자
+    };
+
+    /**
+     * 로딩 표시 (간단한 구현 예시; 실제로는 UI 요소 토글)
+     */
+    function showLoading() {
+        // 예: document.body.classList.add('loading');
+        console.log('로딩 중...');
+    }
+
+    /**
+     * 로딩 숨김
+     */
+    function hideLoading() {
+        // 예: document.body.classList.remove('loading');
+        console.log('로딩 완료');
+    }
+
+    /**
+     * 콘텐츠를 비동기로 불러와 컨테이너에 삽입
+     * @param {string} url - 불러올 URL
+     * @param {string} html - HTML 문자열 (swapFromHtml에서 사용)
+     */
+    async function fetchContent(url) {
+        try {
+            const response = await fetch(url);
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newContent = doc.querySelector(MiniSPAState.opts.containerSelector);
+            if (newContent) {
+                document.querySelector(MiniSPAState.opts.containerSelector).innerHTML = newContent.innerHTML;
+            }
+            return html;  // swapFromHtml에서 재사용 위해 반환
+        } catch (error) {
+            console.error('콘텐츠 로드 실패:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * HTML 문자열로부터 컨테이너 콘텐츠 교체
+     * @param {string} html - 불러온 HTML
+     * @param {string} url - 현재 URL
+     */
+    async function swapFromHtml(html, url) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newContent = doc.querySelector(MiniSPAState.opts.containerSelector);
+        if (newContent) {
+            document.querySelector(MiniSPAState.opts.containerSelector).innerHTML = newContent.innerHTML;
+        }
+        highlightActiveAside(url);
+    }
+
+    /**
+     * 현재 URL에 맞는 aside 링크 하이라이트
+     * @param {string} url - 하이라이트할 URL
+     */
+    function highlightActiveAside(url) {
+        const links = document.querySelectorAll(`${MiniSPAState.opts.asideSelector} a[href]`);
+        links.forEach(link => link.classList.remove('active'));
+        const activeLink = Array.from(links).find(link => link.href === url);
+        if (activeLink) {
+            activeLink.classList.add('active');
+        }
+    }
+
+    /**
+     * 네비게이션 및 스왑: 콘텐츠 로드 + 히스토리 업데이트 + 하이라이트
+     * @param {string} url - 이동할 URL
+     * @param {boolean} push - pushState 사용 여부 (true: push, false: replace)
+     */
+    async function navigateAndSwap(url, push = true) {
+        try {
+            const html = await fetchContent(url);
+            if (push) {
+                history.pushState(null, '', url);
+            } else {
+                history.replaceState(null, '', url);
+            }
+            highlightActiveAside(url);
+            return html;
+        } catch (error) {
+            console.error('네비게이션 실패:', error);
+        }
+    }
+
+    /**
+     * 클릭 핸들러: aside 링크 클릭 시 SPA 전환
+     * @param {Event} e - 클릭 이벤트
+     */
+    function handleClick(e) {
+        const link = e.target.closest(`${MiniSPAState.opts.asideSelector} a[href]`);
+        if (link && link.href.startsWith(window.location.origin)) {  // 같은 도메인 링크만 처리
+            e.preventDefault();
+            const url = link.href;
+            navigateAndSwap(url, true);
+        }
+    }
+
+    /**
+     * popstate 핸들러: 브라우저 뒤로/앞 가기 시 SPA 전환
+     * @param {Event} e - popstate 이벤트
+     */
+    function handlePopstate(e) {
+        const url = location.href;
+        navigateAndSwap(url, false);
+    }
+
+    const MiniSPA = Object.freeze({
+        /**
+         * SPA(1). aside 링크 + popstate 처리 + aside 표시
+         * @param [{asideSelector}: string, containerSelector?: string] opts
+         */
+        init(opts = {}) {
+            if (MiniSPAState.bound) return;
+
+            MiniSPAState.opts = { ...DEFAULTS, ...opts };
+            MiniSPAState.onClick = handleClick;
+            MiniSPAState.onPopstate = handlePopstate;
+
+            document.addEventListener('click', MiniSPAState.onClick);
+            window.addEventListener('popstate', MiniSPAState.onPopstate);
+
+            // 현재 URL 체크 표시
+            highlightActiveAside(location.href);
+
+            MiniSPAState.bound = true;
+        },
+
+        /**
+         * 파괴: 이벤트 리스너 제거
+         */
+        destroy() {
+            if (!MiniSPAState.bound) return;  // 바인딩되지 않은 경우 스킵 (조건 수정)
+
+            document.removeEventListener('click', MiniSPAState.onClick);
+            window.removeEventListener('popstate', MiniSPAState.onPopstate);
+
+            MiniSPAState.bound = false;
+        },
+
+        /**
+         * GET으로 변경. container만 교체 (pushState-결 true)
+         */
+        go(url, push = true) {
+            return navigateAndSwap(url, push);
+        },
+
+        /**
+         * 동일 URL 변경 처리 (현재페이지 새로고침)
+         */
+        reload() {
+            return navigateAndSwap(location.href, /*push*/ false);
+        },
+
+        /**
+         * 현재 URL 기준 표시
+         */
+        highlight(url = location.href) {
+            highlightActiveAside(url);
+        },
+
+        /**
+         * replaceState 통해 URL 변경 (현재페이지 새로고침)
+         */
+        goReplace(url) {
+            return navigateAndSwap(url, /*push*/ false);
+        },
+
+        /**
+         * a 태그 클릭 SPA 변경 처리
+         */
+        goFromAnchor(event, anchor, { push = true } = {}) {
+            if (event) event.preventDefault();
+            const url = anchor.href;
+            return navigateAndSwap(url, push);
+        },
+
+        /**
+         * GET 방식으로 쿼리 문자열 처리 (버그 수정: &&로 변경, 조건 반전)
+         */
+        goGET(url, params = {}, { push = true } = {}) {
+            const u = new URL(url, location.href);
+            Object.entries(params).forEach(([k, v]) => {
+                if (v !== undefined && v !== null) u.searchParams.set(k, v);  // 수정: 조건 반전
+            });
+            return navigateAndSwap(u.toString(), push);
+        },
+
+        /**
+         * POST 요청 HTML container만 교체 (body 처리 보완: JSON.stringify 가정)
+         */
+        async goPOST(url, body, { headers = {}, push = true } = {}) {
+            showLoading();
+            let res;
+            try {
+                const postBody = typeof body === 'object' ? JSON.stringify(body) : body;
+                const postHeaders = {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json',  // JSON body 가정; 필요시 제거
+                    ...headers
+                };
+                res = await fetch(url, {
+                    method: 'POST',
+                    headers: postHeaders,
+                    body: postBody
+                });
+            } catch (e) {
+                hideLoading();
+                alert('네트워크 오류가 발생했습니다.');
+                throw e;
+            }
+            if (res.ok) {
+                hideLoading();
+                // SPA 유지 위해 push/replace 사용 (수정: 풀 리로드 대신)
+                return navigateAndSwap(url, push);
+            }
+            const html = await res.text();
+            await swapFromHtml(html, url, push);
+        }
+    });
+
+    // 사용 예시
+    // MiniSPA.init({ asideSelector: '#myAside', containerSelector: '#content' });
+    // MiniSPA.go('/new-page');
+    // 나중에: MiniSPA.destroy();
 
     // 글로벌 common 객체 정의: 자주 사용되는 함수들을 Object.freeze로 동결하여 불변성 보장
     // 이 객체는 Excel 내보내기, 재로딩, 안전한 요청, 스왑, 모달 등 다양한 유틸리티 함수 포함
@@ -1212,6 +1458,7 @@
         closeModal,
 
         // JSON 수집 함수 (collectAsJson)
-        collectAsJson
+        collectAsJson,
+        MiniSPA
     })
 })(window);

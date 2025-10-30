@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="tmoney.co.kr.hxz.mypage.mbrsinf.mapper.MbrsInfMapper">
+<mapper namespace="tmoney.co.kr.hxz.etc.mbrsinf.mapper.MbrsInfMapper">
 
-    <select id="readMbrsInf" resultType="tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsInfRspVO" parameterType="String">
+    <select id="readMbrsInf" resultType="tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsInfRspVO" parameterType="String">
         /* sql_id : readMbrsInf */
         /*
         * 1. 파일 : MbrsInfMapper_SQL.xml
@@ -40,7 +40,7 @@
          where mbrs_id = #{mbrsId}
     </select>
 
-    <update id="updateMbrsInf" parameterType="tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsUpdReqVO">
+    <update id="updateMbrsInf" parameterType="tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsUpdReqVO">
         /* sql_id : updateMbrsInf */
         /*
         * 1. 파일 : MbrsInfMapper_SQL.xml
@@ -61,7 +61,7 @@
          where mbrs_id = #{req.mbrsId}
     </update>
 
-    <insert id="insertMbrsInf" parameterType="tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsInfReqVO">
+    <insert id="insertMbrsInf" parameterType="tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsInfReqVO">
         /* sql_id : insertMbrsInf */
         /*
         * 1. 파일 : MbrsInfMapper_SQL.xml

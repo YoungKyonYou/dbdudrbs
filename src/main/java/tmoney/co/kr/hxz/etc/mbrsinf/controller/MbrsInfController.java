@@ -1,15 +1,13 @@
-package tmoney.co.kr.hxz.mypage.mbrsinf.controller;
+package tmoney.co.kr.hxz.etc.mbrsinf.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import tmoney.co.kr.hxz.error.exception.DomainExceptionCode;
-import tmoney.co.kr.hxz.mypage.mbrsinf.service.MbrsInfService;
-import tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsInfReqVO;
-import tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsInfRspVO;
-import tmoney.co.kr.hxz.mypage.mbrsinf.vo.MbrsUpdReqVO;
+import tmoney.co.kr.hxz.etc.mbrsinf.service.MbrsInfService;
+import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsInfRspVO;
+import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsUpdReqVO;
 
 import javax.validation.Valid;
 

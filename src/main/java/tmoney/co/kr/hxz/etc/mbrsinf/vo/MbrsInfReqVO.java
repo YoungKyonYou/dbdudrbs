@@ -1,13 +1,15 @@
-package tmoney.co.kr.hxz.mypage.mbrsinf.vo;
+package tmoney.co.kr.hxz.etc.mbrsinf.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class MbrsInfRspVO {
+@Setter
+public class MbrsInfReqVO {
     /** 회원 ID */
     private String mbrsId;
     /** 회원명 */
