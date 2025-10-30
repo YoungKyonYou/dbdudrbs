@@ -1,103 +1,146 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <th:block th:replace="~{component/header :: layout(~{::content})}">
-  <th:block th:fragment="content">
+    <th:block th:fragment="content">
+        <main id="contents">
+            <section class="section">
+                <div class="container fluid">
+                    <div class="join-wrap">
+                        <div class="join-header">
+                            <h2 class="section-title">회원가입</h2>
+                            <ol class="step-box" role="list" aria-label="회원가입 단계">
+                                <li aria-current="step" class="active">
+                                    <div class="circle" aria-hidden="true"><span>1</span><i class="icon document"></i>
+                                    </div>
+                                    <p>약관동의 <span class="sr-only">(현재 단계)</span></p>
+                                </li>
+                                <li>
+                                    <div class="circle" aria-hidden="true"><span>2</span><i class="icon lock"></i></div>
+                                    <p>본인인증</p>
+                                </li>
+                                <li>
+                                    <div class="circle" aria-hidden="true"><span>3</span><i class="icon write"></i>
+                                    </div>
+                                    <p>정보입력</p>
+                                </li>
+                                <li>
+                                    <div class="circle" aria-hidden="true"><span>4</span><i class="icon check"></i>
+                                    </div>
+                                    <p>가입완료</p>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
 
-    <main id="contents">
-      <section class="section">
-        <div class="container fluid">
-          <div class="join-wrap">
-            <div class="join-header">
-              <h2 class="section-title">회원가입</h2>
-              <ol class="step-box" role="list" aria-label="회원가입 단계">
-                <li aria-current="step" class="active">
-                  <div class="circle" aria-hidden="true">
-                    <span>1</span>
-                    <i class="icon document"></i>
-                  </div>
-                  <p>약관동의 <span class="sr-only">(현재 단계)</span></p>
-                </li>
-                <li>
-                  <div class="circle" aria-hidden="true">
-                    <span>2</span>
-                    <i class="icon lock"></i>
-                  </div>
-                  <p>본인인증</p>
-                </li>
-                <li>
-                  <div class="circle" aria-hidden="true">
-                    <span>3</span>
-                    <i class="icon write"></i>
-                  </div>
-                  <p>정보입력</p>
-                </li>
-                <li>
-                  <div class="circle" aria-hidden="true">
-                    <span>4</span>
-                    <i class="icon check"></i>
-                  </div>
-                  <p>가입완료</p>
-                </li>
-              </ol>
-            </div>
-          </div>
-        </div>
-        <div class="container">
-          <div class="join-wrap">
-            <div class="line-box-wrap">
-              <div>
-                <div class="line-box">
-                  <div class="top-box">
-                    이용약관<span class="color-error">(필수)</span>
-                  </div>
-                  <div class="bot-box scroll-y">
-                    이용약관 전문(생략)
-                  </div>
-                </div>
-                <div class="btn-wrap">
-                  <button type="button" class="btn btn-darken-line size-md">동의하지 않음</button>
-                  <button type="button" class="btn btn-darkgray size-md">약관내용 확인</button>
-                </div>
-              </div>
-              <div>
-                <div class="line-box">
-                  <div class="top-box">
-                    개인정보 수집 및 이용에 대한 안내<span class="color-error">(필수)</span>
-                  </div>
-                  <div class="bot-box scroll-y">
-                    이용약관 전문(생략)
-                  </div>
-                </div>
-                <div class="btn-wrap">
-                  <button type="button" class="btn btn-darken-line size-md">동의하지 않음</button>
-                  <button type="button" class="btn btn-darkgray size-md">약관내용 확인</button>
-                </div>
-              </div>
-              <div>
-                <div class="line-box">
-                  <div class="top-box">
-                    행정정보공동이용 사전동의<span class="color-error">(필수)</span>
-                  </div>
-                  <div class="bot-box scroll-y">
-                    이용약관 전문(생략)
-                  </div>
-                </div>
-                <div class="btn-wrap">
-                  <button type="button" class="btn btn-darken-line size-md">동의하지 않음</button>
-                  <button type="button" class="btn btn-darkgray size-md">약관내용 확인</button>
-                </div>
-              </div>
-            </div>
+                <div class="container">
+                    <div class="join-wrap">
+                        <div class="line-box-wrap">
 
-            <button type="button" class="btn btn-primary size-lg finish">다음</button>
-          </div>
-        </div>
-      </section>
+                            <!-- 약관 3개 반복 영역 -->
+                            <div class="agreement" data-required="true">
+                                <div class="line-box">
+                                    <div class="top-box">이용약관 <span class="color-error">(필수)</span></div>
+                                    <div class="bot-box scroll-y">이용약관 전문(생략)</div>
+                                </div>
+                                <div class="btn-wrap">
+                                    <button type="button" class="btn btn-darken-line size-md disagree">동의하지 않음</button>
+                                    <button type="button" class="btn btn-darkgray size-md view">약관내용 확인</button>
+                                </div>
+                            </div>
 
-    </main>
+                            <div class="agreement" data-required="true">
+                                <div class="line-box">
+                                    <div class="top-box">개인정보 수집 및 이용 안내 <span class="color-error">(필수)</span></div>
+                                    <div class="bot-box scroll-y">개인정보 수집 이용 전문(생략)</div>
+                                </div>
+                                <div class="btn-wrap">
+                                    <button type="button" class="btn btn-darken-line size-md disagree">동의하지 않음</button>
+                                    <button type="button" class="btn btn-darkgray size-md view">약관내용 확인</button>
+                                </div>
+                            </div>
 
-  </th:block>
+                            <div class="agreement" data-required="true">
+                                <div class="line-box">
+                                    <div class="top-box">행정정보공동이용 사전동의 <span class="color-error">(필수)</span></div>
+                                    <div class="bot-box scroll-y">행정정보 전문(생략)</div>
+                                </div>
+                                <div class="btn-wrap">
+                                    <button type="button" class="btn btn-darken-line size-md disagree">동의하지 않음</button>
+                                    <button type="button" class="btn btn-darkgray size-md view">약관내용 확인</button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- 🔹 disabled 제거 -->
+                        <button type="button" class="btn btn-primary size-lg finish ">다음</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+
+
+        <script>
+            (function () {
+                const agreements = document.querySelectorAll('.agreement');
+                const nextBtn = document.querySelector('.finish');
+
+                agreements.forEach(ag => {
+                    const viewBtn = ag.querySelector('.view');
+                    const disagreeBtn = ag.querySelector('.disagree');
+
+                    // 초기 상태
+                    ag.dataset.agreed = "false";
+
+                    // 약관내용 확인 클릭 → 동의
+                    viewBtn.addEventListener('click', () => {
+                        viewBtn.textContent = '동의';
+                        viewBtn.classList.remove('btn-darkgray');
+                        viewBtn.classList.add('btn-primary');
+
+                        disagreeBtn.classList.remove('btn-warning');
+                        disagreeBtn.classList.add('btn-darken-line');
+
+                        ag.dataset.agreed = "true";
+                        updateNextBtn();
+                    });
+
+                    disagreeBtn.addEventListener('click', () => {
+                        viewBtn.textContent = '약관내용 확인';
+                        viewBtn.classList.remove('btn-primary');
+                        viewBtn.classList.add('btn-darkgray');
+
+                        disagreeBtn.classList.remove('btn-darken-line');
+                        disagreeBtn.classList.add('btn-warning');
+
+                        ag.dataset.agreed = "false";
+                        updateNextBtn();
+                    });
+                });
+
+                function updateNextBtn() {
+                    const allAgreed = Array.from(agreements).every(ag => ag.dataset.agreed === "true");
+                    if (allAgreed) {
+                        nextBtn.classList.remove('btn-disabled');
+                    } else {
+                        nextBtn.classList.add('btn-disabled');
+                    }
+                }
+
+                nextBtn.addEventListener('click', () => {
+                    const notAgreed = Array.from(agreements).filter(ag => ag.dataset.agreed !== "true");
+                    if (notAgreed.length > 0) {
+                        const notAgreedTitles = notAgreed.map(ag => ag.querySelector('.top-box').textContent.trim());
+                        alert(`${notAgreedTitles.join(', ')}에 대한 확인 및 동의를 진행해 주세요.`);
+                        return;
+                    }
+                    window.location.href = '/etc/mbrsjoin/step2.do';
+                });
+            })();
+        </script>
+    </th:block>
 </th:block>
 
 </html>
-
