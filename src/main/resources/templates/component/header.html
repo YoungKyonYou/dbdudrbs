@@ -16,6 +16,9 @@
   <link rel="stylesheet" th:href="@{/css/vendor/swiper-bundle.min.css}" />
   <link rel="stylesheet" th:href="@{/css/index.css}" />
   <link rel="stylesheet" th:href="@{/css/page/page.css}" />
+  <link rel="stylesheet" th:href="@{/css/page/intro.css}" />
+  <link rel="stylesheet" th:href="@{/css/page/main.css}" />
+
 </head>
 
 <body>
@@ -57,8 +60,9 @@
   <script th:src="@{/js/vendor/gsap.min.js}"></script>
   <script th:src="@{/js/vendor/ScrollTrigger.min.js}"></script>
   <script th:src="@{/js/vendor/swiper-bundle.min.js}"></script>
-  <script type="module" th:src="@{/js/common.js}"></script>
+  <script th:src="@{/js/common.js}"></script>
   <script th:src="@{/js/main.js}"></script>
+
 
   <script>
     // MiniSPA 초기화 + 헤더 swap-link 클릭 SPA 적용
@@ -68,6 +72,7 @@
       if (window.Common && Common.MiniSPA) {
         // MiniSPA 초기화
         Common.MiniSPA.init({
+          headerSelector: '#header .swap-link',
           containerSelector: '#contents .container'
         });
 

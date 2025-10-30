@@ -11,207 +11,255 @@
               <h2 class="section-title">회원가입</h2>
               <ol class="step-box" role="list" aria-label="회원가입 단계">
                 <li>
-                  <div class="circle" aria-hidden="true">
-                    <span>1</span>
-                    <i class="icon document"></i>
-                  </div>
+                  <div class="circle"><span>1</span><i class="icon document"></i></div>
                   <p>약관동의</p>
                 </li>
                 <li>
-                  <div class="circle" aria-hidden="true">
-                    <span>2</span>
-                    <i class="icon lock"></i>
-                  </div>
+                  <div class="circle"><span>2</span><i class="icon lock"></i></div>
                   <p>본인인증</p>
                 </li>
                 <li aria-current="step" class="active">
-                  <div class="circle" aria-hidden="true">
-                    <span>3</span>
-                    <i class="icon write"></i>
-                  </div>
-                  <p>정보입력 <span class="sr-only">(현재 단계)</span></p>
+                  <div class="circle"><span>3</span><i class="icon write"></i></div>
+                  <p>정보입력</p>
                 </li>
                 <li>
-                  <div class="circle" aria-hidden="true">
-                    <span>4</span>
-                    <i class="icon check"></i>
-                  </div>
+                  <div class="circle"><span>4</span><i class="icon check"></i></div>
                   <p>가입완료</p>
                 </li>
               </ol>
             </div>
           </div>
         </div>
+
         <div class="container size-xsm">
           <div class="join-wrap">
             <div class="form-box">
-              <form action="" method="post" novalidate>
+              <form id="joinForm" method="post" novalidate>
+
                 <!-- 아이디 -->
                 <div>
-                  <label class="field-title" for="userId">
-                    아이디 <span class="color-error" aria-hidden="true">*</span>
-                  </label>
+                  <label class="field-title" for="userId">아이디 <span class="color-error">*</span></label>
                   <div class="flex gap8">
                     <input id="userId" name="userId" type="text" class="text-field size-lg" placeholder="아이디를 입력해주세요."
-                      autocomplete="username" required aria-required="true" minlength="6" maxlength="15"
-                      pattern="^[a-z][a-z0-9._]{5,14}$" aria-describedby="userIdHelp">
-                    <button type="button" class="btn btn-darkgray size-lg" aria-describedby="userIdHelp">중복확인</button>
+                      minlength="6" maxlength="15" pattern="^[a-z][a-z0-9_]{5,14}$" required
+                      aria-describedby="userIdHelp">
+                    <button type="button" id="checkIdBtn" class="btn btn-darkgray size-lg">중복확인</button>
                   </div>
-                  <p class="guide-text" id="userIdHelp">
-                    ※ 영문소문자, 숫자, 일부 특수문자(._) 6~15자 (시작은 영문자)
-                  </p>
+                  <p class="guide-text" id="userIdHelp">※ 영문소문자, 숫자, 일부 특수문자(_) 6~15자 (시작은 영문자)</p>
+                  <p id="idCheckMsg" class="guide-text" style="margin-top:4px;"></p>
                 </div>
 
                 <!-- 비밀번호 -->
                 <div>
-                  <label class="field-title" for="password">
-                    비밀번호 <span class="color-error" aria-hidden="true">*</span>
-                  </label>
+                  <label class="field-title" for="password">비밀번호 <span class="color-error">*</span></label>
                   <input id="password" name="password" type="password" class="text-field size-lg"
-                    placeholder="비밀번호를 입력해주세요." autocomplete="new-password" required aria-required="true" minlength="8"
-                    maxlength="20" aria-describedby="pwdHelp1 pwdHelp2">
+                    placeholder="비밀번호를 입력해주세요." required minlength="8" maxlength="20">
                   <p class="guide-text" id="pwdHelp1">※ 영문, 숫자, 특수문자 중 2가지 이상 혼합 8~20자 (영문자 필수)</p>
                   <p class="guide-text" id="pwdHelp2">※ 아이디가 포함된 비밀번호는 사용할 수 없습니다.</p>
+                  <p id="pwdMsg" class="guide-text" style="margin-top:4px;"></p>
                 </div>
 
                 <!-- 비밀번호 확인 -->
                 <div>
-                  <label class="field-title" for="passwordConfirm">
-                    비밀번호 확인 <span class="color-error" aria-hidden="true">*</span>
-                  </label>
+                  <label class="field-title" for="passwordConfirm">비밀번호 확인 <span class="color-error">*</span></label>
                   <input id="passwordConfirm" name="passwordConfirm" type="password" class="text-field size-lg"
-                    placeholder="비밀번호를 다시 입력해주세요." autocomplete="new-password" required aria-required="true">
+                    placeholder="비밀번호를 다시 입력해주세요." required minlength="8" maxlength="20">
                 </div>
 
                 <!-- 휴대전화번호 -->
                 <div>
-                  <p class="field-title">휴대전화번호 <span class="color-error" aria-hidden="true">*</span></p>
+                  <p class="field-title">휴대전화번호 <span class="color-error">*</span></p>
                   <fieldset>
-                    <legend class="sr-only">휴대전화번호 *</legend>
+                    <legend class="sr-only">휴대전화번호</legend>
                     <div class="flex align-center gap8">
-                      <label for="mobile1" class="sr-only">국번</label>
-                      <input id="mobile1" name="mobile1" type="text" class="text-field size-lg" value="010" readonly
-                        aria-readonly="true" inputmode="numeric" pattern="[0-9]*">
-                      <span class="flex-bar" aria-hidden="true">-</span>
-
-                      <label for="mobile2" class="sr-only">중간번호</label>
-                      <input id="mobile2" name="mobile2" type="text" class="text-field size-lg" value="1234" readonly
-                        aria-readonly="true" inputmode="numeric" pattern="[0-9]*">
-                      <span class="flex-bar" aria-hidden="true">-</span>
-
-                      <label for="mobile3" class="sr-only">끝번호</label>
-                      <input id="mobile3" name="mobile3" type="text" class="text-field size-lg" value="5678" readonly
-                        aria-readonly="true" inputmode="numeric" pattern="[0-9]*">
+                      <input id="mobile1" type="text" class="text-field size-lg" value="010" readonly>
+                      <span class="flex-bar">-</span>
+                      <input id="mobile2" type="text" class="text-field size-lg" placeholder="1234" inputmode="numeric">
+                      <span class="flex-bar">-</span>
+                      <input id="mobile3" type="text" class="text-field size-lg" placeholder="5678" inputmode="numeric">
                     </div>
                   </fieldset>
                 </div>
 
                 <!-- 전화번호 -->
                 <div>
-                  <p class="field-title">전화번호</p>
+                  <p class="field-title">전화번호 (선택)</p>
                   <fieldset>
-                    <legend class="sr-only">전화번호</legend>
                     <div class="flex align-center gap8">
-                      <label for="tel1" class="sr-only">지역번호</label>
-                      <input id="tel1" name="tel1" type="text" class="text-field size-lg" value="010" readonly
-                        aria-readonly="true" inputmode="numeric" pattern="[0-9]*">
-                      <span class="flex-bar" aria-hidden="true">-</span>
-
-                      <label for="tel2" class="sr-only">중간번호</label>
-                      <input id="tel2" name="tel2" type="text" class="text-field size-lg" value="1234" readonly
-                        aria-readonly="true" inputmode="numeric" pattern="[0-9]*">
-                      <span class="flex-bar" aria-hidden="true">-</span>
-
-                      <label for="tel3" class="sr-only">끝번호</label>
-                      <input id="tel3" name="tel3" type="text" class="text-field size-lg" value="5678" readonly
-                        aria-readonly="true" inputmode="numeric" pattern="[0-9]*">
+                      <input id="tel1" type="text" class="text-field size-lg" placeholder="02" inputmode="numeric">
+                      <span class="flex-bar">-</span>
+                      <input id="tel2" type="text" class="text-field size-lg" placeholder="1234" inputmode="numeric">
+                      <span class="flex-bar">-</span>
+                      <input id="tel3" type="text" class="text-field size-lg" placeholder="5678" inputmode="numeric">
                     </div>
                   </fieldset>
                 </div>
 
                 <!-- 이메일 -->
                 <div>
-                  <label class="field-title" for="emailId">이메일</label>
+                  <label class="field-title" for="emailId">이메일 (선택)</label>
                   <div class="flex align-center gap8">
-                    <input id="emailId" name="emailId" type="text" class="text-field size-lg"
-                      placeholder="이메일 아이디를 입력해주세요." autocomplete="email" aria-describedby="emailHelp">
-                    <span class="flex-bar" aria-hidden="true">@</span>
-                    <input id="emailDomainManual" name="emailDomainManual" type="text" class="text-field size-lg"
-                      placeholder="직접 입력 (선택)">
+                    <input id="emailId" type="text" class="text-field size-lg" placeholder="아이디">
+                    <span class="flex-bar">@</span>
+                    <input id="emailDomainManual" type="text" class="text-field size-lg" placeholder="도메인 직접 입력">
                   </div>
-
-                  <!-- 도메인 드롭다운 -->
-                  <div class="dropdown size-lg" data-name="emailDomain">
-                    <button type="button" id="emailDomainBtn" class="dropdown_button" aria-haspopup="listbox"
-                      aria-expanded="false" aria-controls="emailDomainList" aria-label="이메일 주소 선택 드롭다운">
-                      <span class="dropdown_value" data-placeholder="이메일주소 선택">이메일주소 선택</span>
-                    </button>
-
-                    <ul class="dropdown_list" id="emailDomainList" role="listbox" tabindex="-1"
-                      aria-labelledby="emailDomainBtn">
-                      <li role="option" class="dropdown_option" data-value="naver.com" aria-selected="false">naver.com
-                      </li>
-                      <li role="option" class="dropdown_option" data-value="daum.net" aria-selected="false">daum.net
-                      </li>
-                      <li role="option" class="dropdown_option" data-value="nate.com" aria-selected="false">nate.com
-                      </li>
-                    </ul>
-
-                    <input type="hidden" name="emailDomain" value="">
-                  </div>
-                  <p class="guide-text" id="emailHelp">도메인 선택 또는 직접 입력 중 하나를 사용하세요.</p>
                 </div>
 
-                <!-- 동의 영역 -->
-                <div>
-                  <div class="control checkbox">
-                    <input type="checkbox" id="check-arg-1" name="marketing-collect" value="Y">
-                    <label for="check-arg-1">
-                      <span class="color-primary">[선택]</span> 마케팅 목적의 개인정보 수집 및 이용 동의
-                    </label>
-                  </div>
-
-                  <fieldset class="control-group checkbox-group vertical">
-                    <legend class="field-title">광고성 정보 수신 동의</legend>
-
-                    <!-- 전체선택 -->
-                    <div class="control checkbox">
-                      <input type="checkbox" id="chk-all" class="chk-all">
-                      <label for="chk-all">
-                        <span class="color-primary">[선택]</span> 광고성 정보 수신 동의
-                      </label>
-                    </div>
-
-                    <div class="depth2">
-                      <!-- 하위 항목 -->
-                      <div class="control checkbox">
-                        <input type="checkbox" id="chk-email" class="chk-item" name="ad-receive[]" value="email"
-                          aria-describedby="adReceiveHelp">
-                        <label for="chk-email">이메일 수신 동의</label>
-                      </div>
-
-                      <div class="control checkbox">
-                        <input type="checkbox" id="chk-sms" class="chk-item" name="ad-receive[]" value="sms"
-                          aria-describedby="adReceiveHelp">
-                        <label for="chk-sms">SMS, SNS 수신 동의</label>
-                      </div>
-                    </div>
-                    <p id="adReceiveHelp" class="guide-text">언제든 설정에서 수신 여부를 변경할 수 있습니다.</p>
-                  </fieldset>
-                </div>
-
-                <!-- 제출 -->
-                <button type="submit" class="btn btn-primary btn-icon-right size-lg">
-                  <i class="icon icon-finish" aria-hidden="true"></i>
-                  완료
-                </button>
+                <button type="submit" class="btn btn-primary size-lg">완료</button>
               </form>
             </div>
           </div>
         </div>
       </section>
-
     </main>
+
+    <script>
+      (function () {
+        const userId = document.getElementById('userId');
+        const checkBtn = document.getElementById('checkIdBtn');
+        const idMsg = document.getElementById('idCheckMsg');
+        const form = document.getElementById('joinForm');
+        const pwd = document.getElementById('password');
+        const pwdConfirm = document.getElementById('passwordConfirm');
+        const pwdMsg = document.getElementById('pwdMsg');
+
+        // 🔹 비밀번호 확인 메시지용 요소 추가
+        const pwdConfirmMsg = document.createElement('p');
+        pwdConfirmMsg.id = 'pwdConfirmMsg';
+        pwdConfirmMsg.className = 'guide-text';
+        pwdConfirmMsg.style.marginTop = '4px';
+        pwdConfirm.insertAdjacentElement('afterend', pwdConfirmMsg);
+
+        let idChecked = false;
+
+        const idRegex = /^[a-z][a-z0-9_]{5,14}$/;
+        const pwdRegex = /^(?=.*[a-zA-Z])(?:(?=.*\d)|(?=.*[^a-zA-Z0-9])).{8,20}$/;
+
+        // 아이디 중복 확인
+        checkBtn.addEventListener('click', () => {
+          const id = userId.value.trim();
+          idChecked = false;
+          idMsg.textContent = '';
+
+          if (!idRegex.test(id)) {
+            alert("아이디는 영문 소문자와 숫자, 특수문자(_)만 사용 가능합니다.\n6~15자, 영문으로 시작해야 합니다.");
+            idMsg.textContent = "❌ 아이디 규칙 불일치";
+            idMsg.style.color = "red";
+            return;
+          }
+
+          // 예시: 실제 서버 연동 대신 랜덤
+          const isDuplicate = Math.random() < 0.5;
+
+          if (isDuplicate) {
+            idMsg.textContent = "❌ 이미 사용중인 아이디입니다.";
+            idMsg.style.color = "red";
+          } else {
+            idMsg.textContent = "✅ 사용 가능한 아이디입니다.";
+            idMsg.style.color = "green";
+            idChecked = true;
+          }
+        });
+
+        // 비밀번호 유효성 실시간 체크
+        pwd.addEventListener('input', () => {
+          const password = pwd.value.trim();
+          const idValue = userId.value.trim();
+
+          if (!pwdRegex.test(password)) {
+            pwdMsg.textContent = "❌ 비밀번호 형식이 올바르지 않습니다.";
+            pwdMsg.style.color = "red";
+          } else if (idValue && password.includes(idValue)) {
+            pwdMsg.textContent = "❌ 비밀번호에 아이디를 포함할 수 없습니다.";
+            pwdMsg.style.color = "red";
+          } else {
+            pwdMsg.textContent = "✅ 사용 가능한 비밀번호입니다.";
+            pwdMsg.style.color = "green";
+          }
+
+          checkPasswordMatch();
+        });
+
+        pwdConfirm.addEventListener('input', checkPasswordMatch);
+
+        function checkPasswordMatch() {
+          const password = pwd.value.trim();
+          const confirm = pwdConfirm.value.trim();
+
+          if (!confirm) {
+            pwdConfirmMsg.textContent = "";
+            return;
+          }
+
+          if (password === confirm) {
+            pwdConfirmMsg.textContent = "✅ 비밀번호가 일치합니다.";
+            pwdConfirmMsg.style.color = "green";
+          } else {
+            pwdConfirmMsg.textContent = "❌ 비밀번호가 일치하지 않습니다.";
+            pwdConfirmMsg.style.color = "red";
+          }
+        }
+
+        const numberOnlyFields = ['mobile2', 'mobile3', 'tel1', 'tel2', 'tel3'];
+        numberOnlyFields.forEach(id => {
+          const field = document.getElementById(id);
+          field.addEventListener('input', () => {
+            field.value = field.value.replace(/[^0-9]/g, '');
+          });
+        });
+
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+
+          if (!userId.value.trim()) {
+            alert("아이디를 입력해주세요.");
+            userId.focus();
+            return;
+          }
+
+          if (!idChecked) {
+            alert("아이디 중복 확인을 해주세요.");
+            return;
+          }
+
+          const password = pwd.value.trim();
+          const confirm = pwdConfirm.value.trim();
+
+          if (!password) {
+            alert("비밀번호를 입력해주세요.");
+            return;
+          }
+
+          if (!pwdRegex.test(password)) {
+            alert("비밀번호는 영문, 숫자, 특수문자 중 2가지 이상 조합 8~20자이며 영문을 반드시 포함해야 합니다.");
+            return;
+          }
+
+          if (password.includes(userId.value.trim())) {
+            alert("비밀번호에 아이디를 포함할 수 없습니다.");
+            return;
+          }
+
+          if (password !== confirm) {
+            pwdConfirmMsg.textContent = "❌ 비밀번호가 일치하지 않습니다.";
+            pwdConfirmMsg.style.color = "red";
+            pwdConfirm.focus();
+            return;
+          }
+
+          const m2 = document.getElementById('mobile2').value.trim();
+          const m3 = document.getElementById('mobile3').value.trim();
+          if (!m2 || !m3) {
+            alert("휴대전화번호를 입력해주세요.");
+            return;
+          }
+
+          alert("회원가입이 완료되었습니다!");
+          window.location.href = '/etc/mbrsjoin/step4.do'
+        });
+      })();
+    </script>
+
 
   </th:block>
 </th:block>

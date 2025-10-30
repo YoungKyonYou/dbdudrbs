@@ -170,9 +170,157 @@
       <div id="bookmark-stop-sentinel"></div>
 
     </main>
-    <script th:inline="javascript" type="text/javascript"></script>
+    <script>
+
+      function bm_getScrollTop() {
+        return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      }
+      function bm_getOffsetTop(el) {
+        if (!el) return 0;
+        const rect = el.getBoundingClientRect();
+        return rect.top + bm_getScrollTop();
+      }
+      function bm_getOffsetLeft(el) {
+        if (!el) return 0;
+        const rect = el.getBoundingClientRect();
+        return rect.left + (window.pageXOffset || document.documentElement.scrollLeft || 0);
+      }
+
+      /* ===== 활성 유틸 ===== */
+      function bm_setActive(links, link) {
+        links.forEach(a => { a.parentElement.classList.remove('active'); a.removeAttribute('aria-current'); });
+        if (link) { link.parentElement.classList.add('active'); link.setAttribute('aria-current', 'true'); }
+      }
+
+      /* ===== 컨트롤러 ===== */
+      function createBookmarkController({
+        navSelector = '.bookmark-nav',
+        startSelector = '#target1',
+        footerSelector = '#footer',
+        containerSelector = '.bookmark-nav',  // fixed 좌표 기준
+        fixedTop = 50,
+        baseTop = 520,
+        stopBuffer = 20,
+        headerVar = '--header-h'
+      } = {}) {
+        const nav = document.querySelector(navSelector);
+        const start = document.querySelector(startSelector);
+        const footer = document.querySelector(footerSelector);
+        const container = document.querySelector(containerSelector);
+        if (!nav || !start || !footer) return;
+
+        let ticking = false;
+        let fixLeft = 0;    // fixed 시 left
+        let startY = 0;     // fixed 전환 기준
+        let stopAbsTop = 0; // stop 상태 absolute top
+
+        const links = [...nav.querySelectorAll('a')];
+        const sections = links.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+
+        function recalc() {
+          startY = bm_getOffsetTop(start);
+          fixLeft = bm_getOffsetLeft(container || nav);
+          const footerTop = bm_getOffsetTop(footer);
+          const navH = nav.offsetHeight || 0;
+          stopAbsTop = footerTop - navH - stopBuffer;
+        }
+
+        function setNormal() {
+          nav.classList.remove('is-fixed', 'is-stop');
+          nav.style.position = 'absolute';
+          nav.style.top = baseTop + 'px';
+          nav.style.left = '';
+        }
+        function setFixed() {
+          nav.classList.add('is-fixed'); nav.classList.remove('is-stop');
+          nav.style.position = 'fixed';
+          nav.style.top = fixedTop + 'px';
+          nav.style.left = fixLeft + 'px';
+        }
+        function setStop() {
+          nav.classList.add('is-stop'); nav.classList.remove('is-fixed');
+          nav.style.position = 'absolute';
+          nav.style.top = stopAbsTop + 'px';
+          nav.style.left = '';
+        }
+
+        function update() {
+          const y = bm_getScrollTop();
+
+          // 기본/고정 전환
+          if (y + fixedTop >= startY) setFixed(); else setNormal();
+
+          // footer 겹침 방지
+          if (nav.style.position === 'fixed') {
+            const navRect = nav.getBoundingClientRect();
+            const footerRect = footer.getBoundingClientRect();
+            if (navRect.bottom + stopBuffer >= footerRect.top) setStop();
+          }
+          ticking = false;
+        }
+        function onScroll() {
+          if (!ticking) { ticking = true; requestAnimationFrame(update); }
+        }
+
+        // 스무스 스크롤
+        links.forEach(a => {
+          a.addEventListener('click', e => {
+            e.preventDefault();
+            const t = document.querySelector(a.getAttribute('href'));
+            if (!t) return;
+            t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            history.replaceState(null, '', a.getAttribute('href'));
+            bm_setActive(links, a); // 클릭 즉시 반영
+          });
+        });
+
+        // 스크롤 스파이
+        const headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue(headerVar)) || 80;
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            const id = '#' + entry.target.id;
+            const link = links.find(a => a.getAttribute('href') === id);
+            if (entry.isIntersecting && link) bm_setActive(links, link);
+          });
+        }, { threshold: 0.4, rootMargin: `-${headerH + 20}px 0px -40% 0px` });
+        sections.forEach(sec => io.observe(sec));
+
+        // 초기 활성화(해시 우선, 없으면 첫 번째)
+        function setInitialActive() {
+          const byHash = links.find(a => a.getAttribute('href') === location.hash);
+          bm_setActive(links, byHash || links[0]);
+        }
+
+        function init() { recalc(); setInitialActive(); update(); }
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', () => { recalc(); onScroll(); }, { passive: true });
+        window.addEventListener('load', init);
+      }
+
+      /* ===== 초기화 ===== */
+      function initBookmarkUI() {
+        createBookmarkController({
+          navSelector: '.bookmark-nav',
+          startSelector: '#target1',
+          footerSelector: '#footer',
+          containerSelector: '.bookmark-nav',
+          fixedTop: 50,
+          baseTop: 520,
+          stopBuffer: 20
+        });
+      }
+
+      /* ===== DOM 로드 ===== */
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initBookmarkUI, { once: true });
+      } else {
+        initBookmarkUI();
+      }
+    </script>
 
   </th:block>
+
 </th:block>
 
 </html>

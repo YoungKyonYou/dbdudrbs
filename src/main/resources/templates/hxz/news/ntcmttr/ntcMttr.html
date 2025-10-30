@@ -3,7 +3,6 @@
 <th:block th:replace="~{component/header :: layout(~{::content})}">
   <th:block th:fragment="content">
 
-    <!-- Breadcrumb -->
     <div id="breadcrumb">
       <div class="container">
         <nav>
@@ -109,7 +108,6 @@
       </section>
     </main>
 
-    <!-- 스크립트 -->
     <script th:inline="javascript" type="text/javascript">
       (function () {
         const searchForm = document.getElementById('searchbar');
