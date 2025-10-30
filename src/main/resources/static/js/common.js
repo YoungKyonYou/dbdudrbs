@@ -273,65 +273,9 @@
             if (emptyRow) emptyRow.remove();
         }
     }
-    /* spin-loader start */
-    // var box = document.getElementById("page-loader");
-    // if (box) return;
 
-    // function show() {
-    //     box.classList.remove("fade-out");
-    //     box.classList.add("show");
-    //     document.documentElement.setAttribute("aria-busy", "true");
-    // }
 
-    // function hide() {
-    //     const box = document.querySelector('.your-box-selector'); // box 요소 선택
-    //     if (!box) return; // 요소 없으면 그냥 종료
 
-    //     box.classList.add("fade-out");
-    //     setTimeout(function () {
-    //         box.classList.remove("show", "fade-out");
-    //         document.documentElement.removeAttribute("aria-busy");
-    //     }, 150);
-    // }
-
-    //단순전역//
-    var inFlight = 0; // ref-count ===
-
-    function start() { if (inFlight === 0) show(); }
-    function end() { if (inFlight > 0 && --inFlight === 0) hide(); }
-
-    /* 페이지이동시 전송됨 페이지를 떠날 때 발생 */
-    window.addEventListener('beforeunload', function () { start(); });
-
-    /* 새로고침될 때 발생*/
-    document.addEventListener("DOMContentLoaded", hide, { once: true });
-    window.addEventListener("load", hide, { once: true });
-    window.addEventListener("pageshow", function (e) { if (e.persisted) hide(); });
-
-    /* AJAX 관련: fetch + XHR로 전송될 때(폼/서브밋 등) 일괄로 적용 */
-    var fetch = window.fetch.bind(window);
-    window.fetch = function () {
-        start();
-        return fetch.apply(this, arguments).finally(end);
-    };
-
-    if (window.XMLHttpRequest) {
-        var open = XMLHttpRequest.prototype.open;
-        var send = XMLHttpRequest.prototype.send;
-        XMLHttpRequest.prototype.open = function () {
-            this.useLoader = true; // 모든 요청에 대해 false로 꺼둠
-            return open.apply(this, arguments);
-        };
-        XMLHttpRequest.prototype.send = function () {
-            if (this.useLoader) {
-                start();
-                this.addEventListener("loadend", end, { once: true });
-            }
-            return send.apply(this, arguments);
-        };
-    }
-
-    /* spin-loader end */
 
     /**
      * 문자열 정규화
@@ -1235,8 +1179,8 @@
     // 전역 상태 및 기본값 정의
 
     const DEFAULTS = {
-        asideSelector: 'aside',  // aside 선택자 (링크가 있는 사이드바)
-        containerSelector: 'main',  // 콘텐츠 컨테이너 선택자
+        asideSelector: '#gnb1',  // aside 선택자 (링크가 있는 사이드바)
+        containerSelector: '#contents .container',  // 콘텐츠 컨테이너 선택자
     };
 
     const MiniSPAState = {
@@ -1284,94 +1228,51 @@
     * @param {string} html - HTML 문자열 (swapFromHtml에서 사용)
     */
 
-    function toggleMenu(anchor) {
-        const li = anchor.closest('li');
-        const subUl = li ? li.querySelector('> ul') : null;
-        if (!subUl) return;
-
+    function toggleMenu(buttonEl) {
+        const li = buttonEl.closest('li.has-sub');
+        if (!li) return;
+        const subBox = li.querySelector(':scope > .depth-box');
         const opened = li.classList.toggle('is-open');
-        anchor.setAttribute('aria-expanded', opened ? 'true' : 'false');
-        subUl.setAttribute('aria-hidden', opened ? 'false' : 'true');
+        buttonEl.setAttribute('aria-expanded', opened ? 'true' : 'false');
+        if (subBox) subBox.setAttribute('aria-hidden', opened ? 'false' : 'true');
     }
 
     function highlightActiveAside(currentUrl) {
-        const ASIDE_SELECTOR = MiniSPAState.opts.asideSelector;
-        const links = Array.from(document.querySelectorAll(`${ASIDE_SELECTOR} a[href]`));
-
-        // reset: all links remove is-active
+        const ASIDE_SELECTOR = MiniSPAState.opts.asideSelector || '#gnb1';
+        const links = Array.from(document.querySelectorAll(`${ASIDE_SELECTOR} a.swap-link[href]`));
         links.forEach(a => a.classList.remove('is-active'));
 
         const cur = new URL(currentUrl || location.href, location.href);
         const curKey = cur.pathname + cur.search;
 
-        // except: only origin and no javascript
-        const candidates = links
-            .map(a => {
-                try {
-                    const href = a.getAttribute('href') || '';
-                    const isCategory = href === '' || href === '#' || href.startsWith('javascript:');
-                    const u = new URL(a.href, location.href);
-                    if (u.origin !== location.origin || isCategory) return null;
-                    const key = u.pathname + u.search;
-                    const depth = linkDepth(a);
-                    return { a, key, depth, len: key.length };
-                } catch {
-                    return null;
-                }
-            })
-            .filter(Boolean);
+        const candidates = links.map(a => {
+            try {
+                const u = new URL(a.href, location.href);
+                if (u.origin !== location.origin) return null;
+                const key = u.pathname + u.search;
+                return { a, key, len: key.length };
+            } catch { return null; }
+        }).filter(Boolean);
 
         if (candidates.length === 0) return;
 
-        // find exact match first
-        let exact = candidates.filter(c => c.key === curKey);
-        let best = null;
-        if (exact.length > 0) {
-            exact = exact.sort((a, b) => {
-                if (b.len === a.len) return b.depth - a.depth; // group by length first
-                return b.len - a.len;
-            })[0];
-        } else {
-            // (2) prefix match, find the longest prefix
+        // 정확 매칭 우선, 없으면 가장 긴 prefix
+        let best = candidates.find(c => c.key === curKey);
+        if (!best) {
             const pref = candidates.filter(c => curKey.startsWith(c.key));
-            if (pref.length > 0) {
-                best = pref.sort((a, b) => {
-                    if (b.len === a.len) return b.depth - a.depth;
-                    return b.len - a.len;
-                })[0];
-            }
+            if (pref.length) best = pref.sort((a, b) => b.len - a.len)[0];
         }
+        if (!best) best = candidates.sort((a, b) => b.len - a.len)[0];
 
-        if (best) return;
-
-        // activate default
         best.a.classList.add('is-active');
 
-        // 3rd level open 2nd level
-        if (best.depth === 3) {
-            const d3 = best.a.closest('ul.depth3');
-            const d2i = d3 ? d3.closest('li.depth2-item') : null;
-            const d2a = d2i ? d2i.querySelector('> a') : null;
-            if (d2a) {
-                d2a.classList.remove('is-active', 'active', 'current');
-                d2a.removeAttribute('aria-current');
-                if (d2a.hasAttribute('aria-selected')) d2a.setAttribute('aria-selected', 'false');
-            }
-            if (d2i) d2i.classList.remove('is-active', 'active', 'current');
-            if (d3) d3.setAttribute('aria-hidden', 'false');
-            if (d2i) d2i.classList.add('is-open');
-            if (d2a) d2a.setAttribute('aria-expanded', 'true');
-        } else {
-            const d3 = best.a.closest('ul.depth3');
-            if (d3) {
-                d3.setAttribute('aria-hidden', 'false');
-
-                const d2i = d3 ? d3.closest('li.depth2-item') : null;
-                if (d2i) d2i.classList.add('is-open');
-                const d2a = d2i ? d2i.querySelector('> a') : null;
-                if (d2a) d2a.setAttribute('aria-expanded', 'true');
-            }
-        }
+        // 상위 메뉴 열기 (li.has-sub > button + .depth-box)
+        const li = best.a.closest('li.has-sub');
+        const btn = li ? li.querySelector(':scope > button[aria-haspopup="true"]') : null;
+        const box = li ? li.querySelector(':scope > .depth-box') : null;
+        if (li) li.classList.add('is-open');
+        if (btn) btn.setAttribute('aria-expanded', 'true');
+        if (box) box.setAttribute('aria-hidden', 'false');
     }
 
 
@@ -1400,62 +1301,47 @@
     async function swapFromHtml(html, url, push) {
         const doc = new DOMParser().parseFromString(html, 'text/html');
         const next = doc.querySelector(MiniSPAState.opts.containerSelector)
-            || doc.querySelector("#contents.container")
-            || doc.body;
+            || doc.querySelector("#contents .container")
+            || null;
         const cur = document.querySelector(MiniSPAState.opts.containerSelector);
 
-        if (cur || next) {
+        // 컨테이너 못 찾으면 폴백
+        if (!(cur && next)) {
             hideLoading();
-            location.href = url; // ???
+            location.href = url;
             return;
         }
 
-        // (1) extract next inline <script> all except module
+        // 추출: inline script
         const inlineScripts = Array.from(next.querySelectorAll('script:not([src])')).map(s => ({
             type: s.getAttribute('type') || '',
-            // module check
-            noModule: s.hasAttribute('noModule')
+            noModule: s.hasAttribute('noModule'),
+            code: s.textContent || ''
         }));
-
-        // (external scripts = Array.from(next.querySelectorAll('script[src]')).map(s => ({
-        //   src: new URL(s.getAttribute('src'), location.href.toString()),
-        //   type: s.getAttribute('type') || ''
-        // }));
-
+        // 교체
         cur.innerHTML = next.innerHTML;
 
-        /* (1) 외부 스크립트 로드 */
-        // for (const m of externalScripts) {
-        //     if (loadedScriptSrcs.has(m.src)) continue;
-        //     await loadExternalScript(m);
-        //     loadedScriptSrcs.add(m.src);
-        // }
-
-        /* (2) 인라인 <script> 처리 (모듈 제외) */
-        /* innerHTML로 <script>는 삭제되지만 이벤트 핸들러에 남아있어 DOM 삭제 필요 */
+        // 인라인 스크립트 재실행
         for (const s of inlineScripts) {
             const el = document.createElement('script');
-            el.type = s.type;
-            el.noModule = s.noModule;
+            if (s.type) el.type = s.type;
+            if (s.noModule) el.noModule = true;
             el.textContent = s.code;
-            cur.appendChild(el)
-            /* cur.appendChild(el); DOM 실행은 브라우저 정책상 차단됨 */
-            /* el.remove(); // 즉시 제거하여 실행 방지 */
+            // 컨테이너 내부로 삽입하여 실행
+            cur.appendChild(el);
         }
 
-        /* (5) 선택자로 타이틀 추출 */
+        // 타이틀
         const title = doc.querySelector('title')?.textContent?.trim();
         if (title) document.title = title;
 
-        if (push) history.pushState({}, url);
+        // 히스토리
+        if (push) history.pushState({}, '', url);
 
-        if (push && typeof AOS !== 'undefined' && typeof AOS.refreshHard === 'function') {
-            AOS.refreshHard();
-        }
-
+        // 네비 하이라이트 갱신
         highlightActiveAside(url);
 
-        /* (최종) 공통 재설정? */
+        // 페이지 전용 재초기화 훅
         if (window.Common?.Reinit?.run) window.Common.Reinit.run();
         hideLoading();
     }
@@ -1501,46 +1387,34 @@
         await swapFromHtml(html, url, push);
     }
 
-    /**
-     * 클릭 핸들러: aside 링크 클릭 시 SPA 전환
-     * @param {Event} e - 클릭 이벤트
-     */
+    // 기존 handleClick 전체 교체
     function handleClick(e) {
-        const a = e.target.closest(`${MiniSPAState.opts.asideSelector} a`);
-        if (!a) return;
-
-        // 새창/수정키
-        if (a.getAttribute('target') === '_blank' || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
-
-        // 깊이3
-        const isDepth3 = !!a.closest('ul.depth3');
-        const d2item = a.closest('li.depth2-item');
-        const hasDepth3 = !!d2item && !!d2item.querySelector('ul.depth3');
-
-        // depth1/2. 서브메뉴
-        if (!isDepth3) {
-            const href = (a.getAttribute('href') || '').trim();
-            const isCategoryLink = href === '' || href === '#' || href.startsWith('javascript:');
-            if (isCategoryLink || hasDepth3) {
-                e.preventDefault();
-                toggleMenu(a);
-                return;
-            }
+        // 1) 서브 열기/닫기(버튼)
+        const menuBtn = e.target.closest('#gnb1 li.has-sub > button[aria-haspopup="true"]');
+        if (menuBtn) {
+            e.preventDefault();
+            toggleMenu(menuBtn);
+            return;
         }
 
-        // 깊이3이면 풀 새로고침
-        if (isDepth3) return;
+        // 2) SPA 링크 처리 (.swap-link)
+        const a = e.target.closest('a.swap-link[href]');
+        if (!a) return;
 
-        // SPA
-        const url = a.href;
+        // 새창/수정키는 그대로
+        if (a.getAttribute('target') === '_blank' || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+
+        // 외부 링크는 패스
         try {
-            const u = new URL(url, location.href);
-            if (u.origin !== location.origin) return; // 외부는 그대로
+            const u = new URL(a.href, location.href);
+            if (u.origin !== location.origin) return;
         } catch { return; }
-        if (!url || url.endsWith('#')) return;
+
+        // # 같은 더미도 패스
+        if (!a.href || a.getAttribute('href').trim().endsWith('#')) return;
 
         e.preventDefault();
-        navigateAndSwap(url, true).catch(console.error);
+        navigateAndSwap(a.href, true).catch(console.error);
     }
     /**
      * popstate 핸들러: 브라우저 뒤로/앞 가기 시 SPA 전환

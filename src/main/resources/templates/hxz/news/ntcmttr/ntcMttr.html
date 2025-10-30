@@ -1,5 +1,4 @@
-<!doctype html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
 <th:block th:replace="~{component/header :: layout(~{::content})}">
   <th:block th:fragment="content">
 
@@ -105,74 +104,76 @@
           </div>
 
         </div>
+
       </section>
+
+        <script th:inline="javascript" type="text/javascript">
+            (function () {
+              const searchForm = document.getElementById('searchbar');
+              const grid = document.getElementById('grid');
+              const input = document.getElementById('searchInput');
+              const titleField = document.getElementById('ntcMttrTtlNm');
+              const contentField = document.getElementById('ntcMttrCtt');
+              const inputPage = document.getElementById('page');
+              const inputSize = document.getElementById('size');
+              const inputSort = document.getElementById('sort');
+              const inputDir = document.getElementById('dir');
+              const searchFieldSelect = document.getElementById('searchFieldSelect');
+              const searchFieldInput = document.getElementById('searchField');
+              const baseUrl = '/news/ntcmttr/ntcMttr.do';
+
+              searchFieldSelect.addEventListener('change', function () {
+                searchFieldInput.value = this.value;
+              });
+
+              searchForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                if (searchFieldInput.value === 'ntcMttrTtlNm') {
+                  titleField.value = input.value;
+                  contentField.value = '';
+                } else {
+                  titleField.value = '';
+                  contentField.value = input.value;
+                }
+
+                inputPage.value = 0;
+
+                const applied = Common.collectFromForm(searchForm);
+
+                Common.reloadList({
+                  page: parseInt(inputPage.value),
+                  defaultSortColumn: 'bltn_no',
+                  swapTargets: ['.board-list', '#grid-pager'],
+                  baseUrl,
+                  selectSize: inputSize,
+                  inputSort,
+                  inputDir,
+                  applied
+                });
+              });
+
+              bindPagination(baseUrl, {
+                page: parseInt(inputPage.value || '0'),
+                size: parseInt(inputSize.value || '10'),
+                sort: inputSort.value || 'rgtDtm',
+                dir: inputDir.value || 'asc'
+              });
+
+              grid.addEventListener('click', (e) => {
+                const sendBtn = e.target.closest('button[data-garget="detail"]');
+                if (!sendBtn) return;
+                let rowId = sendBtn.dataset.id;
+                if (rowId) {
+                  window.location.href = '/news/ntcmttr/ntcMttrDtl/' + rowId;
+                }
+              });
+
+
+            })();
+        </script>
     </main>
 
-    <script th:inline="javascript" type="text/javascript">
-      (function () {
-        const searchForm = document.getElementById('searchbar');
-        const grid = document.getElementById('grid');
-        const input = document.getElementById('searchInput');
-        const titleField = document.getElementById('ntcMttrTtlNm');
-        const contentField = document.getElementById('ntcMttrCtt');
-        const inputPage = document.getElementById('page');
-        const inputSize = document.getElementById('size');
-        const inputSort = document.getElementById('sort');
-        const inputDir = document.getElementById('dir');
-        const searchFieldSelect = document.getElementById('searchFieldSelect');
-        const searchFieldInput = document.getElementById('searchField');
-        const baseUrl = '/news/ntcmttr/ntcMttr.do';
-
-        searchFieldSelect.addEventListener('change', function () {
-          searchFieldInput.value = this.value;
-        });
-
-        searchForm.addEventListener('submit', function (e) {
-          e.preventDefault();
-
-          if (searchFieldInput.value === 'ntcMttrTtlNm') {
-            titleField.value = input.value;
-            contentField.value = '';
-          } else {
-            titleField.value = '';
-            contentField.value = input.value;
-          }
-
-          inputPage.value = 0;
-
-          const applied = Common.collectFromForm(searchForm);
-
-          Common.reloadList({
-            page: parseInt(inputPage.value),
-            defaultSortColumn: 'bltn_no',
-            swapTargets: ['.board-list', '#grid-pager'],
-            baseUrl,
-            selectSize: inputSize,
-            inputSort,
-            inputDir,
-            applied
-          });
-        });
-
-        bindPagination(baseUrl, {
-          page: parseInt(inputPage.value || '0'),
-          size: parseInt(inputSize.value || '10'),
-          sort: inputSort.value || 'rgtDtm',
-          dir: inputDir.value || 'asc'
-        });
-
-        grid.addEventListener('click', (e) => {
-          const sendBtn = e.target.closest('button[data-garget="detail"]');
-          if (!sendBtn) return;
-          let rowId = sendBtn.dataset.id;
-          if (rowId) {
-            window.location.href = '/news/ntcmttr/ntcMttrDtl/' + rowId;
-          }
-        });
-
-
-      })();
-    </script>
 
 
   </th:block>
