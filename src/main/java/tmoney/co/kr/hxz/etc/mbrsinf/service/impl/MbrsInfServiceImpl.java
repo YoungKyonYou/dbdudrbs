@@ -78,8 +78,14 @@ public class MbrsInfServiceImpl implements MbrsInfService {
             throw DomainExceptionCode.PASSWORD_VALIDATION_ERROR.newInstance("비밀번호는 영문, 숫자, 특수문자 중 두 두가지 포함 8~20자입니다.");
         }
 
-        mbrsInfMapper.updatePwd(mbrsId, newPwd);
         MbrsInfRspVO rspVO = readMbrsInf(mbrsId);
+
+        // 이전 비밀번호 동일 여부 판별
+        if (rspVO.getPwd().equals(newPwd)) {
+            throw DomainExceptionCode.PASSWORD_DUPLICATION.newInstance();
+        }
+
+        mbrsInfMapper.updatePwd(mbrsId, newPwd);
         MbrsInfReqVO reqVO = new MbrsInfReqVO(
                 rspVO.getMbrsId(),
                 rspVO.getMbrsNm(),

@@ -86,9 +86,20 @@ public class SignupController {
             @RequestHeader("X-Nonce") String nonce,
             @Valid @RequestBody Step1VO payload,
             HttpServletRequest req, HttpServletResponse res) {
-
+        //프론트에서 넘겨준 토큰 및 nonce 체크
         PrecheckContext ctx = flow.precheck(token, nonce, 0);
 
+        //외부연계API 영역 start
+
+//        try {
+//
+//        }catch(){
+//
+//        }
+        //외부연계API 영역 end
+
+
+        //다음 step를 위한 토큰 및 nonce, receipt 발급
         String nextToken = flow.advance(req, res, ctx, 1);
         String rcpt = receiptService.issueReceiptFromMap(ctx.getOnb(), 0, payload, Duration.ofMinutes(receiptStepTtlMinutes));
         String nextNonce = flow.issueNonceFor(nextToken);

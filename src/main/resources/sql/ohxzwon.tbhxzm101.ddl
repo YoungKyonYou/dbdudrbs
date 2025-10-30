@@ -8,7 +8,7 @@ CREATE TABLE ohxzown.tbhxzm101 (
     mbrs_sta_cd varchar(2) NULL,
     pwd_err_ncnt numeric(2) NULL,
     dspr_rgt_inhr_no varchar(20) NULL,
-    vtn_no varchar(50) NULL,
+    vtrn_no varchar(50) NULL,
     tpw_join_typ_cd varchar(2) NULL,
     tpw_join_rctd_val varchar(20) NULL,
     scsn_dtm varchar(14) NULL,
