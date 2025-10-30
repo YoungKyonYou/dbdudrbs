@@ -6,7 +6,6 @@
     var MODAL_BOUND = false;
     var MODAL_PREV_ACTIVE = null;
 
-    // 전역(열 때 채워주면 됨)
     let lastActive = null;
     let lastScrollTop = 0;
 
@@ -43,6 +42,24 @@
         }
     }
 
+    // function initDatePicker() {
+    //     // 중복 초기화 방지
+    //     window.__JQ_PERIOD_FIXED__ = window.__JQ_PERIOD_FIXED__ || false;
+    //     if (window.__JQ_PERIOD_FIXED__) return;
+    //     window.__JQ_PERIOD_FIXED__ = true;
+
+    //     $("#sttDt, #endDt").datepicker({
+    //         dateFormat: "yy-mm-dd",
+    //         changeMonth: true,
+    //         changeYear: true,
+    //         showOn: "focus"
+    //     });
+    //     var sttBtn = document.getElementById("sttD").nextElementSibling;
+    //     var endBtn = document.getElementById("endD").nextElementSibling;
+    //     if (sttBtn) sttBtn.addEventListener("click", function () { $("#sttD").datepicker("show"); });
+    //     if (endBtn) endBtn.addEventListener("click", function () { $("#endD").datepicker("show"); });
+    // }
+    // initDatePicker();
 
 
 
@@ -256,7 +273,65 @@
             if (emptyRow) emptyRow.remove();
         }
     }
+    /* spin-loader start */
+    var box = document.getElementById("page-loader");
+    if (box) return;
 
+    function show() {
+        box.classList.remove("fade-out");
+        box.classList.add("show");
+        document.documentElement.setAttribute("aria-busy", "true");
+    }
+
+    function hide() {
+        const box = document.querySelector('.your-box-selector'); // box 요소 선택
+        if (!box) return; // 요소 없으면 그냥 종료
+
+        box.classList.add("fade-out");
+        setTimeout(function () {
+            box.classList.remove("show", "fade-out");
+            document.documentElement.removeAttribute("aria-busy");
+        }, 150);
+    }
+
+    //단순전역//
+    var inFlight = 0; // ref-count ===
+
+    function start() { if (inFlight === 0) show(); }
+    function end() { if (inFlight > 0 && --inFlight === 0) hide(); }
+
+    /* 페이지이동시 전송됨 페이지를 떠날 때 발생 */
+    window.addEventListener('beforeunload', function () { start(); });
+
+    /* 새로고침될 때 발생*/
+    document.addEventListener("DOMContentLoaded", hide, { once: true });
+    window.addEventListener("load", hide, { once: true });
+    window.addEventListener("pageshow", function (e) { if (e.persisted) hide(); });
+
+    /* AJAX 관련: fetch + XHR로 전송될 때(폼/서브밋 등) 일괄로 적용 */
+    var fetch = window.fetch.bind(window);
+    window.fetch = function () {
+        start();
+        return fetch.apply(this, arguments).finally(end);
+    };
+
+    if (window.XMLHttpRequest) {
+        var open = XMLHttpRequest.prototype.open;
+        var send = XMLHttpRequest.prototype.send;
+        XMLHttpRequest.prototype.open = function () {
+            this.useLoader = true; // 모든 요청에 대해 false로 꺼둠
+            return open.apply(this, arguments);
+        };
+        XMLHttpRequest.prototype.send = function () {
+            if (this.useLoader) {
+                start();
+                this.addEventListener("loadend", end, { once: true });
+            }
+            return send.apply(this, arguments);
+        };
+    }
+
+    /* spin-loader end */
 
     /**
      * 문자열 정규화
@@ -1109,108 +1184,197 @@
             method,
             headers,
             cache: 'no-store',
+            credential: 'same-origin',
             signal: signal || undefined  // signal이 제공되면 사용, 아니면 생략
         };
 
-        // 데이터가 있는 경우 body 처리
         if (data != null) {
             if (data instanceof FormData) {
-                // FormData인 경우 Content-Type 헤더 제거 (브라우저가 자동 설정)
-                delete headers['Content-Type'];
                 init.body = data;
-            } else if (typeof data === 'object') {
-                // 객체인 경우 URLSearchParams로 변환하여 x-www-form-urlencoded 형식으로 전송
-                // 또는 JSON으로 변환 (코드에 따라 다름, 여기서는 form-urlencoded로 가정)
-                if (!(data instanceof URLSearchParams)) {
-                    // URLSearchParams가 아니면 변환
-                    data = new URLSearchParams(data).toString();
-                    init.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
-                } else {
-                    // 이미 URLSearchParams인 경우
-                    data = data.toString();
-                    init.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
-                }
-                init.body = data;
+            } else if (data instanceof URLSearchParams) {
+                init.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
+                init.body = data.toString();
+            } else if (headers['Content-Type'] === 'application/x-www-form-urlencoded;charset=UTF-8') {
+                body = new URLSearchParams(data).toString();
             } else {
-                // 다른 타입 (문자열 등)은 그대로 body에 설정
-                init.body = data;
+                init.headers['Content-Type'] = 'application/json;charset=UTF-8';
+                init.body = JSON.stringify(data);
             }
         }
 
-        // Fetch 요청 실행
-        // show(): 콘솔 로그 출력 (디버깅용, 실제 코드에서는 제거 가능)
-        console.log('Request:', { url, method, body: data, headers });
-
+        // show:
         const res = await fetch(url, init);
-
-        // 응답 Content-Type 확인
         const ct = res.headers.get('content-type') || '';
-
-        // 응답 본문 텍스트로 읽기
         const text = await res.text();
 
-        let payload = null;
-
-        // JSON 응답인 경우 파싱 시도
-        if (ct.includes('application/json')) {
-            try {
-                payload = JSON.parse(text);
-            } catch {
-                // 파싱 실패 시 에러 생성
-                const err = new Error(`${payload && payload.message ? payload.message : 'JSON Parse Error'} HTTP ${res.status}`);
-                err.name = 'FetchJSONError';
-                err.status = res.status;
-                err.body = text;
-                err.contentType = ct;
-                throw err;
+        if (res.ok) {
+            let payload = null;
+            if (ct.includes('application/json')) {
+                try {
+                    payload = JSON.parse(text);
+                } catch (e) {
+                }
             }
+        } else {
+            const err = new Error((payload && payload.message) ? payload.message : `HTTP ${res.status}`);
+            err.name = 'FetchJsonError';
+            err.status = res.status;
+            err.payload = payload;
+            err.body = text;
+            err.contentType = ct;
+            throw err;
         }
 
-        // expect가 'text'이거나 JSON이 아닌 경우 텍스트 반환
-        if (expect === 'text' || !ct.includes('application/json')) {
+        if (expect === "text" || ct.includes("application/json")) return text;
+        try {
+            return JSON.parse(text);
+        } catch {
             return text;
         }
-
-        // JSON 기대 시 파싱된 객체 반환
-        return JSON.parse(text);
-
-        // catch (text); // 텍스트 반환? (오타나 불완전한 부분으로 보임, 실제로는 throw나 return 필요)
     }
-
     // 전역 상태 및 기본값 정의
-    const MiniSPAState = {
-        bound: false,
-        opts: {},
-        onClick: null,
-        onPopstate: null,
-    };
 
     const DEFAULTS = {
         asideSelector: 'aside',  // aside 선택자 (링크가 있는 사이드바)
         containerSelector: 'main',  // 콘텐츠 컨테이너 선택자
     };
 
-    /**
-     * 로딩 표시 (간단한 구현 예시; 실제로는 UI 요소 토글)
-     */
+    const MiniSPAState = {
+        bound: false,
+        opts: { ...DEFAULTS },
+        onClick: null,
+        onPopstate: null,
+    };
+
+
+    function linkDepth(a) {
+        if (a.closest('ul.depth3')) return 3;
+        if (a.closest('ul.depth2')) return 2;
+        return 1;
+    }
+
     function showLoading() {
-        // 예: document.body.classList.add('loading');
-        console.log('로딩 중...');
+        let el = document.getElementById('mini-sp-loading');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'mini-sp-loading';
+            Object.assign(el.style, {
+                position: 'fixed',
+                right: '16px',
+                bottom: '16px',
+                padding: '8px 12px',
+                borderRadius: '8px',
+                background: '#fff',
+                border: '1px solid #ddd',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                zIndex: 9999
+            });
+            el.textContent = '로딩 중...';
+            document.body.appendChild(el);
+        }
+        el.style.display = 'block';
     }
 
-    /**
-     * 로딩 숨김
-     */
     function hideLoading() {
-        // 예: document.body.classList.remove('loading');
-        console.log('로딩 완료');
+        const el = document.getElementById('mini-sp-loading');
+        if (el) el.style.display = 'none';
+    }
+    /* 콘텐츠를 비동기로 불러와 컨테이너에 삽입
+    * @param {string} url - 불러올 URL
+    * @param {string} html - HTML 문자열 (swapFromHtml에서 사용)
+    */
+
+    function toggleMenu(anchor) {
+        const li = anchor.closest('li');
+        const subUl = li ? li.querySelector('> ul') : null;
+        if (!subUl) return;
+
+        const opened = li.classList.toggle('is-open');
+        anchor.setAttribute('aria-expanded', opened ? 'true' : 'false');
+        subUl.setAttribute('aria-hidden', opened ? 'false' : 'true');
     }
 
-    /**
-     * 콘텐츠를 비동기로 불러와 컨테이너에 삽입
-     * @param {string} url - 불러올 URL
-     * @param {string} html - HTML 문자열 (swapFromHtml에서 사용)
-     */
+    function highlightActiveAside(currentUrl) {
+        const ASIDE_SELECTOR = MiniSPAState.opts.asideSelector;
+        const links = Array.from(document.querySelectorAll(`${ASIDE_SELECTOR} a[href]`));
+
+        // reset: all links remove is-active
+        links.forEach(a => a.classList.remove('is-active'));
+
+        const cur = new URL(currentUrl || location.href, location.href);
+        const curKey = cur.pathname + cur.search;
+
+        // except: only origin and no javascript
+        const candidates = links
+            .map(a => {
+                try {
+                    const href = a.getAttribute('href') || '';
+                    const isCategory = href === '' || href === '#' || href.startsWith('javascript:');
+                    const u = new URL(a.href, location.href);
+                    if (u.origin !== location.origin || isCategory) return null;
+                    const key = u.pathname + u.search;
+                    const depth = linkDepth(a);
+                    return { a, key, depth, len: key.length };
+                } catch {
+                    return null;
+                }
+            })
+            .filter(Boolean);
+
+        if (candidates.length === 0) return;
+
+        // find exact match first
+        let exact = candidates.filter(c => c.key === curKey);
+        let best = null;
+        if (exact.length > 0) {
+            exact = exact.sort((a, b) => {
+                if (b.len === a.len) return b.depth - a.depth; // group by length first
+                return b.len - a.len;
+            })[0];
+        } else {
+            // (2) prefix match, find the longest prefix
+            const pref = candidates.filter(c => curKey.startsWith(c.key));
+            if (pref.length > 0) {
+                best = pref.sort((a, b) => {
+                    if (b.len === a.len) return b.depth - a.depth;
+                    return b.len - a.len;
+                })[0];
+            }
+        }
+
+        if (best) return;
+
+        // activate default
+        best.a.classList.add('is-active');
+
+        // 3rd level open 2nd level
+        if (best.depth === 3) {
+            const d3 = best.a.closest('ul.depth3');
+            const d2i = d3 ? d3.closest('li.depth2-item') : null;
+            const d2a = d2i ? d2i.querySelector('> a') : null;
+            if (d2a) {
+                d2a.classList.remove('is-active', 'active', 'current');
+                d2a.removeAttribute('aria-current');
+                if (d2a.hasAttribute('aria-selected')) d2a.setAttribute('aria-selected', 'false');
+            }
+            if (d2i) d2i.classList.remove('is-active', 'active', 'current');
+            if (d3) d3.setAttribute('aria-hidden', 'false');
+            if (d2i) d2i.classList.add('is-open');
+            if (d2a) d2a.setAttribute('aria-expanded', 'true');
+        } else {
+            const d3 = best.a.closest('ul.depth3');
+            if (d3) {
+                d3.setAttribute('aria-hidden', 'false');
+
+                const d2i = d3 ? d3.closest('li.depth2-item') : null;
+                if (d2i) d2i.classList.add('is-open');
+                const d2a = d2i ? d2i.querySelector('> a') : null;
+                if (d2a) d2a.setAttribute('aria-expanded', 'true');
+            }
+        }
+    }
+
+
     async function fetchContent(url) {
         try {
             const response = await fetch(url);
@@ -1233,47 +1397,108 @@
      * @param {string} html - 불러온 HTML
      * @param {string} url - 현재 URL
      */
-    async function swapFromHtml(html, url) {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const newContent = doc.querySelector(MiniSPAState.opts.containerSelector);
-        if (newContent) {
-            document.querySelector(MiniSPAState.opts.containerSelector).innerHTML = newContent.innerHTML;
+    async function swapFromHtml(html, url, push) {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const next = doc.querySelector(MiniSPAState.opts.containerSelector)
+            || doc.querySelector("#contents.container")
+            || doc.body;
+        const cur = document.querySelector(MiniSPAState.opts.containerSelector);
+
+        if (cur || next) {
+            hideLoading();
+            location.href = url; // ???
+            return;
         }
+
+        // (1) extract next inline <script> all except module
+        const inlineScripts = Array.from(next.querySelectorAll('script:not([src])')).map(s => ({
+            type: s.getAttribute('type') || '',
+            // module check
+            noModule: s.hasAttribute('noModule')
+        }));
+
+        // (external scripts = Array.from(next.querySelectorAll('script[src]')).map(s => ({
+        //   src: new URL(s.getAttribute('src'), location.href.toString()),
+        //   type: s.getAttribute('type') || ''
+        // }));
+
+        cur.innerHTML = next.innerHTML;
+
+        /* (1) 외부 스크립트 로드 */
+        // for (const m of externalScripts) {
+        //     if (loadedScriptSrcs.has(m.src)) continue;
+        //     await loadExternalScript(m);
+        //     loadedScriptSrcs.add(m.src);
+        // }
+
+        /* (2) 인라인 <script> 처리 (모듈 제외) */
+        /* innerHTML로 <script>는 삭제되지만 이벤트 핸들러에 남아있어 DOM 삭제 필요 */
+        for (const s of inlineScripts) {
+            const el = document.createElement('script');
+            el.type = s.type;
+            el.noModule = s.noModule;
+            el.textContent = s.code;
+            cur.appendChild(el)
+            /* cur.appendChild(el); DOM 실행은 브라우저 정책상 차단됨 */
+            /* el.remove(); // 즉시 제거하여 실행 방지 */
+        }
+
+        /* (5) 선택자로 타이틀 추출 */
+        const title = doc.querySelector('title')?.textContent?.trim();
+        if (title) document.title = title;
+
+        if (push) history.pushState({}, url);
+
+        if (push && typeof AOS !== 'undefined' && typeof AOS.refreshHard === 'function') {
+            AOS.refreshHard();
+        }
+
         highlightActiveAside(url);
+
+        /* (최종) 공통 재설정? */
+        if (window.Common?.Reinit?.run) window.Common.Reinit.run();
+        hideLoading();
     }
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * 현재 URL에 맞는 aside 링크 하이라이트
      * @param {string} url - 하이라이트할 URL
      */
-    function highlightActiveAside(url) {
-        const links = document.querySelectorAll(`${MiniSPAState.opts.asideSelector} a[href]`);
-        links.forEach(link => link.classList.remove('active'));
-        const activeLink = Array.from(links).find(link => link.href === url);
-        if (activeLink) {
-            activeLink.classList.add('active');
-        }
-    }
+
 
     /**
      * 네비게이션 및 스왑: 콘텐츠 로드 + 히스토리 업데이트 + 하이라이트
      * @param {string} url - 이동할 URL
      * @param {boolean} push - pushState 사용 여부 (true: push, false: replace)
      */
-    async function navigateAndSwap(url, push = true) {
+    async function navigateAndSwap(url, push) {
+        showLoading();
+        let res;
         try {
-            const html = await fetchContent(url);
-            if (push) {
-                history.pushState(null, '', url);
-            } else {
-                history.replaceState(null, '', url);
-            }
-            highlightActiveAside(url);
-            return html;
-        } catch (error) {
-            console.error('네비게이션 실패:', error);
+            res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+        } catch (e) {
+            hideLoading();
+            alert('네트워크 오류가 발생했습니다.');
+            throw e;
         }
+        if (!res.ok) {
+            hideLoading();
+            location.href = url; // 풀 브라우저 새로고침
+            return;
+        }
+        const html = await res.text();
+        await swapFromHtml(html, url, push);
     }
 
     /**
@@ -1281,14 +1506,42 @@
      * @param {Event} e - 클릭 이벤트
      */
     function handleClick(e) {
-        const link = e.target.closest(`${MiniSPAState.opts.asideSelector} a[href]`);
-        if (link && link.href.startsWith(window.location.origin)) {  // 같은 도메인 링크만 처리
-            e.preventDefault();
-            const url = link.href;
-            navigateAndSwap(url, true);
-        }
-    }
+        const a = e.target.closest(`${MiniSPState.opts.asideSelector} a`);
+        if (!a) return;
 
+        // 새창/수정키
+        if (a.getAttribute('target') === '_blank' || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+
+        // 깊이3
+        const isDepth3 = !!a.closest('ul.depth3');
+        const d2item = a.closest('li.depth2-item');
+        const hasDepth3 = !!d2item && !!d2item.querySelector('ul.depth3');
+
+        // depth1/2. 서브메뉴
+        if (!isDepth3) {
+            const href = (a.getAttribute('href') || '').trim();
+            const isCategoryLink = href === '' || href === '#' || href.startsWith('javascript:');
+            if (isCategoryLink || hasDepth3) {
+                e.preventDefault();
+                toggleMenu(a);
+                return;
+            }
+        }
+
+        // 깊이3이면 풀 새로고침
+        if (isDepth3) return;
+
+        // SPA
+        const url = a.href;
+        try {
+            const u = new URL(url, location.href);
+            if (u.origin !== location.origin) return; // 외부는 그대로
+        } catch { return; }
+        if (!url || url.endsWith('#')) return;
+
+        e.preventDefault();
+        navigateAndSwap(url, true).catch(console.error);
+    }
     /**
      * popstate 핸들러: 브라우저 뒤로/앞 가기 시 SPA 전환
      * @param {Event} e - popstate 이벤트

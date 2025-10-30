@@ -61,7 +61,6 @@
   <script th:src="@{/js/vendor/ScrollTrigger.min.js}"></script>
   <script th:src="@{/js/vendor/swiper-bundle.min.js}"></script>
   <script th:src="@{/js/common.js}"></script>
-  <script th:src="@{/js/main.js}"></script>
 
 
   <script>
@@ -72,18 +71,17 @@
       if (window.Common && Common.MiniSPA) {
         // MiniSPA 초기화
         Common.MiniSPA.init({
-          headerSelector: '#header .swap-link',
           containerSelector: '#contents .container'
         });
 
         // 헤더 링크 클릭 시 SPA 이동
-        document.querySelectorAll('#header .swap-link').forEach(link => {
-          link.addEventListener('click', function (e) {
-            e.preventDefault();
-            const url = this.getAttribute('href');
-            if (url) Common.MiniSPA.go(url);
-          });
-        });
+        // document.querySelectorAll('#header .swap-link').forEach(link => {
+        //   link.addEventListener('click', function (e) {
+        //     e.preventDefault();
+        //     const url = this.getAttribute('href');
+        //     if (url) Common.MiniSPA.go(url);
+        //   });
+        // });
 
         console.log('MiniSPA 초기화 완료');
         window.__miniSpaInited = true;
