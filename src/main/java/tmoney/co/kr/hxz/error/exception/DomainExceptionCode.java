@@ -16,14 +16,16 @@ public enum DomainExceptionCode {
     SIGNUP_JTI_REPLAY_ERROR(SIGNUP.code+2, "%s"),
     SIGNUP_NOT_ALL_STEPS_FINISHED(SIGNUP.code+3, "%s"),
     SIGNUP_EXCEPTION(SIGNUP.code+4, "%s"),
+    SIGNUP_ID_DUPLICATION_ERROR(SIGNUP.code+5, "이미 사용중인 아이디입니다."),
+    SIGNUP_PASSWORD_CONTAINS_ID(SIGNUP.code+6, "아이디가 포함된 비밀번호는 사용하실 수 없습니다."),
 
 
     KAKAO_ACCESS_TOKEN_EXPIRED(AUTH.code + 4, "접근 토큰이 만료되었습니다."),
     LOGIN_ID_NOT_FOUND(AUTH.code + 5, "로그인 ID가 존재하지 않습니다."),
-    PASSWORD_DUPLICATION(AUTH.code + 5, "이전 비밀번호랑 동일한 비밀번호로 변경할 수 없습니다."),
-    PASSWORD_VALIDATION_ERROR(AUTH.code + 5, "%s"),
-    LOGIN_NEEDED(AUTH.code + 5, "로그인이 필요합니다.."),
-    LOGIN_TAKEOVER(AUTH.code + 5, "다른 기기에서 로그인 중입니다. 기존 세션을 종료하시겠습니까?");
+    PASSWORD_DUPLICATION(AUTH.code + 6, "이전 비밀번호랑 동일한 비밀번호로 변경할 수 없습니다."),
+    PASSWORD_VALIDATION_ERROR(AUTH.code + 7, "%s"),
+    LOGIN_NEEDED(AUTH.code + 8, "로그인이 필요합니다.."),
+    LOGIN_TAKEOVER(AUTH.code + 9, "다른 기기에서 로그인 중입니다. 기존 세션을 종료하시겠습니까?"),;
 
     private final int code;
     private final String message;

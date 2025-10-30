@@ -103,7 +103,7 @@
              , updr_id
              , upd_dtm
              )
-        VALUES (
+        values (
                #{req.mbrsId}
              , to_char(now(), 'YYYYMMDD')
              , coalesce

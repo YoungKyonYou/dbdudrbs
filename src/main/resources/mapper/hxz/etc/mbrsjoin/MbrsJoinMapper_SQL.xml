@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tmoney.co.kr.hxz.etc.mbrsjoin.mapper.MbrsJoinMapper">
+
+    <insert id="insertMbrsJoin" parameterType="tmoney.co.kr.hxz.etc.mbrsjoin.vo.MbrsJoinReqVO">
+        /* sql_id : insertMbrsJoin */
+        /*
+        * 1. 파일 : MbrsJoinMapper_SQL.xml
+        * 2. 기능 : 회원 가입 정보 추가
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.10.30 - 최중혁 : 최초작성
+        */
+        insert
+          into ohxzown.tbhxzm101
+             ( mbrs_id
+             , mbrs_nm
+             , mail_addr
+             , mbrs_mbph_no
+             , mbrs_tel_no
+             , pwd
+             , mbrs_sta_cd
+             , pwd_err_ncnt
+             , dspr_rgt_inhr_no
+             , vtrn_no
+             , tpw_join_typ_cd
+             , tpw_join_rctd_val
+             , scsn_dtm
+             , prsn_auth_ci_enc_val
+             , gndr_cd
+             , mbrs_brdt
+             , mbrs_scsn_dvs_cd
+             , ntfc_yn
+             , mrkg_utlz_agrm_yn
+             , sms_rcv_agrm_yn
+             , mail_rcv_agrm_yn
+             , bztl_rcv_agrm_yn
+             , mbrs_join_dt
+             , rgsr_id
+             , rgt_dtm
+             , updr_id
+             , upd_dtm
+             )
+        values
+             ( #{req.mbrsId}
+             , #{req.mbrsNm}
+             , #{req.mailAddr}
+             , #{req.mbrsMbphNo}
+             , #{req.mbrsTelNo}
+             , #{req.pwd}
+             , #{req.mbrsStaCd}
+             , #{req.pwdErrNcnt}
+             , #{req.dsprRgtInhrNo}
+             , #{req.vtrnNo}
+             , #{req.tpwJoinTypCd}
+             , #{req.tpwJoinRctdVal}
+             , #{req.scsnDtm}
+             , #{req.prsnAuthCiEncVal}
+             , #{req.gndrCd}
+             , #{req.mbrsBrdt}
+             , #{req.mbrsScsnDvsCd}
+             , #{req.ntfcYn}
+             , #{req.mrkgUtlzAgrmYn}
+             , #{req.smsRcvAgrmYn}
+             , #{req.mailRcvAgrmYn}
+             , #{req.bztlRcvAgrmYn}
+             , to_char(now(), 'yyyymmdd')
+             , #{req.mbrsId}
+             , to_char(now(), 'YYYYMMDDHH24MISS')
+             , #{req.mbrsId}
+             , to_char(now(), 'YYYYMMDDHH24MISS')
+             )
+    </insert>
+
+    <select id="readMbrsCountById" resultType="int" parameterType="String">
+        /* sql_id : readMbrsCountById */
+        /*
+        * 1. 파일 : MbrsJoinMapper_SQL.xml
+        * 2. 기능 : 아이디 중복 확인
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.10.30 - 최중혁 : 최초작성
+        */
+        select count(1)
+        from ohxzown.tbhxzm101
+        where mbrs_id = #{checkId}
+    </select>
+
+</mapper>
