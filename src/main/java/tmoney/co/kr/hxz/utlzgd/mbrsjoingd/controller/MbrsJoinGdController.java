@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/utlzgd/mbrsjoingd")
+@RequestMapping("/utlzgd")
 public class MbrsJoinGdController {
-    @GetMapping
-    public String mbrsjoingd(Model model) {
-        return "/hxz/main/utlzgd/mbrsjoingd/mbrsjoingd";
+    @GetMapping("/mbrsJoinGd.do")
+    public String mbrsjoinGd(Model model) {
+        return "/hxz/main/utlzgd/mbrsjoingd/mbrsJoinGd";
     }
 }

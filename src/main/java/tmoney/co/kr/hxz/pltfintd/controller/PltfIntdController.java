@@ -10,18 +10,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 @RequestMapping("/pltfintd")
 public class PltfIntdController {
-    @GetMapping("/bzaflt")
+    @GetMapping("/bzAflt.do")
     public String bzaflt(Model model) {
-        return "/hxz/main/pltfintd/bzaflt";
+        return "/hxz/main/pltfintd/bzAflt";
     }
 
-    @GetMapping("/mdlby")
+    @GetMapping("/mdlBy.do")
     public String mdlby(Model model) {
-        return "/hxz/main/pltfintd/mdlby";
+        return "/hxz/main/pltfintd/mdlBy";
     }
 
-    @GetMapping("/pltfintd")
+    @GetMapping("/pltfIntd.do")
     public String pltfintd(Model model) {
-        return "/hxz/main/pltfintd/pltfintd";
+        return "/hxz/main/pltfintd/pltfIntd";
     }
 }

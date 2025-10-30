@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/utlzgd/spfnaplpaygd")
+@RequestMapping("/utlzgd")
 public class SpfnAplPayGdController {
-    @GetMapping
-    public String mbrsjoingd(Model model) {
-        return "/hxz/main/utlzgd/spfnaplpaygd/spfnaplpaygd";
+    @GetMapping("/spfnAplPayGd.do")
+    public String spfnAplPayGd(Model model) {
+        return "/hxz/main/utlzgd/spfnaplpaygd/spfnAplPayGd";
     }
 }

@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/svcgd/lcgvsvcgd")
+@RequestMapping("/svcgd")
 public class lcgvSvcGdController {
-    @GetMapping
-    public String icgvsvcgd(Model model) {
-        return "/hxz/main/svcgd/lcgvsvcgd/lcgvsvcgd";
+    @GetMapping("/lcgvSvcGd.do")
+    public String icgvSvcGd(Model model) {
+        return "/hxz/main/svcgd/lcgvsvcgd/lcgvSvcGd";
     }
 }
