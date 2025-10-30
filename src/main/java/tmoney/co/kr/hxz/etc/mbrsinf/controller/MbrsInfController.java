@@ -13,7 +13,7 @@ import javax.validation.Valid;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/mypage/mbrsinf")
+@RequestMapping("/etc/mbrsinf")
 public class MbrsInfController {
     private final MbrsInfService mbrsInfService;
 
@@ -35,7 +35,7 @@ public class MbrsInfController {
     ) {
         MbrsInfRspVO mbrsInf = mbrsInfService.readMbrsInf(mbrsId);
         model.addAttribute("mbrsInf", mbrsInf);
-        return "/hxz/mypage/mbrsinf/mbrsInf";
+        return "/hxz/etc/mbrsinf/mbrsInf";
     }
 
     /**
@@ -67,14 +67,14 @@ public class MbrsInfController {
      */
     @GetMapping("/{mbrsId}/pwdForm.do")
     public String pwdForm(
-        @PathVariable("mbrsId") String mbrsId,
-        Model model
+            @PathVariable("mbrsId") String mbrsId,
+            Model model
     ) {
         MbrsInfRspVO mbrsInf = mbrsInfService.readMbrsInf(mbrsId);
 
         model.addAttribute("mbrsInf", mbrsInf);
         model.addAttribute("mbrsId", mbrsId);
-        return "/hxz/mypage/mbrsinf/pwdForm";
+        return "/hxz/etc/mbrsinf/pwdForm";
     }
 
     /**
@@ -98,7 +98,7 @@ public class MbrsInfController {
      */
     @GetMapping("/mbrsScsn.do")
     public String mbrsScsn() {
-        return "/hxz/mypage/mbrsinf/mbrsScsn";
+        return "/hxz/etc/mbrsinf/mbrsScsn";
     }
 }
 
