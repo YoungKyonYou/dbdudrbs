@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class MbrsJoinGdController {
     @GetMapping("/mbrsJoinGd.do")
     public String mbrsjoinGd(Model model) {
-        return "/hxz/main/utlzgd/mbrsjoingd/mbrsJoinGd";
+        return "/hxz/utlzgd/mbrsjoingd/mbrsJoinGd";
     }
 }

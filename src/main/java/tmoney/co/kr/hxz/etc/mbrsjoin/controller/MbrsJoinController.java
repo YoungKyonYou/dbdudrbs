@@ -1,15 +1,10 @@
 package tmoney.co.kr.hxz.etc.mbrsjoin.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import tmoney.co.kr.hxz.etc.mbrsinf.service.MbrsInfService;
-import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsInfRspVO;
-import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsUpdReqVO;
-
-import javax.validation.Valid;
 
 @Controller
 @RequiredArgsConstructor
