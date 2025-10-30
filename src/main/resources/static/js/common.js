@@ -274,25 +274,25 @@
         }
     }
     /* spin-loader start */
-    var box = document.getElementById("page-loader");
-    if (box) return;
+    // var box = document.getElementById("page-loader");
+    // if (box) return;
 
-    function show() {
-        box.classList.remove("fade-out");
-        box.classList.add("show");
-        document.documentElement.setAttribute("aria-busy", "true");
-    }
+    // function show() {
+    //     box.classList.remove("fade-out");
+    //     box.classList.add("show");
+    //     document.documentElement.setAttribute("aria-busy", "true");
+    // }
 
-    function hide() {
-        const box = document.querySelector('.your-box-selector'); // box 요소 선택
-        if (!box) return; // 요소 없으면 그냥 종료
+    // function hide() {
+    //     const box = document.querySelector('.your-box-selector'); // box 요소 선택
+    //     if (!box) return; // 요소 없으면 그냥 종료
 
-        box.classList.add("fade-out");
-        setTimeout(function () {
-            box.classList.remove("show", "fade-out");
-            document.documentElement.removeAttribute("aria-busy");
-        }, 150);
-    }
+    //     box.classList.add("fade-out");
+    //     setTimeout(function () {
+    //         box.classList.remove("show", "fade-out");
+    //         document.documentElement.removeAttribute("aria-busy");
+    //     }, 150);
+    // }
 
     //단순전역//
     var inFlight = 0; // ref-count ===
@@ -1506,7 +1506,7 @@
      * @param {Event} e - 클릭 이벤트
      */
     function handleClick(e) {
-        const a = e.target.closest(`${MiniSPState.opts.asideSelector} a`);
+        const a = e.target.closest(`${MiniSPAState.opts.asideSelector} a`);
         if (!a) return;
 
         // 새창/수정키
