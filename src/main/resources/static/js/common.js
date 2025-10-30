@@ -133,7 +133,7 @@
             const out = await send(url, method, data, headers, signal, expect);
 
             // 성공 시 결과를 그대로 반환 (ok: true, status: 200, payload: out 등)
-            return out;
+            return { ok: true, data: out};
         } catch (e) {
             // AbortError인 경우 (요청 취소) 에러 무시하고 null 반환
             if (e.name === 'AbortError') {
@@ -141,14 +141,14 @@
             }
 
             // 400, 401, 422 등의 클라이언트 에러 상태 코드인 경우
-            if ([400, 401, 422].includes(e.status)) {
+           if (e?.status >= 400 && e.status < 500) {
                 // 모달 에러 메시지 생성: payload.message가 있으면 사용, 아니면 clientErrorMsg
                 const msg = (e.payload && e.payload.message) ? e.payload.message : clientErrorMsg;
 
                 modalShow({
                     title: '경고',
                     message: msg,
-                    buttons: ['닫기']
+                    buttons: ['close']
                 });
 
                 // 에러 정보 반환
@@ -162,7 +162,7 @@
             modalShow({
                 title: '오류',
                 message: otherErrorMsg,
-                buttons: ['닫기']
+                buttons: ['close']
             });
 
             // 에러 정보 반환
@@ -1085,84 +1085,81 @@
 
 
 
-    // HTTP 요청을 보내는 비동기 함수
-    // url: 요청할 URL
-    // method: HTTP 메서드 (기본값: 'POST')
-    // data: 요청 본문 데이터 (기본값: null)
-    // headers: 추가 헤더 (기본값: {} )
-    // signal: AbortSignal (선택적)
-    // expect: 응답 형식 기대값 (기본값: 'json')
-    async function send(url, method = 'POST', data = null, headers = {}, signal, expect = 'json') {
-        // 기본 헤더 설정: JSON 형식으로 Accept와 Content-Type 지정
-        // 기존 헤더와 병합
-        headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json; charset=utf-8',
-            ...headers
-        };
+     // HTTP 요청을 보내는 비동기 함수
+        // url: 요청할 URL
+        // method: HTTP 메서드 (기본값: 'POST')
+        // data: 요청 본문 데이터 (기본값: null)
+        // headers: 추가 헤더 (기본값: {} )
+        // signal: AbortSignal (선택적)
+        // expect: 응답 형식 기대값 (기본값: 'json')
+        async function send(url, method = 'POST', data = null, headers = {}, signal, expect = 'json') {
+            // 기본 헤더
+            const baseHeaders = {
+                'Accept': 'application/json, text/plain;q=0.9',
+                ...headers
+            };
 
-        // Fetch 초기화 객체 설정
-        // 캐시: no-store (캐싱하지 않음)
-        // signal: AbortController 신호 (취소 가능)
-        let init = {
-            method,
-            headers,
-            cache: 'no-store',
-            signal: signal || undefined  // signal이 제공되면 사용, 아니면 생략
-        };
+            const init = {
+                method,
+                headers: { ...baseHeaders },
+                cache: 'no-store',
+                credentials: 'same-origin',
+                signal: signal || undefined
+            };
 
-        // 데이터가 있는 경우 body 처리
-        if (data != null) {
-            if (data instanceof FormData) {
-                // FormData인 경우 Content-Type 헤더 제거 (브라우저가 자동 설정)
-                delete headers['Content-Type'];
-                init.body = data;
-            } else if (typeof data === 'object') {
-                // 객체인 경우 URLSearchParams로 변환하여 x-www-form-urlencoded 형식으로 전송
-                // 또는 JSON으로 변환 (코드에 따라 다름, 여기서는 form-urlencoded로 가정)
-                if (!(data instanceof URLSearchParams)) {
-                    // URLSearchParams가 아니면 변환
-                    data = new URLSearchParams(data).toString();
-                    init.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+            // body 인코딩 자동화
+            if (data != null) {
+                if (data instanceof FormData) {
+                    delete init.headers['Content-Type'];            // 브라우저가 boundary 포함 설정
+                    init.body = data;
+                } else if (data instanceof URLSearchParams) {
+                    init.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
+                    init.body = data.toString();
+                } else if (data instanceof Blob) {
+                    init.headers['Content-Type'] = data.type || 'application/octet-stream';
+                    init.body = data;
+                } else if (typeof data === 'string') {
+                    init.headers['Content-Type'] = init.headers['Content-Type'] || 'text/plain;charset=UTF-8';
+                    init.body = data;
+                } else if (typeof data === 'object') {
+                    init.headers['Content-Type'] = init.headers['Content-Type'] || 'application/json;charset=UTF-8';
+                    init.body = JSON.stringify(data);
                 } else {
-                    // 이미 URLSearchParams인 경우
-                    data = data.toString();
-                    init.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+                    init.body = data;
                 }
-                init.body = data;
-            } else {
-                // 다른 타입 (문자열 등)은 그대로 body에 설정
-                init.body = data;
             }
-        }
 
-        // Fetch 요청 실행
-        // show(): 콘솔 로그 출력 (디버깅용, 실제 코드에서는 제거 가능)
-        console.log('Request:', { url, method, body: data, headers });
+            const res = await fetch(url, init);
+            const ct = res.headers.get('content-type') || '';
 
-        const res = await fetch(url, init);
+            // Blob 기대(엑셀/파일 다운로드 등)
+            if (expect === 'blob') {
+                if (!res.ok) {
+                    const text = await res.text();
+                    let payload = null;
+                    if (ct.includes('application/json')) { try { payload = JSON.parse(text); } catch { } }
+                    const err = new Error((payload && payload.message) || `HTTP ${res.status}`);
+                    err.status = res.status; err.payload = payload; err.contentType = ct; err.body = text;
+                    err.url = url; err.method = method; err.headers = init.headers;
+                    throw err;
+                }
+                return await res.blob();
+            }
 
-        // 응답 Content-Type 확인
-        const ct = res.headers.get('content-type') || '';
+            // 텍스트 우선 확보 → JSON 파싱 시도
+            const text = await res.text();
+            let payload = null;
+            if (ct.includes('application/json')) { try { payload = text ? JSON.parse(text) : null; } catch { } }
 
-        // 응답 본문 텍스트로 읽기
-        const text = await res.text();
-
-        let payload = null;
-
-        // JSON 응답인 경우 파싱 시도
-        if (ct.includes('application/json')) {
-            try {
-                payload = JSON.parse(text);
-            } catch {
-                // 파싱 실패 시 에러 생성
-                const err = new Error(`${payload && payload.message ? payload.message : 'JSON Parse Error'} HTTP ${res.status}`);
-                err.name = 'FetchJSONError';
-                err.status = res.status;
-                err.body = text;
-                err.contentType = ct;
+            if (!res.ok) {
+                const err = new Error((payload && payload.message) || `HTTP ${res.status}`);
+                err.status = res.status; err.payload = payload; err.contentType = ct; err.body = text;
+                err.url = url; err.method = method; err.headers = init.headers;
                 throw err;
             }
+
+            if (expect === 'text' || !ct.includes('application/json')) return text;
+            return payload; // JSON
         }
 
         // expect가 'text'이거나 JSON이 아닌 경우 텍스트 반환
