@@ -1,0 +1,261 @@
+
+
+<th:block th:replace="~{component/header :: layout(~{::content})}">
+    <th:block th:fragment="content">
+
+<style>
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .section {
+      border: 1px solid #ddd;
+      padding: 16px;
+      margin: 12px 0;
+      border-radius: 8px;
+    }
+
+    .hint {
+      color: #555;
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .row input {
+      flex: 1;
+      padding: 6px 8px;
+    }
+
+    .dim {
+      opacity: .6
+    }
+</style>
+<body th:with="currentStep=${signup.step}">
+  <h2>회원가입 – 단계별 인증 (버튼만)</h2>
+  <p>현재 단계(step): <strong th:text="${signup.step}">0</strong></p>
+
+  <section class="section" data-stepBox="0">
+    <h3>① 거주지 인증</h3>
+    <form th:action="@{/signup/step/address}" method="post" th:object="${signup}" data-step="0" class="step-form">
+      <input type="hidden" th:field="*{nonce}" />
+      <div class="row">
+        <input name="zipcode" placeholder="우편번호">
+        <input name="addr1" placeholder="기본주소">
+        <input name="addr2" placeholder="상세주소">
+      </div>
+      <button type="submit">거주지 인증</button>
+      <div class="hint" th:if="${signup.step > 0}">완료</div>
+    </form>
+  </section>
+
+  <section class="section" data-stepBox="1">
+    <h3>② 본인 인증</h3>
+    <form th:action="@{/signup/step/identity}" method="post" th:object="${signup}" data-step="1" class="step-form">
+      <input type="hidden" th:field="*{nonce}" />
+      <div class="row">
+        <input name="name" placeholder="이름">
+        <input name="dob" placeholder="생년월일(YYYYMMDD)">
+      </div>
+      <button type="submit">본인 인증</button>
+      <div class="hint" th:if="${signup.step > 1}">완료</div>
+    </form>
+  </section>
+
+  <section class="section" data-stepBox="2">
+    <h3>③ 휴대폰 인증</h3>
+    <form th:action="@{/signup/step/phone}" method="post" th:object="${signup}" data-step="2" class="step-form">
+      <input type="hidden" th:field="*{nonce}" />
+      <div class="row">
+        <input name="phone" placeholder="휴대폰번호(숫자만)">
+      </div>
+      <button type="submit">휴대폰 인증</button>
+      <div class="hint" th:if="${signup.step > 2}">완료</div>
+    </form>
+  </section>
+
+  <section class="section" data-stepBox="3">
+    <h3>④ 주민번호 인증</h3>
+    <form th:action="@{/signup/step/rrn}" method="post" th:object="${signup}" data-step="3" class="step-form">
+      <input type="hidden" th:field="*{nonce}" />
+      <div class="row">
+        <input name="rrn" placeholder="주민등록번호(입력 즉시 서버 저장/로그 금지)">
+      </div>
+      <button type="submit">주민번호 인증</button>
+      <div class="hint" th:if="${signup.step == 3}">모든 단계 완료</div>
+    </form>
+  </section>
+
+  <script th:inline="javascript">
+    (function () {
+      let currentStep = /*[[${signup.step}]]*/ 0;
+      const stepNames = ['거주지 인증', '본인 인증', '휴대폰 인증', '주민번호 인증'];
+      let sending = false;
+
+      const clone = (obj) => {
+        try { return structuredClone(obj); } catch { return JSON.parse(JSON.stringify(obj || {})); }
+      };
+
+      function saveReceipt(step, receipt) {
+        if (receipt) sessionStorage.setItem('rcpt' + step, receipt);
+      }
+      function saveStepPayload(step, payload) {
+        sessionStorage.setItem('step' + step, JSON.stringify(payload || {}));
+      }
+
+      function advanceUI(doneStep) {
+        const doneForm = document.querySelector('form.step-form[data-step="' + doneStep + '"]');
+        if (doneForm) {
+          doneForm.classList.add('dim');
+          doneForm.querySelectorAll('input,button,select,textarea').forEach(el => el.disabled = true);
+          const hint = doneForm.parentElement.querySelector('.hint');
+          if (hint) hint.textContent = '완료';
+        }
+        const next = doneStep + 1;
+        const nextForm = document.querySelector('form.step-form[data-step="' + next + '"]');
+        if (nextForm) {
+          nextForm.classList.remove('dim');
+          nextForm.querySelectorAll('input,button,select,textarea').forEach(el => el.disabled = false);
+          const firstInput = nextForm.querySelector('input,select,textarea,button');
+          if (firstInput) firstInput.focus({ preventScroll: false });
+          nextForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        currentStep = next;
+        const s = document.querySelector('p strong');
+        if (s) s.textContent = String(currentStep);
+      }
+
+      async function submitAjax(form) {
+        if (sending) return;
+        sending = true;
+        form.classList.add('dim');
+
+        const step = parseInt(form.getAttribute('data-step'), 10);
+        const action = form.getAttribute('action') || form.getAttribute('th:action');
+
+        // 1) 폼 → payload (nonce는 헤더로 이동)
+        const all = (window.Common && Common.collectFromForm)
+          ? Common.collectFromForm(form)
+          : Object.fromEntries(new FormData(form));
+        const nonce = all.nonce || '';
+        delete all.nonce;
+        const payload = clone(all);
+
+        // 2) 프런트 보관
+        saveStepPayload(step, clone(payload));
+
+        try {
+          // 3) 단계 호출 (nonce는 헤더) — common.js 기반으로 변경
+          const out = await Common.sendSafe(
+            action,                 // url
+            'POST',                 // method
+            payload,                // data (object ⇒ JSON 전송됨)
+            undefined,              // signal
+            { 'X-Nonce': nonce },   // headers
+            'json',                 // expect
+            '요청에 실패했습니다.',   // clientErrorMsg
+            '오류가 발생했습니다.'    // otherErrorMsg
+          );
+
+          // sendSafe는 실패 시 { ok:false, status, error } 반환하므로 가드
+          if (!out || out.ok === false) return;
+
+          // 4) 영수증 저장
+          saveReceipt(step, out.data.receipt || out.data.rcpt || null);
+
+          // 5) 다음 단계 nonce 주입
+          if (out.data.nextNonce) {
+            const next = step + 1;
+            const nextForm = document.querySelector('form.step-form[data-step="' + next + '"]');
+            if (nextForm) {
+              const nextNonceInput = nextForm.querySelector('input[name="nonce"]');
+              if (nextNonceInput) nextNonceInput.value = out.data.nextNonce;
+            }
+          }
+
+          // 6) 최종 or 다음 단계 전환
+          if (step === 3) {
+            await finalizeSubmit();                     // ★ finalize도 Common.sendSafe 사용
+            window.location.assign('/signup/complete'); // 완료 페이지로 이동
+          } else {
+            advanceUI(step);                            // 새로고침 없이 UI만 전환
+          }
+        } catch (e) {
+          (window.Common?.modalShow || alert)({
+            title: '오류',
+            message: e?.message || '요청 처리 중 오류가 발생했습니다.',
+            buttons: 'close'
+          });
+        } finally {
+          sending = false;
+          form.classList.remove('dim');
+        }
+      }
+
+      async function finalizeSubmit() {
+        const body = {
+          step1: JSON.parse(sessionStorage.getItem('step0') || '{}'),
+          step2: JSON.parse(sessionStorage.getItem('step1') || '{}'),
+          step3: JSON.parse(sessionStorage.getItem('step2') || '{}'),
+          step4: JSON.parse(sessionStorage.getItem('step3') || '{}'),
+          rcpt1: sessionStorage.getItem('rcpt0'),
+          rcpt2: sessionStorage.getItem('rcpt1'),
+          rcpt3: sessionStorage.getItem('rcpt2'),
+          rcpt4: sessionStorage.getItem('rcpt3')
+        };
+        if (!body.rcpt1 || !body.rcpt2 || !body.rcpt3 || !body.rcpt4) {
+          throw new Error('영수증이 누락되었습니다. 처음부터 다시 진행해주세요.');
+        }
+
+        const res = await Common.sendSafe(
+          '/signup/finalize',
+          'POST',
+          body,
+          undefined,
+          undefined,
+          'json',
+          '요청에 실패했습니다.',
+          '오류가 발생했습니다.'
+        );
+        if (!res || res.ok === false) {
+          throw new Error('최종 제출에 실패했습니다.');
+        }
+      }
+
+      function bootstrapLock() {
+        document.querySelectorAll('form.step-form').forEach(form => {
+          const step = parseInt(form.getAttribute('data-step'), 10);
+          const disabled = step !== currentStep;
+          if (disabled) {
+            form.classList.add('dim');
+            form.querySelectorAll('input,button,select,textarea').forEach(el => el.disabled = true);
+          }
+        });
+      }
+
+      document.querySelectorAll('.step-form').forEach(function (form) {
+        form.addEventListener('submit', function (ev) {
+          ev.preventDefault();
+          const targetStep = parseInt(form.getAttribute('data-step'), 10);
+          if (targetStep !== currentStep) {
+            const msg = (targetStep > currentStep)
+              ? (stepNames[currentStep] + '을 먼저 완료해주세요.')
+              : '이미 진행된 단계입니다. 현재 단계로 계속 진행해주세요.';
+            (window.Common?.modalShow || alert)({ title: '안내', message: msg, buttons: 'close' });
+            return false;
+          }
+          submitAjax(form);
+        }, false);
+      });
+
+      bootstrapLock();
+    })();
+  </script>
+
+</body>
+</th:block>

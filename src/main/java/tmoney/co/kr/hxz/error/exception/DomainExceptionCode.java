@@ -10,6 +10,14 @@ public enum DomainExceptionCode {
     LOGIN_FAIL(AUTH.code + 1, "로그인 실패"),
     LOGIN_ID_INVALID(AUTH.code + 2, "아이디가 일치하지 않습니다."),
     KAKAO_ACCESS_TOKEN_INVALID_IN_SESSION(AUTH.code + 3, "접근 토큰이 없거나 유효하지 않습니다."),
+
+    SIGNUP(2000, "정의되지 않은 에러입니다."),
+    SIGNUP_PRECHECK_ERROR(SIGNUP.code+1, "%s"),
+    SIGNUP_JTI_REPLAY_ERROR(SIGNUP.code+2, "%s"),
+    SIGNUP_NOT_ALL_STEPS_FINISHED(SIGNUP.code+3, "%s"),
+    SIGNUP_EXCEPTION(SIGNUP.code+4, "%s"),
+
+
     KAKAO_ACCESS_TOKEN_EXPIRED(AUTH.code + 4, "접근 토큰이 만료되었습니다."),
     LOGIN_ID_NOT_FOUND(AUTH.code + 5, "로그인 ID가 존재하지 않습니다."),
     PASSWORD_DUPLICATION(AUTH.code + 5, "이전 비밀번호랑 동일한 비밀번호로 변경할 수 없습니다."),
