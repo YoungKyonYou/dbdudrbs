@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class SpfnAplPayGdController {
     @GetMapping("/spfnAplPayGd.do")
     public String spfnAplPayGd(Model model) {
-        return "/hxz/main/utlzgd/spfnaplpaygd/spfnAplPayGd";
+        return "/hxz/utlzgd/spfnaplpaygd/spfnAplPayGd";
     }
 }

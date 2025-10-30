@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class lcgvSvcGdController {
     @GetMapping("/lcgvSvcGd.do")
     public String icgvSvcGd(Model model) {
-        return "/hxz/main/svcgd/lcgvsvcgd/lcgvSvcGd";
+        return "/hxz/svcgd/lcgvsvcgd/lcgvSvcGd";
     }
 }
