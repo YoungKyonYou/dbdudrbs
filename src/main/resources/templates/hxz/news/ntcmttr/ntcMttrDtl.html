@@ -55,97 +55,103 @@
                         <!-- 본문 -->
                         <div class="content-box">
                             <!-- HTML 그대로 렌더링 -->
-                            <p th:utext="*{ntcMttrCtt}">
+                            <p th:text="*{ntcMttrCtt}">
                                 게시글 내용이 들어갑니다.
                             </p>
                         </div>
-
-                        <!-- <nav class="post-navigation" aria-label="게시글 탐색">
-                            <ul class="post-nav-grid" role="list">
-
-                                <li class="post-nav-item prev" th:if="${ntcMttrPrev != null}">
-                                    <a class="post-nav-link"
-                                        th:href="@{'/news/ntcmttr/ntcMttrDtl/' + ${ntcMttrPrev.bltnNo}}"
-                                        th:aria-label="'이전 글 보기: ' + ${ntcMttrPrev.ntcMttrTtlNm}">
-                                        <div class="flex">
-                                            <i class="icon icon-arrow-left" aria-hidden="true"></i>
-                                            <span class="post-nav-kicker">PREV</span>
-                                        </div>
-                                        <span class="post-nav-title" th:text="${ntcMttrPrev.ntcMttrTtlNm}">
-                                            이전글 제목
-                                        </span>
-                                    </a>
-                                </li>
-
-                                <li class="post-nav-item list">
-                                    <a class="btn btn-darken-line size-lg" th:href="@{'/news/ntcmttr/ntcMttr.do'}"
-                                        aria-label="목록으로 이동">
-                                        목록
-                                    </a>
-                                </li>
-
-                                <li class="post-nav-item next" th:if="${ntcMttrNext != null}">
-                                    <a class="post-nav-link"
-                                        th:href="@{'/news/ntcmttr/ntcMttrDtl/' + ${ntcMttrNext.bltnNo}}"
-                                        th:aria-label="'다음 글 보기: ' + ${ntcMttrNext.ntcMttrTtlNm}">
-                                        <div class="flex">
-                                            <span class="post-nav-kicker">NEXT</span>
-                                            <i class="icon icon-arrow-right" aria-hidden="true"></i>
-                                        </div>
-                                        <span class="post-nav-title" th:text="${ntcMttrNext.ntcMttrTtlNm}">
-                                            다음글 제목
-                                        </span>
-                                    </a>
-                                </li>
-
-                                <li class="post-nav-item next" th:if="${ntcMttrNext == null}">
-                                    <a class="post-nav-link is-disabled" aria-disabled="true" tabindex="-1">
-                                        <div class="flex">
-                                            <span class="post-nav-kicker">NEXT</span>
-                                            <i class="icon icon-arrow-right" aria-hidden="true"></i>
-                                        </div>
-                                        <span class="post-nav-title">다음글이 없습니다.</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav> -->
                         <nav class="post-navigation" aria-label="게시글 탐색">
                             <ul class="post-nav-grid" role="list">
                                 <!-- 이전글 -->
                                 <li class="post-nav-item prev">
-                                    <a class="post-nav-link" href="" aria-label="이전 글 보기: (공지)서비스 이용약관 개정 안내">
+                                    <a id="prevBtn" class="post-nav-link" href="javascript:void(0)" data-garget="detail"
+                                        th:attr="data-id=${bltnNo}">
                                         <div class="flex">
                                             <i class="icon icon-arrow-left" aria-hidden="true"></i>
                                             <span class="post-nav-kicker">PREV</span>
                                         </div>
-                                        <span class="post-nav-title">(공지)두 줄일 때 케이스 예시 입니다. 두 줄일 때 케이스 예시 입니다. 두 줄일 때
-                                            케이스 예시 입니다. 두 줄일 때 케이스 예시 입니다.</span>
+                                        <span class="post-nav-title">이전글 보기</span>
                                     </a>
                                 </li>
 
                                 <!-- 목록 -->
                                 <li class="post-nav-item list">
-                                    <a class="btn btn-darken-line size-lg" href="" aria-label="목록으로 이동">
+                                    <a id="listBtn" class="btn btn-darken-line size-lg" href="javascript:void(0)">
                                         목록
                                     </a>
                                 </li>
 
-                                <!-- 다음글 (없을 때 is-disabled + aria-disabled="true" + tabindex="-1") -->
+                                <!-- 다음글 -->
                                 <li class="post-nav-item next">
-                                    <a class="post-nav-link is-disabled" href="" aria-disabled="true" tabindex="-1">
+                                    <a data-garget="detail" th:attr="data-id=${bltnNo}" id="nextBtn"
+                                        class="post-nav-link" href="javascript:void(0)">
                                         <div class="flex">
                                             <span class="post-nav-kicker">NEXT</span>
                                             <i class="icon icon-arrow-right" aria-hidden="true"></i>
                                         </div>
-                                        <span class="post-nav-title">다음글이 없습니다.</span>
+                                        <span class="post-nav-title">다음글 보기</span>
                                     </a>
                                 </li>
                             </ul>
                         </nav>
+
+
+
+
                     </div>
                 </div>
             </section>
         </main>
+        <script th:inline="javascript">
+            (function () {
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                const listBtn = document.getElementById('listBtn');
+
+                function formatBltnNo(num) {
+                    return ('0000000000' + num).slice(-10);
+                }
+
+                if (prevBtn) {
+                    prevBtn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        const currentBltnNo = parseInt(prevBtn.getAttribute('data-id'), 10);
+                        if (currentBltnNo > 1) {
+                            const prevNo = formatBltnNo(currentBltnNo - 1);
+                            Common.MiniSPA.go('/news/ntcmttr/ntcMttrDtl/' + prevNo);
+                        } else {
+                            prevBtn.classList.add('is-disabled');
+                            prevBtn.setAttribute('aria-disabled', 'true');
+                            prevBtn.querySelector('.post-nav-title').textContent = '이전글이 없습니다.';
+                        }
+                    });
+                }
+
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        const currentBltnNo = parseInt(nextBtn.getAttribute('data-id'), 10);
+                        const MAX_BLTN_NO = 9999999999;
+                        if (currentBltnNo < MAX_BLTN_NO) {
+                            const nextNo = formatBltnNo(currentBltnNo + 1);
+                            Common.MiniSPA.go('/news/ntcmttr/ntcMttrDtl/' + nextNo);
+                        } else {
+                            nextBtn.classList.add('is-disabled');
+                            nextBtn.setAttribute('aria-disabled', 'true');
+                            nextBtn.querySelector('.post-nav-title').textContent = '다음글이 없습니다.';
+                        }
+                    });
+                }
+
+                if (listBtn) {
+                    listBtn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        Common.MiniSPA.go('/news/ntcmttr/ntcMttr.do');
+                    });
+                }
+            })();
+        </script>
+
+
     </th:block>
 </th:block>
 

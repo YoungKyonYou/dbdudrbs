@@ -1,4 +1,3 @@
-
 <th:block th:replace="~{component/header :: layout(~{::content})}">
   <th:block th:fragment="content">
 
@@ -82,9 +81,9 @@
               <li class="board-row" th:each="row, stat : ${pageData.content}"
                 th:classappend="${row.mainExpsYn} == 'Y' ? 'is-notice'">
                 <div class="board-item">
-                  <span class="col col-num"
-                    th:text="${row.mainExpsYn == 'Y' ? row.bltnNo : pageData.total - (pageData.page * pageData.size) - stat.index}">1</span>
-
+                  <!-- <span class="col col-num"
+                    th:text="${row.mainExpsYn == 'Y' ? row.bltnNo : pageData.total - (pageData.page * pageData.size) - stat.index}">1</span> -->
+                  <span class="col col-num" th:text="${row.bltnNo }">1</span>
                   <span class="col col-title">
                     <span th:if="${row.mainExpsYn == 'Y'}" class="badge badge-notice">공지</span>
                     <button type="button" data-garget="detail" th:attr="data-id=${row.bltnNo}" class="link-button"
@@ -107,71 +106,72 @@
 
       </section>
 
-        <script th:inline="javascript" type="text/javascript">
-            (function () {
-              const searchForm = document.getElementById('searchbar');
-              const grid = document.getElementById('grid');
-              const input = document.getElementById('searchInput');
-              const titleField = document.getElementById('ntcMttrTtlNm');
-              const contentField = document.getElementById('ntcMttrCtt');
-              const inputPage = document.getElementById('page');
-              const inputSize = document.getElementById('size');
-              const inputSort = document.getElementById('sort');
-              const inputDir = document.getElementById('dir');
-              const searchFieldSelect = document.getElementById('searchFieldSelect');
-              const searchFieldInput = document.getElementById('searchField');
-              const baseUrl = '/news/ntcmttr/ntcMttr.do';
+      <script th:inline="javascript" type="text/javascript">
+        (function () {
+          const searchForm = document.getElementById('searchbar');
+          const grid = document.getElementById('grid');
+          const input = document.getElementById('searchInput');
+          const titleField = document.getElementById('ntcMttrTtlNm');
+          const contentField = document.getElementById('ntcMttrCtt');
+          const inputPage = document.getElementById('page');
+          const inputSize = document.getElementById('size');
+          const inputSort = document.getElementById('sort');
+          const inputDir = document.getElementById('dir');
+          const searchFieldSelect = document.getElementById('searchFieldSelect');
+          const searchFieldInput = document.getElementById('searchField');
+          const baseUrl = '/news/ntcmttr/ntcMttr.do';
 
-              searchFieldSelect.addEventListener('change', function () {
-                searchFieldInput.value = this.value;
-              });
+          searchFieldSelect.addEventListener('change', function () {
+            searchFieldInput.value = this.value;
+          });
 
-              searchForm.addEventListener('submit', function (e) {
-                e.preventDefault();
+          searchForm.addEventListener('submit', function (e) {
+            e.preventDefault();
 
-                if (searchFieldInput.value === 'ntcMttrTtlNm') {
-                  titleField.value = input.value;
-                  contentField.value = '';
-                } else {
-                  titleField.value = '';
-                  contentField.value = input.value;
-                }
+            if (searchFieldInput.value === 'ntcMttrTtlNm') {
+              titleField.value = input.value;
+              contentField.value = '';
+            } else {
+              titleField.value = '';
+              contentField.value = input.value;
+            }
 
-                inputPage.value = 0;
+            inputPage.value = 0;
 
-                const applied = Common.collectFromForm(searchForm);
+            const applied = Common.collectFromForm(searchForm);
 
-                Common.reloadList({
-                  page: parseInt(inputPage.value),
-                  defaultSortColumn: 'bltn_no',
-                  swapTargets: ['.board-list', '#grid-pager'],
-                  baseUrl,
-                  selectSize: inputSize,
-                  inputSort,
-                  inputDir,
-                  applied
-                });
-              });
+            Common.reloadList({
+              page: parseInt(inputPage.value),
+              defaultSortColumn: 'bltn_no',
+              swapTargets: ['.board-list', '#grid-pager'],
+              baseUrl,
+              selectSize: inputSize,
+              inputSort,
+              inputDir,
+              applied
+            });
+          });
 
-              bindPagination(baseUrl, {
-                page: parseInt(inputPage.value || '0'),
-                size: parseInt(inputSize.value || '10'),
-                sort: inputSort.value || 'rgtDtm',
-                dir: inputDir.value || 'asc'
-              });
+          bindPagination(baseUrl, {
+            page: parseInt(inputPage.value || '0'),
+            size: parseInt(inputSize.value || '10'),
+            sort: inputSort.value || 'rgtDtm',
+            dir: inputDir.value || 'asc'
+          });
 
-              grid.addEventListener('click', (e) => {
-                const sendBtn = e.target.closest('button[data-garget="detail"]');
-                if (!sendBtn) return;
-                let rowId = sendBtn.dataset.id;
-                if (rowId) {
-                  window.location.href = '/news/ntcmttr/ntcMttrDtl/' + rowId;
-                }
-              });
+          grid.addEventListener('click', (e) => {
+            const sendBtn = e.target.closest('button[data-garget="detail"]');
+            if (!sendBtn) return;
+            let rowId = sendBtn.dataset.id;
+            const url = '/news/ntcmttr/ntcMttrDtl/' + rowId;
+            if (rowId) {
+              Common.MiniSPA.go(url);
+            }
+          });
 
 
-            })();
-        </script>
+        })();
+      </script>
     </main>
 
 

@@ -112,7 +112,6 @@
         </div>
       </section>
     </main>
-
     <script>
       (function () {
         const userId = document.getElementById('userId');
@@ -123,7 +122,6 @@
         const pwdConfirm = document.getElementById('passwordConfirm');
         const pwdMsg = document.getElementById('pwdMsg');
 
-        // 🔹 비밀번호 확인 메시지용 요소 추가
         const pwdConfirmMsg = document.createElement('p');
         pwdConfirmMsg.id = 'pwdConfirmMsg';
         pwdConfirmMsg.className = 'guide-text';
@@ -131,38 +129,61 @@
         pwdConfirm.insertAdjacentElement('afterend', pwdConfirmMsg);
 
         let idChecked = false;
-
         const idRegex = /^[a-z][a-z0-9_]{5,14}$/;
         const pwdRegex = /^(?=.*[a-zA-Z])(?:(?=.*\d)|(?=.*[^a-zA-Z0-9])).{8,20}$/;
+        const contextPath = ''; // 필요 시 수정
 
-        // 아이디 중복 확인
-        checkBtn.addEventListener('click', () => {
+        /** 아이디 입력 시 초기화 */
+        userId.addEventListener('input', () => {
+          idChecked = false;
+          idMsg.textContent = '';
+          idMsg.style.color = '';
+        });
+
+        /** 아이디 중복 확인 */
+        checkBtn.addEventListener('click', async () => {
           const id = userId.value.trim();
           idChecked = false;
           idMsg.textContent = '';
+          idMsg.style.color = '';
 
           if (!idRegex.test(id)) {
-            alert("아이디는 영문 소문자와 숫자, 특수문자(_)만 사용 가능합니다.\n6~15자, 영문으로 시작해야 합니다.");
             idMsg.textContent = "❌ 아이디 규칙 불일치";
             idMsg.style.color = "red";
             return;
           }
 
-          // 예시: 실제 서버 연동 대신 랜덤
-          const isDuplicate = Math.random() < 0.5;
+          // 객체 그대로 전달 (send에서 JSON.stringify 처리)
+          const postData = { mbrsId: id };
 
-          if (isDuplicate) {
-            idMsg.textContent = "❌ 이미 사용중인 아이디입니다.";
-            idMsg.style.color = "red";
+          const res = await Common.sendSafe(
+            `${contextPath}/etc/mbrsjoin/checkId`,
+            'POST',
+            postData,
+            null,
+            { 'Content-Type': 'application/json' },
+
+          );
+
+          if (!res) return; // 요청 취소
+          if (res.ok) {
+            if (res.data === "아이디가 이미 존재합니다.") {
+              idMsg.textContent = res.data;
+              idMsg.style.color = "red";
+              idChecked = false;
+            } else {
+              idMsg.textContent = res.data || "✅ 사용 가능한 아이디입니다.";
+              idMsg.style.color = "green";
+              idChecked = true;
+            }
           } else {
-            idMsg.textContent = "✅ 사용 가능한 아이디입니다.";
-            idMsg.style.color = "green";
-            idChecked = true;
+            idMsg.textContent = res.data || "❌ 아이디 확인 실패";
+            idMsg.style.color = "red";
           }
         });
 
-        // 비밀번호 유효성 실시간 체크
-        pwd.addEventListener('input', () => {
+        /** 비밀번호 체크 */
+        function checkPassword() {
           const password = pwd.value.trim();
           const idValue = userId.value.trim();
 
@@ -170,17 +191,14 @@
             pwdMsg.textContent = "❌ 비밀번호 형식이 올바르지 않습니다.";
             pwdMsg.style.color = "red";
           } else if (idValue && password.includes(idValue)) {
-            pwdMsg.textContent = "❌ 비밀번호에 아이디를 포함할 수 없습니다.";
+            pwdMsg.textContent = "❌ 비밀번호에 아이디 포함 불가";
             pwdMsg.style.color = "red";
           } else {
             pwdMsg.textContent = "✅ 사용 가능한 비밀번호입니다.";
             pwdMsg.style.color = "green";
           }
-
           checkPasswordMatch();
-        });
-
-        pwdConfirm.addEventListener('input', checkPasswordMatch);
+        }
 
         function checkPasswordMatch() {
           const password = pwd.value.trim();
@@ -200,65 +218,77 @@
           }
         }
 
-        const numberOnlyFields = ['mobile2', 'mobile3', 'tel1', 'tel2', 'tel3'];
-        numberOnlyFields.forEach(id => {
+        pwd.addEventListener('input', checkPassword);
+        pwdConfirm.addEventListener('input', checkPasswordMatch);
+
+        /** 숫자만 입력 */
+        ['mobile2', 'mobile3', 'tel1', 'tel2', 'tel3'].forEach(id => {
           const field = document.getElementById(id);
           field.addEventListener('input', () => {
             field.value = field.value.replace(/[^0-9]/g, '');
           });
         });
 
-        form.addEventListener('submit', (e) => {
+        /** 폼 제출 */
+        form.addEventListener('submit', async (e) => {
           e.preventDefault();
 
-          if (!userId.value.trim()) {
-            alert("아이디를 입력해주세요.");
-            userId.focus();
-            return;
-          }
-
-          if (!idChecked) {
-            alert("아이디 중복 확인을 해주세요.");
-            return;
-          }
-
+          const id = userId.value.trim();
           const password = pwd.value.trim();
           const confirm = pwdConfirm.value.trim();
-
-          if (!password) {
-            alert("비밀번호를 입력해주세요.");
-            return;
-          }
-
-          if (!pwdRegex.test(password)) {
-            alert("비밀번호는 영문, 숫자, 특수문자 중 2가지 이상 조합 8~20자이며 영문을 반드시 포함해야 합니다.");
-            return;
-          }
-
-          if (password.includes(userId.value.trim())) {
-            alert("비밀번호에 아이디를 포함할 수 없습니다.");
-            return;
-          }
-
-          if (password !== confirm) {
-            pwdConfirmMsg.textContent = "❌ 비밀번호가 일치하지 않습니다.";
-            pwdConfirmMsg.style.color = "red";
-            pwdConfirm.focus();
-            return;
-          }
-
           const m2 = document.getElementById('mobile2').value.trim();
           const m3 = document.getElementById('mobile3').value.trim();
-          if (!m2 || !m3) {
-            alert("휴대전화번호를 입력해주세요.");
-            return;
-          }
+          const tel1 = document.getElementById('tel1').value.trim();
+          const tel2 = document.getElementById('tel2').value.trim();
+          const tel3 = document.getElementById('tel3').value.trim();
+          const emailId = document.getElementById('emailId').value.trim();
+          const emailDomain = document.getElementById('emailDomainManual').value.trim();
 
-          alert("회원가입이 완료되었습니다!");
-          window.location.href = '/etc/mbrsjoin/step4.do'
+          if (!id) { alert("아이디 입력"); userId.focus(); return; }
+          if (!idChecked) { alert("아이디 중복 확인"); return; }
+          if (!password) { alert("비밀번호 입력"); pwd.focus(); return; }
+          if (!pwdRegex.test(password)) { alert("비밀번호 형식 오류"); pwd.focus(); return; }
+          if (password.includes(id)) { alert("비밀번호에 아이디 포함 불가"); pwd.focus(); return; }
+          if (password !== confirm) { alert("비밀번호 불일치"); pwdConfirm.focus(); return; }
+          if (!m2 || !m3) { alert("휴대전화번호 입력"); return; }
+
+          // 객체 그대로 전달
+          const postData = {
+            mbrsId: id,
+            password,
+            mobile: `010-${m2}-${m3}`,
+            tel: (tel1 && tel2 && tel3) ? `${tel1}-${tel2}-${tel3}` : '',
+            email: (emailId && emailDomain) ? `${emailId}@${emailDomain}` : ''
+          };
+
+          const res = await Common.sendSafe(
+            `${contextPath}/etc/mbrsjoin/step4`,
+            'POST',
+            postData,
+            undefined,
+            { 'Content-Type': 'application/json' },
+            'json',
+            '회원가입 요청 실패',
+            '서버 오류가 발생했습니다.'
+          );
+
+          if (res && res.ok) {
+            alert("✅ 회원가입 완료!");
+            window.location.href = `${contextPath}/etc/mbrsjoin/step4.do`;
+          } else if (res && !res.ok) {
+            alert(res.data || "❌ 회원가입 실패");
+          }
         });
       })();
     </script>
+
+
+
+
+
+
+
+
 
 
   </th:block>

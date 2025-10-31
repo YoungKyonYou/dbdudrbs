@@ -144,49 +144,6 @@
     // expect: 응답 형식 기대값 (기본값: 'json')
     // clientErrorMsg: 클라이언트 에러 메시지 (기본값: '요청에 실패했습니다.')
     // otherErrorMsg: 기타 에러 메시지 (기본값: '오류가 발생했습니다.')
-    async function sendSafe(url, method = 'POST', data = null, signal, headers, expect = 'json', clientErrorMsg = '요청에 실패했습니다.', otherErrorMsg = '오류가 발생했습니다.') {
-        // send 함수 호출 결과를 out 변수에 저장
-        try {
-            const out = await send(url, method, data, headers, signal, expect);
-
-            // 성공 시 결과를 그대로 반환 (ok: true, status: 200, payload: out 등)
-            return { ok: true, data: out };
-        } catch (e) {
-            // AbortError인 경우 (요청 취소) 에러 무시하고 null 반환
-            if (e.name === 'AbortError') {
-                return null;
-            }
-
-            // 400, 401, 422 등의 클라이언트 에러 상태 코드인 경우
-            if (e?.status >= 400 && e.status < 500) {
-                // 모달 에러 메시지 생성: payload.message가 있으면 사용, 아니면 clientErrorMsg
-                const msg = (e.payload && e.payload.message) ? e.payload.message : clientErrorMsg;
-
-                modalShow({
-                    title: '경고',
-                    message: msg,
-                    buttons: ['close']
-                });
-
-                // 에러 정보 반환
-                return { ok: false, status: e.status, error: e };
-            }
-
-            // 기타 에러인 경우
-            console.error(e);
-
-            // 에러 모달 표시 (title: '오류', message: otherErrorMsg, buttons: ['닫기'])
-            modalShow({
-                title: '오류',
-                message: otherErrorMsg,
-                buttons: ['close']
-            });
-
-            // 에러 정보 반환
-            return { ok: false, status: e.status, error: e };
-        }
-    }
-
 
 
 
@@ -1135,24 +1092,27 @@
         if (data != null) {
             if (data instanceof FormData) {
                 init.body = data;
+
+
             } else if (data instanceof URLSearchParams) {
                 init.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
                 init.body = data.toString();
             } else if (headers['Content-Type'] === 'application/x-www-form-urlencoded;charset=UTF-8') {
-                body = new URLSearchParams(data).toString();
+                // body = new URLSearchParams(data).toString();
+                init.body = new URLSearchParams(data).toString();
             } else {
                 init.headers['Content-Type'] = 'application/json;charset=UTF-8';
                 init.body = JSON.stringify(data);
             }
         }
 
+        let payload = null;
         // show:
         const res = await fetch(url, init);
         const ct = res.headers.get('content-type') || '';
         const text = await res.text();
 
         if (res.ok) {
-            let payload = null;
             if (ct.includes('application/json')) {
                 try {
                     payload = JSON.parse(text);
@@ -1176,6 +1136,53 @@
             return text;
         }
     }
+    async function sendSafe(url, method = 'POST', data = null, signal, headers, expect = 'json', clientErrorMsg = '요청에 실패했습니다.', otherErrorMsg = '오류가 발생했습니다.') {
+        // send 함수 호출 결과를 out 변수에 저장
+        try {
+            console.log(url, method, data, signal, headers, expect, clientErrorMsg, otherErrorMsg);
+
+            const out = await send(url, method, data, headers, signal, expect);
+
+            // 성공 시 결과를 그대로 반환 (ok: true, status: 200, payload: out 등)
+            return { ok: true, data: out };
+        } catch (e) {
+            // AbortError인 경우 (요청 취소) 에러 무시하고 null 반환
+            if (e.name === 'AbortError') {
+                return null;
+            }
+
+            // 400, 401, 422 등의 클라이언트 에러 상태 코드인 경우
+            if (e?.status >= 400 && e.status < 500) {
+                // 모달 에러 메시지 생성: payload.message가 있으면 사용, 아니면 clientErrorMsg
+                const msg = (e.payload && e.payload.message) ? e.payload.message : clientErrorMsg;
+
+                modalShow({
+                    title: '경고',
+                    message: msg,
+                    buttons: ['close']
+                });
+
+                // 에러 정보 반환
+                return { ok: false, status: e.status, error: e };
+            }
+
+            // 기타 에러인 경우
+            console.error(e);
+            console.log(e, '?')
+
+            // 에러 모달 표시 (title: '오류', message: otherErrorMsg, buttons: ['닫기'])
+            modalShow({
+                title: '오류',
+                message: otherErrorMsg,
+                buttons: ['close']
+            });
+
+            // 에러 정보 반환
+            return { ok: false, status: e.status, error: e };
+        }
+    }
+
+
     // 전역 상태 및 기본값 정의
 
     const DEFAULTS = {
@@ -1228,52 +1235,52 @@
     * @param {string} html - HTML 문자열 (swapFromHtml에서 사용)
     */
 
-   function toggleMenu(buttonEl) {
-     const li = buttonEl.closest('li.has-sub');
-     if (!li) return;
-     const subBox = li.querySelector(':scope > .depth-box');
-     const opened = li.classList.toggle('is-open');
-     buttonEl.setAttribute('aria-expanded', opened ? 'true' : 'false');
-     if (subBox) subBox.setAttribute('aria-hidden', opened ? 'false' : 'true');
-   }
+    function toggleMenu(buttonEl) {
+        const li = buttonEl.closest('li.has-sub');
+        if (!li) return;
+        const subBox = li.querySelector(':scope > .depth-box');
+        const opened = li.classList.toggle('is-open');
+        buttonEl.setAttribute('aria-expanded', opened ? 'true' : 'false');
+        if (subBox) subBox.setAttribute('aria-hidden', opened ? 'false' : 'true');
+    }
 
-   function highlightActiveAside(currentUrl) {
-     const ASIDE_SELECTOR = MiniSPAState.opts.asideSelector || '#gnb1';
-     const links = Array.from(document.querySelectorAll(`${ASIDE_SELECTOR} a.swap-link[href]`));
-     links.forEach(a => a.classList.remove('is-active'));
+    function highlightActiveAside(currentUrl) {
+        const ASIDE_SELECTOR = MiniSPAState.opts.asideSelector || '#gnb1';
+        const links = Array.from(document.querySelectorAll(`${ASIDE_SELECTOR} a.swap-link[href]`));
+        links.forEach(a => a.classList.remove('is-active'));
 
-     const cur = new URL(currentUrl || location.href, location.href);
-     const curKey = cur.pathname + cur.search;
+        const cur = new URL(currentUrl || location.href, location.href);
+        const curKey = cur.pathname + cur.search;
 
-     const candidates = links.map(a => {
-       try {
-         const u = new URL(a.href, location.href);
-         if (u.origin !== location.origin) return null;
-         const key = u.pathname + u.search;
-         return { a, key, len: key.length };
-       } catch { return null; }
-     }).filter(Boolean);
+        const candidates = links.map(a => {
+            try {
+                const u = new URL(a.href, location.href);
+                if (u.origin !== location.origin) return null;
+                const key = u.pathname + u.search;
+                return { a, key, len: key.length };
+            } catch { return null; }
+        }).filter(Boolean);
 
-     if (candidates.length === 0) return;
+        if (candidates.length === 0) return;
 
-     // 정확 매칭 우선, 없으면 가장 긴 prefix
-     let best = candidates.find(c => c.key === curKey);
-     if (!best) {
-       const pref = candidates.filter(c => curKey.startsWith(c.key));
-       if (pref.length) best = pref.sort((a,b)=> b.len - a.len)[0];
-     }
-     if (!best) best = candidates.sort((a,b)=> b.len - a.len)[0];
+        // 정확 매칭 우선, 없으면 가장 긴 prefix
+        let best = candidates.find(c => c.key === curKey);
+        if (!best) {
+            const pref = candidates.filter(c => curKey.startsWith(c.key));
+            if (pref.length) best = pref.sort((a, b) => b.len - a.len)[0];
+        }
+        if (!best) best = candidates.sort((a, b) => b.len - a.len)[0];
 
-     best.a.classList.add('is-active');
+        best.a.classList.add('is-active');
 
-     // 상위 메뉴 열기 (li.has-sub > button + .depth-box)
-     const li = best.a.closest('li.has-sub');
-     const btn = li ? li.querySelector(':scope > button[aria-haspopup="true"]') : null;
-     const box = li ? li.querySelector(':scope > .depth-box') : null;
-     if (li) li.classList.add('is-open');
-     if (btn) btn.setAttribute('aria-expanded','true');
-     if (box) box.setAttribute('aria-hidden','false');
-   }
+        // 상위 메뉴 열기 (li.has-sub > button + .depth-box)
+        const li = best.a.closest('li.has-sub');
+        const btn = li ? li.querySelector(':scope > button[aria-haspopup="true"]') : null;
+        const box = li ? li.querySelector(':scope > .depth-box') : null;
+        if (li) li.classList.add('is-open');
+        if (btn) btn.setAttribute('aria-expanded', 'true');
+        if (box) box.setAttribute('aria-hidden', 'false');
+    }
 
 
     async function fetchContent(url) {
@@ -1299,51 +1306,59 @@
      * @param {string} url - 현재 URL
      */
     async function swapFromHtml(html, url, push) {
-      const doc = new DOMParser().parseFromString(html, 'text/html');
-      const next = doc.querySelector(MiniSPAState.opts.containerSelector)
-                 || doc.querySelector("#contents .container")
-                 || null;
-      const cur  = document.querySelector(MiniSPAState.opts.containerSelector);
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const next = doc.querySelector(MiniSPAState.opts.containerSelector)
+            || doc.querySelector("#contents .container")
+            || null;
+        const cur = document.querySelector(MiniSPAState.opts.containerSelector);
 
-      // 컨테이너 못 찾으면 폴백
-      if (!(cur && next)) {
+        // 컨테이너 못 찾으면 폴백
+        if (!(cur && next)) {
+            hideLoading();
+            location.href = url;
+            return;
+        }
+
+        // 1) 교체 전에 next 안의 inline script를 미리 뽑아둠
+        const inlineScripts = Array.from(next.querySelectorAll('script:not([src])')).map(s => ({
+            type: s.getAttribute('type') || '',
+            noModule: s.hasAttribute('noModule'),
+            code: s.textContent || ''
+        }));
+
+        // 2) 컨테이너 교체
+        cur.innerHTML = next.innerHTML;
+
+        // 3) 인라인 스크립트 재실행
+        for (const s of inlineScripts) {
+            const el = document.createElement('script');
+            if (s.type) el.type = s.type;
+            if (s.noModule) el.noModule = true;
+            el.textContent = s.code;
+            cur.appendChild(el);
+        }
+
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+
+        // AOS/기타 위젯 재바인딩 (이미지/폰트 로딩 고려)
+        if (window.Common?.Reinit?.run) {
+            // 컨테이너 노드 기준으로만 스캔하면 성능에 유리
+            await window.Common.Reinit.run(cur);
+        }
+        // =========================
+
+        // 4) 타이틀 변경
+        const title = doc.querySelector('title')?.textContent?.trim();
+        if (title) document.title = title;
+
+        // 5) 히스토리
+        if (push) history.pushState({}, '', url);
+
+        // 6) 네비 하이라이트 갱신
+        highlightActiveAside(url);
+
+        // (Reinit는 위에서 이미 호출함)
         hideLoading();
-        location.href = url;
-        return;
-      }
-
-      // 추출: inline script
-      const inlineScripts = Array.from(next.querySelectorAll('script:not([src])')).map(s => ({
-        type: s.getAttribute('type') || '',
-        noModule: s.hasAttribute('noModule'),
-        code: s.textContent || ''
-      }));
-      // 교체
-      cur.innerHTML = next.innerHTML;
-
-      // 인라인 스크립트 재실행
-      for (const s of inlineScripts) {
-        const el = document.createElement('script');
-        if (s.type) el.type = s.type;
-        if (s.noModule) el.noModule = true;
-        el.textContent = s.code;
-        // 컨테이너 내부로 삽입하여 실행
-        cur.appendChild(el);
-      }
-
-      // 타이틀
-      const title = doc.querySelector('title')?.textContent?.trim();
-      if (title) document.title = title;
-
-      // 히스토리
-      if (push) history.pushState({}, '', url);
-
-      // 네비 하이라이트 갱신
-      highlightActiveAside(url);
-
-      // 페이지 전용 재초기화 훅
-      if (window.Common?.Reinit?.run) window.Common.Reinit.run();
-      hideLoading();
     }
 
 
@@ -1387,35 +1402,35 @@
         await swapFromHtml(html, url, push);
     }
 
-  // 기존 handleClick 전체 교체
-  function handleClick(e) {
-    // 1) 서브 열기/닫기(버튼)
-    const menuBtn = e.target.closest('#gnb1 li.has-sub > button[aria-haspopup="true"]');
-    if (menuBtn) {
-      e.preventDefault();
-      toggleMenu(menuBtn);
-      return;
+    // 기존 handleClick 전체 교체
+    function handleClick(e) {
+        // 1) 서브 열기/닫기(버튼)
+        const menuBtn = e.target.closest('#gnb1 li.has-sub > button[aria-haspopup="true"]');
+        if (menuBtn) {
+            e.preventDefault();
+            toggleMenu(menuBtn);
+            return;
+        }
+
+        // 2) SPA 링크 처리 (.swap-link)
+        const a = e.target.closest('a.swap-link[href]');
+        if (!a) return;
+
+        // 새창/수정키는 그대로
+        if (a.getAttribute('target') === '_blank' || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+
+        // 외부 링크는 패스
+        try {
+            const u = new URL(a.href, location.href);
+            if (u.origin !== location.origin) return;
+        } catch { return; }
+
+        // # 같은 더미도 패스
+        if (!a.href || a.getAttribute('href').trim().endsWith('#')) return;
+
+        e.preventDefault();
+        navigateAndSwap(a.href, true).catch(console.error);
     }
-
-    // 2) SPA 링크 처리 (.swap-link)
-    const a = e.target.closest('a.swap-link[href]');
-    if (!a) return;
-
-    // 새창/수정키는 그대로
-    if (a.getAttribute('target') === '_blank' || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
-
-    // 외부 링크는 패스
-    try {
-      const u = new URL(a.href, location.href);
-      if (u.origin !== location.origin) return;
-    } catch { return; }
-
-    // # 같은 더미도 패스
-    if (!a.href || a.getAttribute('href').trim().endsWith('#')) return;
-
-    e.preventDefault();
-    navigateAndSwap(a.href, true).catch(console.error);
-  }
     /**
      * popstate 핸들러: 브라우저 뒤로/앞 가기 시 SPA 전환
      * @param {Event} e - popstate 이벤트
@@ -1538,6 +1553,38 @@
             await swapFromHtml(html, url, push);
         }
     });
+    const Reinit = {
+        async run(root = document) {
+            // 1) 폰트/이미지 로딩 대기 (레이아웃 확정 후 AOS 계산 정확히)
+            async function imagesReady(scope) {
+                const imgs = Array.from(scope.querySelectorAll('img'));
+                if (!imgs.length) return;
+                await Promise.allSettled(imgs.map(img => {
+                    if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+                    return new Promise(res => {
+                        img.addEventListener('load', res, { once: true });
+                        img.addEventListener('error', res, { once: true });
+                    });
+                }));
+            }
+            try {
+                if (document.fonts?.ready) await document.fonts.ready;
+            } catch { }
+
+            await imagesReady(root);
+
+            // 2) AOS 재초기화/리프레시
+            if (window.AOS) {
+                // 최초 1회만 init, 이후에는 refreshHard
+                if (!window.__aosInited) {
+                    AOS.init({ duration: 600, once: true });
+                    window.__aosInited = true;
+                } else {
+                    AOS.refreshHard(); // 새 data-aos 요소까지 재스캔
+                }
+            }
+        }
+    };
 
     // 사용 예시
     // MiniSPA.init({ asideSelector: '#myAside', containerSelector: '#content' });
@@ -1590,6 +1637,7 @@
 
         // JSON 수집 함수 (collectAsJson)
         collectAsJson,
-        MiniSPA
+        MiniSPA,
+        Reinit
     })
 })(window);
