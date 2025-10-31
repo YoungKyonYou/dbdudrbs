@@ -4,6 +4,6 @@ import tmoney.co.kr.hxz.etc.mbrsjoin.vo.MbrsJoinInstReqVO;
 
 public interface MbrsJoinService {
     void insertMbrsJoin(MbrsJoinInstReqVO req);
-    boolean readMbrsCountById(String checkId);
 
+    boolean readMbrsCountById(String checkId);
 }
