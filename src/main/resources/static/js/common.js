@@ -1298,53 +1298,61 @@
      * @param {string} html - 불러온 HTML
      * @param {string} url - 현재 URL
      */
-    async function swapFromHtml(html, url, push) {
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-        const next = doc.querySelector(MiniSPAState.opts.containerSelector)
-            || doc.querySelector("#contents .container")
-            || null;
-        const cur = document.querySelector(MiniSPAState.opts.containerSelector);
+   async function swapFromHtml(html, url, push) {
+     const doc = new DOMParser().parseFromString(html, 'text/html');
+     const next = doc.querySelector(MiniSPAState.opts.containerSelector)
+         || doc.querySelector("#contents .container")
+         || null;
+     const cur = document.querySelector(MiniSPAState.opts.containerSelector);
 
-        // 컨테이너 못 찾으면 폴백
-        if (!(cur && next)) {
-            hideLoading();
-            location.href = url;
-            return;
-        }
+     // 컨테이너 못 찾으면 폴백
+     if (!(cur && next)) {
+       hideLoading();
+       location.href = url;
+       return;
+     }
 
-        // 추출: inline script
-        const inlineScripts = Array.from(next.querySelectorAll('script:not([src])')).map(s => ({
-            type: s.getAttribute('type') || '',
-            noModule: s.hasAttribute('noModule'),
-            code: s.textContent || ''
-        }));
-        // 교체
-        cur.innerHTML = next.innerHTML;
+     // 1) 교체 전에 next 안의 inline script를 미리 뽑아둠
+     const inlineScripts = Array.from(next.querySelectorAll('script:not([src])')).map(s => ({
+       type: s.getAttribute('type') || '',
+       noModule: s.hasAttribute('noModule'),
+       code: s.textContent || ''
+     }));
 
-        // 인라인 스크립트 재실행
-        for (const s of inlineScripts) {
-            const el = document.createElement('script');
-            if (s.type) el.type = s.type;
-            if (s.noModule) el.noModule = true;
-            el.textContent = s.code;
-            // 컨테이너 내부로 삽입하여 실행
-            cur.appendChild(el);
-        }
+     // 2) 컨테이너 교체
+     cur.innerHTML = next.innerHTML;
 
-        // 타이틀
-        const title = doc.querySelector('title')?.textContent?.trim();
-        if (title) document.title = title;
+     // 3) 인라인 스크립트 재실행
+     for (const s of inlineScripts) {
+       const el = document.createElement('script');
+       if (s.type) el.type = s.type;
+       if (s.noModule) el.noModule = true;
+       el.textContent = s.code;
+       cur.appendChild(el);
+     }
 
-        // 히스토리
-        if (push) history.pushState({}, '', url);
+     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
 
-        // 네비 하이라이트 갱신
-        highlightActiveAside(url);
+     // AOS/기타 위젯 재바인딩 (이미지/폰트 로딩 고려)
+     if (window.Common?.Reinit?.run) {
+       // 컨테이너 노드 기준으로만 스캔하면 성능에 유리
+       await window.Common.Reinit.run(cur);
+     }
+     // =========================
 
-        // 페이지 전용 재초기화 훅
-        if (window.Common?.Reinit?.run) window.Common.Reinit.run();
-        hideLoading();
-    }
+     // 4) 타이틀 변경
+     const title = doc.querySelector('title')?.textContent?.trim();
+     if (title) document.title = title;
+
+     // 5) 히스토리
+     if (push) history.pushState({}, '', url);
+
+     // 6) 네비 하이라이트 갱신
+     highlightActiveAside(url);
+
+     // (Reinit는 위에서 이미 호출함)
+     hideLoading();
+   }
 
 
 
@@ -1538,6 +1546,38 @@
             await swapFromHtml(html, url, push);
         }
     });
+    const Reinit = {
+      async run(root = document) {
+        // 1) 폰트/이미지 로딩 대기 (레이아웃 확정 후 AOS 계산 정확히)
+        async function imagesReady(scope) {
+          const imgs = Array.from(scope.querySelectorAll('img'));
+          if (!imgs.length) return;
+          await Promise.allSettled(imgs.map(img => {
+            if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+            return new Promise(res => {
+              img.addEventListener('load', res, { once: true });
+              img.addEventListener('error', res, { once: true });
+            });
+          }));
+        }
+        try {
+          if (document.fonts?.ready) await document.fonts.ready;
+        } catch {}
+
+        await imagesReady(root);
+
+        // 2) AOS 재초기화/리프레시
+        if (window.AOS) {
+          // 최초 1회만 init, 이후에는 refreshHard
+          if (!window.__aosInited) {
+            AOS.init({ duration: 600, once: true });
+            window.__aosInited = true;
+          } else {
+            AOS.refreshHard(); // 새 data-aos 요소까지 재스캔
+          }
+        }
+      }
+    };
 
     // 사용 예시
     // MiniSPA.init({ asideSelector: '#myAside', containerSelector: '#content' });
@@ -1590,6 +1630,7 @@
 
         // JSON 수집 함수 (collectAsJson)
         collectAsJson,
-        MiniSPA
+        MiniSPA,
+        Reinit
     })
 })(window);
