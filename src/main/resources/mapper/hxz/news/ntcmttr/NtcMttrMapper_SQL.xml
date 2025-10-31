@@ -19,6 +19,7 @@
              , bltn_dvs_cd as bltnDvsCd
              , tpw_bltn_rgt_dtm as tpwBltnRgtDtm
              , ntc_mttr_ttl_nm as ntcMttrTtlNm
+             , ntc_mttr_ctt as ntcMttrCtt
              , main_exps_yn as mainExpsYn
              , main_exps_stt_dt as mainExpsSttDt
              , main_exps_end_dt as mainExpsEndDt
@@ -74,6 +75,7 @@
              , bltn_dvs_cd as bltnDvsCd
              , tpw_bltn_rgt_dtm as tpwBltnRgtDtm
              , ntc_mttr_ttl_nm as ntcMttrTtlNm
+             , ntc_mttr_ctt as ntcMttrCtt
              , main_exps_yn as mainExpsYn
              , main_exps_stt_dt as mainExpsSttDt
              , main_exps_end_dt as mainExpsEndDt

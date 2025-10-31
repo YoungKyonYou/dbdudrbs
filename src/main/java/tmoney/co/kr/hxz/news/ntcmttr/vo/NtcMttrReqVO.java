@@ -15,6 +15,7 @@ public class NtcMttrReqVO {
     private String bltnDvsCd;       // 게시구분코드
     private String tpwBltnRgtDtm;   // 교통복지게시등록일시
     private String ntcMttrTtlNm;    // 공지사항제목명
+    private String ntcMttrCtt;    // 공지사항내용?
     private String ntcMtrrCtt;      // 공지사항내용
     private String mainExpsYn;      // 메인노출 여부
     private String mainExpsSttDt;   // 메인노출 시작일자

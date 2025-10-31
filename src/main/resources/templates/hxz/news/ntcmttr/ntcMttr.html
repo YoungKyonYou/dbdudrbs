@@ -81,9 +81,9 @@
               <li class="board-row" th:each="row, stat : ${pageData.content}"
                 th:classappend="${row.mainExpsYn} == 'Y' ? 'is-notice'">
                 <div class="board-item">
-                  <span class="col col-num"
-                    th:text="${row.mainExpsYn == 'Y' ? row.bltnNo : pageData.total - (pageData.page * pageData.size) - stat.index}">1</span>
-
+                  <!-- <span class="col col-num"
+                    th:text="${row.mainExpsYn == 'Y' ? row.bltnNo : pageData.total - (pageData.page * pageData.size) - stat.index}">1</span> -->
+                  <span class="col col-num" th:text="${row.bltnNo }">1</span>
                   <span class="col col-title">
                     <span th:if="${row.mainExpsYn == 'Y'}" class="badge badge-notice">공지</span>
                     <button type="button" data-garget="detail" th:attr="data-id=${row.bltnNo}" class="link-button"

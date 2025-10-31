@@ -1,4 +1,3 @@
-
 <th:block th:replace="~{component/header :: layout(~{::content})}">
   <th:block th:fragment="content">
     <div id="breadcrumb">
@@ -235,7 +234,7 @@
             <div class="card-item" data-aos="fade-up" data-aos-duration="900" data-aos-easing="ease-in-sine">
               <div class="img-box">
                 <p><span>G</span>IMHAE SI</p>
-<!--                <img src="/images/sub/img-gh.jpg" alt="김해시 이미지">-->
+                <!--                <img src="/images/sub/img-gh.jpg" alt="김해시 이미지">-->
               </div>
               <h3>김해시 <br />교통비 지원사업</h3>
             </div>
@@ -256,84 +255,84 @@
           </div>
         </div>
       </section>
-        <script th:inline="javascript" type="text/javascript">
-            (async function () {
+      <script th:inline="javascript" type="text/javascript">
+        (async function () {
 
-              // ✅ GSAP / ScrollTrigger 로드 확인
-              if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-                console.warn('GSAP 또는 ScrollTrigger가 로드되지 않았습니다.');
-                return;
-              }
+          // ✅ GSAP / ScrollTrigger 로드 확인
+          if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+            console.warn('GSAP 또는 ScrollTrigger가 로드되지 않았습니다.');
+            return;
+          }
 
-              gsap.registerPlugin(ScrollTrigger);
+          gsap.registerPlugin(ScrollTrigger);
 
-              const sec = document.querySelector('.section8');
-              if (!sec) return;
+          const sec = document.querySelector('.section8');
+          if (!sec) return;
 
-              const cont = sec.querySelector('.container') || sec;
-              const wrap = sec.querySelector('.card-wrap');
-              if (!cont || !wrap) return;
+          const cont = sec.querySelector('.container') || sec;
+          const wrap = sec.querySelector('.card-wrap');
+          if (!cont || !wrap) return;
 
-              // ✅ 이미지 & 폰트 로딩 대기
-              await imagesReady(wrap);
-              if (document.fonts && document.fonts.ready) {
-                try {
-                  await document.fonts.ready;
-                } catch (e) {
-                  console.warn('폰트 로딩 오류:', e);
-                }
-              }
+          // ✅ 이미지 & 폰트 로딩 대기
+          await imagesReady(wrap);
+          if (document.fonts && document.fonts.ready) {
+            try {
+              await document.fonts.ready;
+            } catch (e) {
+              console.warn('폰트 로딩 오류:', e);
+            }
+          }
 
-              const viewW = cont.clientWidth;
-              const wrapW = wrap.scrollWidth;
-              if (wrapW <= viewW) return; // 수평 이동 불필요
+          const viewW = cont.clientWidth;
+          const wrapW = wrap.scrollWidth;
+          if (wrapW <= viewW) return; // 수평 이동 불필요
 
-              // 💡 스크롤 거리 계산
-              const startLeftPx = Math.round(viewW * 0.3);
-              const endLeftPx = -Math.max(0, wrapW - viewW);
-              const distancePx = startLeftPx - endLeftPx;
+          // 💡 스크롤 거리 계산
+          const startLeftPx = Math.round(viewW * 0.3);
+          const endLeftPx = -Math.max(0, wrapW - viewW);
+          const distancePx = startLeftPx - endLeftPx;
 
-              gsap.set(wrap, { left: startLeftPx });
+          gsap.set(wrap, { left: startLeftPx });
 
-              gsap.to(wrap, {
-                left: endLeftPx,
-                ease: 'none',
-                scrollTrigger: {
-                  trigger: sec,
-                  start: 'top-=20%',
-                  end: '+=' + distancePx,
-                  pin: true,
-                  pinType: ScrollTrigger.isTouch ? 'transform' : 'fixed',
-                  scrub: 1,
-                  anticipatePin: 1,
-                  invalidateOnRefresh: true
-                  // markers: true
-                }
-              });
+          gsap.to(wrap, {
+            left: endLeftPx,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: sec,
+              start: 'top-=20%',
+              end: '+=' + distancePx,
+              pin: true,
+              pinType: ScrollTrigger.isTouch ? 'transform' : 'fixed',
+              scrub: 1,
+              anticipatePin: 1,
+              invalidateOnRefresh: true
+              // markers: true
+            }
+          });
 
-              // ✅ 디바운스 리사이즈 이벤트
-              let resizeTimer;
-              window.addEventListener('resize', () => {
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(() => ScrollTrigger.refresh(), 100);
-              });
+          // ✅ 디바운스 리사이즈 이벤트
+          let resizeTimer;
+          window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => ScrollTrigger.refresh(), 100);
+          });
 
-              // ✅ 이미지 로딩 유틸 함수
-              function imagesReady(root) {
-                const imgs = Array.from(root.querySelectorAll('img'));
-                if (!imgs.length) return Promise.resolve();
-                return Promise.allSettled(
-                  imgs.map(img => {
-                    if (img.complete && img.naturalWidth > 0) return Promise.resolve();
-                    return new Promise(res => {
-                      img.addEventListener('load', res, { once: true });
-                      img.addEventListener('error', res, { once: true });
-                    });
-                  })
-                );
-              }
-            })();
-        </script>
+          // ✅ 이미지 로딩 유틸 함수
+          function imagesReady(root) {
+            const imgs = Array.from(root.querySelectorAll('img'));
+            if (!imgs.length) return Promise.resolve();
+            return Promise.allSettled(
+              imgs.map(img => {
+                if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+                return new Promise(res => {
+                  img.addEventListener('load', res, { once: true });
+                  img.addEventListener('error', res, { once: true });
+                });
+              })
+            );
+          }
+        })();
+      </script>
     </main>
 
 

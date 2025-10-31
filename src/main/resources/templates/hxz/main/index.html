@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<link rel="stylesheet" th:href="@{/css/page/main.css}" />
 <th:block th:replace="~{component/header :: layout(~{::content})}">
   <th:block th:fragment="content">
     <main id="contents">
@@ -46,13 +45,13 @@
               <p>반갑습니다!</p>
             </div>
             <!-- 참고 해야 합니다 minispa -->
-            <a th:href="@{/etc/lgn/login.do}" class="swap-link btn btn-primary btn-icon-right">
+            <button onclick="Common.MiniSPA.go('/etc/lgn/login.do')" class="swap-link btn btn-primary btn-icon-right">
               <i class="icon icon-arrow-right" aria-hidden="true"></i>
               로그인
-            </a>
+            </button>
 
             <div class="link-wrap" aria-label="회원 계정 관련 링크">
-              <a href="#">회원가입</a>
+              <a onclick="Common.MiniSPA.go('/etc/mbrsjoin/step1.do')">회원가입</a>
               <span class="bar" aria-hidden="true"></span>
               <a href="#">아이디/비밀번호찾기</a>
             </div>
@@ -103,7 +102,8 @@
                 다양한 대상자가 지원금을 신청할 수 있어요!
               </h3>
               <p class="">* 지원금 신청과 입금 절차는 각 지자체별 정책에 따라 다를 수 있습니다.</p>
-              <a href="#" class="btn-link">자세히 보기 <i class="icon right"></i></a>
+              <a onclick="Common.MiniSPA.go('/utlzgd/spfnAplPayGd.do')" class="btn-link">자세히 보기 <i
+                  class="icon right"></i></a>
 
             </div>
             <div class="img-box">
@@ -171,7 +171,8 @@
                   <span>(분기별)</span>
                 </div>
               </div>
-              <a href="#" class="btn-link">자세히 보기 <i class="icon right"></i></a>
+              <a onclick="Common.MiniSPA.go('/utlzgd/mbrsJoinGd.do')" class="btn-link">자세히 보기 <i
+                  class="icon right"></i></a>
             </div>
           </div>
         </div>
@@ -275,12 +276,47 @@
           </div>
         </div>
       </section>
-
       <section class="section section7">
         <div class="container">
           <div class="title-box">
             <h2>공지사항</h2>
-            <a th:href="@{/news/ntcmttr/ntcMttr.do}" class="btn-link swap-link">자세히 보기 <i class="icon right"></i></a>
+            <a onclick="Common.MiniSPA.go('/news/ntcmttr/ntcMttr.do')" class="btn-link swap-link">
+              자세히 보기 <i class="icon right"></i>
+            </a>
+          </div>
+
+          <div class="list-box">
+            <!-- pageData가 null일 수 있으므로 안전하게 처리 -->
+            <a th:each="row : ${pageData != null ? #lists.take(pageData.content, 5) : {}}"
+              th:href="@{'/news/ntcmttr/ntcMttrDtl/' + ${row.bltnNo}}" class="list-item" data-aos="fade-up"
+              data-aos-offset="100" data-aos-easing="ease-out-cubic" data-aos-duration="1000">
+
+              <span th:if="${row.mainExpsYn == 'Y'}" class="badge primary">공지</span>
+              <span class="title" th:text="${row.ntcMttrTtlNm}">공지 제목</span>
+              <span class="date" th:text="${row.rgtDtm != null and row.rgtDtm.length() >= 8 ?
+                        #strings.substring(row.rgtDtm,0,4) + '.' +
+                        #strings.substring(row.rgtDtm,4,6) + '.' +
+                        #strings.substring(row.rgtDtm,6,8) :
+                        row.rgtDtm}">
+                2025.07.29
+              </span>
+            </a>
+
+            <!-- 공지 없음 처리 -->
+            <p th:if="${pageData == null or #lists.isEmpty(pageData.content)}" class="no-data"
+              style="text-align:center; color:#888; margin-top:20px;">
+              등록된 공지사항이 없습니다.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- <section class="section section7">
+        <div class="container">
+          <div class="title-box">
+            <h2>공지사항</h2>
+            <a onclick="Common.MiniSPA.go('/news/ntcmttr/ntcMttr.do')" class="btn-link swap-link">자세히 보기 <i
+                class="icon right"></i></a>
 
           </div>
           <div class="list-box">
@@ -316,7 +352,7 @@
             </a>
           </div>
         </div>
-      </section>
+      </section> -->
     </main>
   </th:block>
 </th:block>

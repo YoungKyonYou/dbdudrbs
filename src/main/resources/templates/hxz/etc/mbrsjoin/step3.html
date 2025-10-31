@@ -160,17 +160,22 @@
             `${contextPath}/etc/mbrsjoin/checkId`,
             'POST',
             postData,
-            undefined,
+            null,
             { 'Content-Type': 'application/json' },
 
           );
 
           if (!res) return; // 요청 취소
-
           if (res.ok) {
-            idMsg.textContent = res.data || "✅ 사용 가능한 아이디입니다.";
-            idMsg.style.color = "green";
-            idChecked = true;
+            if (res.data === "아이디가 이미 존재합니다.") {
+              idMsg.textContent = res.data;
+              idMsg.style.color = "red";
+              idChecked = false;
+            } else {
+              idMsg.textContent = res.data || "✅ 사용 가능한 아이디입니다.";
+              idMsg.style.color = "green";
+              idChecked = true;
+            }
           } else {
             idMsg.textContent = res.data || "❌ 아이디 확인 실패";
             idMsg.style.color = "red";
