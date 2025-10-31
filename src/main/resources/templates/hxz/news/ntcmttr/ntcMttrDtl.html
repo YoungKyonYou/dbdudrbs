@@ -30,9 +30,9 @@
                         <!-- 제목 영역 -->
                         <div class="title-box">
                             <!-- 공지 배지 -->
-                            <span class="col-num" th:if="*{mainExpsYn} == 'Y'">
-                                <span class="badge badge-notice">공지</span>
-                            </span>
+                            <span class="col-num" th:if="*{mainExpsYn} != null and *{mainExpsYn} == 'Y'">
+    <span class="badge badge-notice">공지</span>
+</span>
 
                             <!-- 일반 공지일 경우 bltnNo 표시 -->
                             <span class="col-num" th:if="*{mainExpsYn} != 'Y'" th:text="*{bltnNo}">000000</span>

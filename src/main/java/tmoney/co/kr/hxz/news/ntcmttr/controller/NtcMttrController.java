@@ -69,4 +69,5 @@ public class NtcMttrController {
         return "/hxz/news/ntcmttr/ntcMttrDtl";
 
     }
+    
 }

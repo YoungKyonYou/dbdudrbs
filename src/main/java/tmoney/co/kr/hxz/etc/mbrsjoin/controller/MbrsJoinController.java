@@ -103,7 +103,7 @@ public class MbrsJoinController {
     ) {
         boolean isCheckId = mbrsJoinService.readMbrsCountById(req.getMbrsId());
         if (isCheckId) {
-            return ResponseEntity.badRequest().body("아이디가 이미 존재합니다.");
+            return ResponseEntity.ok("아이디가 이미 존재합니다.");
         }
         return ResponseEntity.ok("사용 가능한 아이디입니다.");
     }
