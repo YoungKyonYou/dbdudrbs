@@ -144,49 +144,6 @@
     // expect: 응답 형식 기대값 (기본값: 'json')
     // clientErrorMsg: 클라이언트 에러 메시지 (기본값: '요청에 실패했습니다.')
     // otherErrorMsg: 기타 에러 메시지 (기본값: '오류가 발생했습니다.')
-    async function sendSafe(url, method = 'POST', data = null, signal, headers, expect = 'json', clientErrorMsg = '요청에 실패했습니다.', otherErrorMsg = '오류가 발생했습니다.') {
-        // send 함수 호출 결과를 out 변수에 저장
-        try {
-            const out = await send(url, method, data, headers, signal, expect);
-
-            // 성공 시 결과를 그대로 반환 (ok: true, status: 200, payload: out 등)
-            return { ok: true, data: out };
-        } catch (e) {
-            // AbortError인 경우 (요청 취소) 에러 무시하고 null 반환
-            if (e.name === 'AbortError') {
-                return null;
-            }
-
-            // 400, 401, 422 등의 클라이언트 에러 상태 코드인 경우
-            if (e?.status >= 400 && e.status < 500) {
-                // 모달 에러 메시지 생성: payload.message가 있으면 사용, 아니면 clientErrorMsg
-                const msg = (e.payload && e.payload.message) ? e.payload.message : clientErrorMsg;
-
-                modalShow({
-                    title: '경고',
-                    message: msg,
-                    buttons: ['close']
-                });
-
-                // 에러 정보 반환
-                return { ok: false, status: e.status, error: e };
-            }
-
-            // 기타 에러인 경우
-            console.error(e);
-
-            // 에러 모달 표시 (title: '오류', message: otherErrorMsg, buttons: ['닫기'])
-            modalShow({
-                title: '오류',
-                message: otherErrorMsg,
-                buttons: ['close']
-            });
-
-            // 에러 정보 반환
-            return { ok: false, status: e.status, error: e };
-        }
-    }
-
 
 
 
@@ -1135,6 +1092,8 @@
         if (data != null) {
             if (data instanceof FormData) {
                 init.body = data;
+
+
             } else if (data instanceof URLSearchParams) {
                 init.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
                 init.body = data.toString();
@@ -1146,13 +1105,13 @@
             }
         }
 
+        let payload = null;
         // show:
         const res = await fetch(url, init);
         const ct = res.headers.get('content-type') || '';
         const text = await res.text();
 
         if (res.ok) {
-            let payload = null;
             if (ct.includes('application/json')) {
                 try {
                     payload = JSON.parse(text);
@@ -1176,6 +1135,52 @@
             return text;
         }
     }
+    async function sendSafe(url, method = 'POST', data = null, signal, headers, expect = 'json', clientErrorMsg = '요청에 실패했습니다.', otherErrorMsg = '오류가 발생했습니다.') {
+        // send 함수 호출 결과를 out 변수에 저장
+        try {
+            console.log(url, method, data, signal, headers, expect, clientErrorMsg, otherErrorMsg);
+
+            const out = await send(url, method, data, headers, signal, expect);
+
+            // 성공 시 결과를 그대로 반환 (ok: true, status: 200, payload: out 등)
+            return { ok: true, data: out };
+        } catch (e) {
+            // AbortError인 경우 (요청 취소) 에러 무시하고 null 반환
+            if (e.name === 'AbortError') {
+                return null;
+            }
+
+            // 400, 401, 422 등의 클라이언트 에러 상태 코드인 경우
+            if (e?.status >= 400 && e.status < 500) {
+                // 모달 에러 메시지 생성: payload.message가 있으면 사용, 아니면 clientErrorMsg
+                const msg = (e.payload && e.payload.message) ? e.payload.message : clientErrorMsg;
+
+                modalShow({
+                    title: '경고',
+                    message: msg,
+                    buttons: ['close']
+                });
+
+                // 에러 정보 반환
+                return { ok: false, status: e.status, error: e };
+            }
+
+            // 기타 에러인 경우
+            console.error(e);
+
+            // 에러 모달 표시 (title: '오류', message: otherErrorMsg, buttons: ['닫기'])
+            modalShow({
+                title: '오류',
+                message: otherErrorMsg,
+                buttons: ['close']
+            });
+
+            // 에러 정보 반환
+            return { ok: false, status: e.status, error: e };
+        }
+    }
+
+
     // 전역 상태 및 기본값 정의
 
     const DEFAULTS = {

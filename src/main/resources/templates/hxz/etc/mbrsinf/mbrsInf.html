@@ -206,7 +206,7 @@
                                 const res = await Common.sendSafe(
                                     '/etc/mbrsinf/',
                                     'POST',
-                                    JSON.stringify(applied),
+                                    applied,
                                     undefined,
                                     { 'Content-Type': 'application/json' }
                                 );

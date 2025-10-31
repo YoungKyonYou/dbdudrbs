@@ -22,7 +22,7 @@
              , mbrs_sta_cd          as mbrsStaCd
              , pwd_err_ncnt          as pwdErrNcnt
              , dspr_rgt_inhr_no          as dsprRgtInhrNo
-             , vtn_no          as vtnNo
+             , vtrn_no          as vtrnNo
              , tpw_join_typ_cd          as tpwJoinTypCd
              , tpw_join_rctd_val          as tpwJoinRctdVal
              , scsn_dtm          as scsnDtm

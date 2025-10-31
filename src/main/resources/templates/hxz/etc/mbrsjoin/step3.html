@@ -112,7 +112,6 @@
         </div>
       </section>
     </main>
-
     <script>
       (function () {
         const userId = document.getElementById('userId');
@@ -132,20 +131,21 @@
         let idChecked = false;
         const idRegex = /^[a-z][a-z0-9_]{5,14}$/;
         const pwdRegex = /^(?=.*[a-zA-Z])(?:(?=.*\d)|(?=.*[^a-zA-Z0-9])).{8,20}$/;
+        const contextPath = ''; // 필요 시 수정
 
-        const contextPath = ''; // 프로젝트 context root (예: '/hxz') 필요 시 수정
-
-        // 아이디 입력 시 idChecked 초기화
+        /** 아이디 입력 시 초기화 */
         userId.addEventListener('input', () => {
           idChecked = false;
           idMsg.textContent = '';
+          idMsg.style.color = '';
         });
 
-        // 아이디 중복 확인
+        /** 아이디 중복 확인 */
         checkBtn.addEventListener('click', async () => {
           const id = userId.value.trim();
           idChecked = false;
           idMsg.textContent = '';
+          idMsg.style.color = '';
 
           if (!idRegex.test(id)) {
             idMsg.textContent = "❌ 아이디 규칙 불일치";
@@ -153,31 +153,31 @@
             return;
           }
 
-          try {
-            const response = await fetch(`/etc/mbrsjoin/checkId`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ mbrsId: id })
-            });
+          // 객체 그대로 전달 (send에서 JSON.stringify 처리)
+          const postData = { mbrsId: id };
 
-            if (response.ok) {
-              const text = await response.text();
-              idMsg.textContent = "✅ 사용 가능한 아이디입니다.";
-              idMsg.style.color = "green";
-              idChecked = true;
-            } else {
-              const text = await response.text();
-              idMsg.textContent = "❌ " + text;
-              idMsg.style.color = "red";
-            }
-          } catch (err) {
-            console.error(err);
-            idMsg.textContent = "❌ 서버 오류 발생";
+          const res = await Common.sendSafe(
+            `${contextPath}/etc/mbrsjoin/checkId`,
+            'POST',
+            postData,
+            undefined,
+            { 'Content-Type': 'application/json' },
+
+          );
+
+          if (!res) return; // 요청 취소
+
+          if (res.ok) {
+            idMsg.textContent = res.data || "✅ 사용 가능한 아이디입니다.";
+            idMsg.style.color = "green";
+            idChecked = true;
+          } else {
+            idMsg.textContent = res.data || "❌ 아이디 확인 실패";
             idMsg.style.color = "red";
           }
         });
 
-        // 비밀번호 체크
+        /** 비밀번호 체크 */
         function checkPassword() {
           const password = pwd.value.trim();
           const idValue = userId.value.trim();
@@ -194,9 +194,6 @@
           }
           checkPasswordMatch();
         }
-
-        pwd.addEventListener('input', checkPassword);
-        pwdConfirm.addEventListener('input', checkPasswordMatch);
 
         function checkPasswordMatch() {
           const password = pwd.value.trim();
@@ -216,7 +213,10 @@
           }
         }
 
-        // 숫자만 입력
+        pwd.addEventListener('input', checkPassword);
+        pwdConfirm.addEventListener('input', checkPasswordMatch);
+
+        /** 숫자만 입력 */
         ['mobile2', 'mobile3', 'tel1', 'tel2', 'tel3'].forEach(id => {
           const field = document.getElementById(id);
           field.addEventListener('input', () => {
@@ -224,7 +224,7 @@
           });
         });
 
-        // 폼 제출
+        /** 폼 제출 */
         form.addEventListener('submit', async (e) => {
           e.preventDefault();
 
@@ -233,6 +233,11 @@
           const confirm = pwdConfirm.value.trim();
           const m2 = document.getElementById('mobile2').value.trim();
           const m3 = document.getElementById('mobile3').value.trim();
+          const tel1 = document.getElementById('tel1').value.trim();
+          const tel2 = document.getElementById('tel2').value.trim();
+          const tel3 = document.getElementById('tel3').value.trim();
+          const emailId = document.getElementById('emailId').value.trim();
+          const emailDomain = document.getElementById('emailDomainManual').value.trim();
 
           if (!id) { alert("아이디 입력"); userId.focus(); return; }
           if (!idChecked) { alert("아이디 중복 확인"); return; }
@@ -242,13 +247,41 @@
           if (password !== confirm) { alert("비밀번호 불일치"); pwdConfirm.focus(); return; }
           if (!m2 || !m3) { alert("휴대전화번호 입력"); return; }
 
-          // TODO: 실제 회원가입 서버 POST 요청 가능
-          alert("회원가입 완료!");
-          window.location.href = `${contextPath}/etc/mbrsjoin/step4.do`;
-        });
+          // 객체 그대로 전달
+          const postData = {
+            mbrsId: id,
+            password,
+            mobile: `010-${m2}-${m3}`,
+            tel: (tel1 && tel2 && tel3) ? `${tel1}-${tel2}-${tel3}` : '',
+            email: (emailId && emailDomain) ? `${emailId}@${emailDomain}` : ''
+          };
 
+          const res = await Common.sendSafe(
+            `${contextPath}/etc/mbrsjoin/step4`,
+            'POST',
+            postData,
+            undefined,
+            { 'Content-Type': 'application/json' },
+            'json',
+            '회원가입 요청 실패',
+            '서버 오류가 발생했습니다.'
+          );
+
+          if (res && res.ok) {
+            alert("✅ 회원가입 완료!");
+            window.location.href = `${contextPath}/etc/mbrsjoin/step4.do`;
+          } else if (res && !res.ok) {
+            alert(res.data || "❌ 회원가입 실패");
+          }
+        });
       })();
     </script>
+
+
+
+
+
+
 
 
 
