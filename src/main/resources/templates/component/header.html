@@ -16,14 +16,24 @@
   <link rel="stylesheet" th:href="@{/css/vendor/swiper-bundle.min.css}" />
   <link rel="stylesheet" th:href="@{/css/index.css}" />
   <link rel="stylesheet" th:href="@{/css/page/page.css}" />
-  <link rel="stylesheet" th:href="@{/css/page/intro.css}" />
+
   <link rel="stylesheet" th:href="@{/css/page/main.css}" />
-    <!-- JS -->
-    <script defer th:src="@{/js/vendor/aos.js}"></script>
-    <script defer th:src="@{/js/vendor/gsap.min.js}"></script>
-    <script defer th:src="@{/js/vendor/ScrollTrigger.min.js}"></script>
-    <script defer th:src="@{/js/vendor/swiper-bundle.min.js}"></script>
-    <script defer th:src="@{/js/common.js}"></script>
+  <!-- JS -->
+  <script defer th:src="@{/js/vendor/aos.js}"></script>
+  <script defer th:src="@{/js/vendor/gsap.min.js}"></script>
+  <script defer th:src="@{/js/vendor/ScrollTrigger.min.js}"></script>
+  <script defer th:src="@{/js/vendor/swiper-bundle.min.js}"></script>
+  <script defer th:src="@{/js/common.js}"></script>
+
+  <script defer th:src="@{/js/main.js}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.AOS && !window.__aosInited) {
+        AOS.init(); /* 옵션 필요 시 { duration: 600, once: true } */
+        window.__aosInited = true;
+      }
+    });
+  </script>
 </head>
 
 <body>
@@ -72,15 +82,6 @@
         Common.MiniSPA.init({
           containerSelector: '#contents .container'
         });
-
-        // 헤더 링크 클릭 시 SPA 이동
-        // document.querySelectorAll('#header .swap-link').forEach(link => {
-        //   link.addEventListener('click', function (e) {
-        //     e.preventDefault();
-        //     const url = this.getAttribute('href');
-        //     if (url) Common.MiniSPA.go(url);
-        //   });
-        // });
 
         console.log('MiniSPA 초기화 완료');
         window.__miniSpaInited = true;
