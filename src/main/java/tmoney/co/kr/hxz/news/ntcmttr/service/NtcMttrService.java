@@ -15,5 +15,9 @@ public interface NtcMttrService {
 
     NtcMttrRspVO readNtcMttrDtl(String bltnNo);
 
+    NtcMttrRspVO readPrevNtcMttr(String bltnNo);
+
+    NtcMttrRspVO readNextNtcMttr(String bltnNo);
+
     void updateNtcInqrNcnt(String bltnNo);
 }

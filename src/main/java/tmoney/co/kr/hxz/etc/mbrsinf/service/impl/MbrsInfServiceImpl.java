@@ -1,6 +1,7 @@
 package tmoney.co.kr.hxz.etc.mbrsinf.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tmoney.co.kr.hxz.error.exception.DomainExceptionCode;
@@ -14,6 +15,7 @@ import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsUpdReqVO;
 @Service
 public class MbrsInfServiceImpl implements MbrsInfService {
     private final MbrsInfMapper mbrsInfMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional(readOnly = true)
@@ -24,7 +26,19 @@ public class MbrsInfServiceImpl implements MbrsInfService {
     @Override
     @Transactional
     public void updateMbrsInf(MbrsUpdReqVO req) {
-        mbrsInfMapper.updateMbrsInf(req);
+        MbrsUpdReqVO mbrsUpdReqVO = new MbrsUpdReqVO(
+                req.getMbrsId(),
+                req.getMbrsNm(),
+                req.getMailAddr(),
+                req.getMbrsMbphNo(),
+                req.getMbrsTelNo(),
+                req.getMbrsStaCd(),
+                req.getPrsnAuthCiEncVal(),
+                req.getGndrCd(),
+                req.getMbrsBrdt()
+        );
+
+        mbrsInfMapper.updateMbrsInf(mbrsUpdReqVO);
 
         MbrsInfRspVO rspVO = readMbrsInf(req.getMbrsId());
         MbrsInfReqVO reqVO = new MbrsInfReqVO(

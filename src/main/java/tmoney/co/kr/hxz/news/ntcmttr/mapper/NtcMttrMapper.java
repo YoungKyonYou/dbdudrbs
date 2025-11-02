@@ -20,4 +20,8 @@ public interface NtcMttrMapper {
     NtcMttrRspVO readNtcMttrDtl(@Param("bltnNo") String bltnNo);
 
     void updateNtcInqrNcnt(@Param("bltnNo") String bltnNo);
+
+    NtcMttrRspVO readPrevNtcMttr(@Param("bltnNo") String bltnNo);
+
+    NtcMttrRspVO readNextNtcMttr(@Param("bltnNo") String bltnNo);
 }

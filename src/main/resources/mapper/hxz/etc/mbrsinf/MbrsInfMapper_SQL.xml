@@ -50,12 +50,9 @@
         2025.10.28 - 최중혁 : 최초작성
         */
         update ohxzown.tbhxzm101
-           set mbrs_nm = #{req.mbrsNm}
-             , mbrs_brdt = #{req.mbrsBrdt}
-             , mbrs_mbph_no = #{req.mbrsMbphNo}
+           set mbrs_mbph_no = #{req.mbrsMbphNo}
              , mbrs_tel_no = #{req.mbrsTelNo}
              , mail_addr = #{req.mailAddr}
-             , prsn_auth_ci_enc_val = #{req.prsnAuthCiEncVal}
              , updr_id = #{req.mbrsId}
              , upd_dtm = to_char(now(), 'YYYYMMDDHH24MISS')
          where mbrs_id = #{req.mbrsId}
