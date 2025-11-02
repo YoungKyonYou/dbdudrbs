@@ -2,6 +2,7 @@ package tmoney.co.kr.hxz.news.ntcmttr.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -68,5 +69,46 @@ public class NtcMttrController {
         model.addAttribute("bltnNo" , bltnNo);
         return "/hxz/news/ntcmttr/ntcMttrDtl";
 
+    }
+
+    /**
+     * 이전 공지사항 조회
+     * tbhxzm113 HXZ_공지사항관리
+     *
+     * [process]
+     * 1. 현재 공지사항의 게시일 (이전,다음) 공지사항ID 반환
+     *
+     * @param bltnNo
+     * @return
+     */
+    @GetMapping(value = "/prev/{bltnNo}")
+    public ResponseEntity<?> readPrevNtcMttr(
+            @PathVariable("bltnNo") String bltnNo
+    ) {
+        NtcMttrRspVO ntcMttr = ntcMttrService.readPrevNtcMttr(bltnNo);
+        if(ntcMttr == null) return ResponseEntity.ok().body("이전 공지사항이 없습니다.");
+
+        return ResponseEntity.ok().body(ntcMttr.getBltnNo());
+    }
+
+
+    /**
+     * 다음 공지사항 조회
+     * tbhxzm113 HXZ_공지사항관리
+     *
+     * [process]
+     * 1. 현재 공지사항의 게시일 다음 공지사항ID 반환
+     *
+     * @param bltnNo
+     * @return
+     */
+    @GetMapping(value = "/next/{bltnNo}")
+    public ResponseEntity<?> readNextNtcMttr(
+            @PathVariable("bltnNo") String bltnNo
+    ) {
+        NtcMttrRspVO ntcMttr = ntcMttrService.readNextNtcMttr(bltnNo);
+        if(ntcMttr == null) return ResponseEntity.ok().body("다음 공지사항이 없습니다.");
+
+        return ResponseEntity.ok().body(ntcMttr.getBltnNo());
     }
 }

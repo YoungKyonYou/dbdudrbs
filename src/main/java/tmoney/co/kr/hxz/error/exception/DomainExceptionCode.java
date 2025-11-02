@@ -25,7 +25,11 @@ public enum DomainExceptionCode {
     PASSWORD_DUPLICATION(AUTH.code + 6, "이전 비밀번호랑 동일한 비밀번호로 변경할 수 없습니다."),
     PASSWORD_VALIDATION_ERROR(AUTH.code + 7, "%s"),
     LOGIN_NEEDED(AUTH.code + 8, "로그인이 필요합니다.."),
-    LOGIN_TAKEOVER(AUTH.code + 9, "다른 기기에서 로그인 중입니다. 기존 세션을 종료하시겠습니까?"),;
+    LOGIN_TAKEOVER(AUTH.code + 9, "다른 기기에서 로그인 중입니다. 기존 세션을 종료하시겠습니까?"),
+
+    NTC(2500, "정의되지 않은 에러입니다."),
+    NTC_EXCEPTION(NTC.code+1, "%s");
+
 
     private final int code;
     private final String message;

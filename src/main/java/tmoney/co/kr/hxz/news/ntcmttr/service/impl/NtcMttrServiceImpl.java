@@ -1,10 +1,10 @@
 package tmoney.co.kr.hxz.news.ntcmttr.service.impl;
 
-import tmoney.co.kr.hxz.common.page.vo.PageDataVO;
-import tmoney.co.kr.hxz.news.ntcmttr.mapper.NtcMttrMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tmoney.co.kr.hxz.common.page.vo.PageDataVO;
+import tmoney.co.kr.hxz.news.ntcmttr.mapper.NtcMttrMapper;
 import tmoney.co.kr.hxz.news.ntcmttr.service.NtcMttrService;
 import tmoney.co.kr.hxz.news.ntcmttr.vo.NtcMttrRspVO;
 import tmoney.co.kr.hxz.news.ntcmttr.vo.NtcMttrSrchReqVO;
@@ -52,5 +52,17 @@ public class NtcMttrServiceImpl implements NtcMttrService {
     @Transactional
     public void updateNtcInqrNcnt(String bltnNo) {
         ntcMttrMapper.updateNtcInqrNcnt(bltnNo);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public NtcMttrRspVO readPrevNtcMttr(String bltnNo) {
+        return ntcMttrMapper.readPrevNtcMttr(bltnNo);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public NtcMttrRspVO readNextNtcMttr(String bltnNo) {
+        return ntcMttrMapper.readNextNtcMttr(bltnNo);
     }
 }

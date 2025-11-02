@@ -7,6 +7,8 @@ import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 
@@ -17,6 +19,11 @@ public class SecurityConfig {
 
     // 새 DSL에서 쓸 AuthorizationManager
     private final AuthorizationManager<RequestAuthorizationContext> onboardingAuthz;
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -36,6 +43,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .antMatchers("/css/**", "/js/**", "/images/**", "/signup/start").permitAll()
                         .antMatchers("/signup", "/signup/**").access(onboardingAuthz) // 여기만 커스텀 권한
+                        .antMatchers("/etc/**").access(onboardingAuthz)
                         .anyRequest().permitAll() // 필요하면 authenticated()로 바꾸세요
                 )
 

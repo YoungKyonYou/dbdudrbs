@@ -25,7 +25,7 @@ public class NtcMttrSrchReqVO {
     @Positive(message = "페이지 값은 0보다 커야 합니다.")
     private int size = 10;
     @Size(max = 15, message = "")
-    private String sort = "bltn_no";
+    private String sort = "tpw_bltn_rgt_dtm";
 
     private String dir = "asc";
 }

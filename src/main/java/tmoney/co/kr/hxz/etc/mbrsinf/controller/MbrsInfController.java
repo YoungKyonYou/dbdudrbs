@@ -96,7 +96,7 @@ public class MbrsInfController {
      *
      * @return
      */
-    @GetMapping("/mbrsScsn.do")
+    @GetMapping("/{mbrsId}/mbrsScsn.do")
     public String mbrsScsn() {
         return "/hxz/etc/mbrsinf/mbrsScsn";
     }
