@@ -14,8 +14,12 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 public class PrsnAuthReqVO {
+    /** 회원명 */
+    @Size(max = 100,
+            message = "회원명은 길이가 100이하여야 합니다.")
+    private String mbrsNm;
+
     /** 회원 휴대폰 번호 */
-    @NotNull(message = "휴대전화번호는 필수 입력입니다.")
     @Pattern(regexp = "^01[0-9]{8,9}$", message = "휴대전화번호 형식이 올바르지 않습니다.")
     private String mbrsMbphNo;
 

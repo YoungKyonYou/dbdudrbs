@@ -40,6 +40,7 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
     private final Integer onbMaxAgeSeconds;
     private final Integer receiptStepTtlMinutes;
     private final MbrsJoinMapper mbrsJoinMapper;
+    private final PasswordEncoder passwordEncoder;
 
     public MbrsJoinServiceImpl(NonceUtil nonceUtil,
                                ReceiptService receiptService,
@@ -47,7 +48,8 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
                                OnboardingFlowService flow,
                                @Value("${app.onboarding.cookie.onb-max-age-seconds}") Integer onbMaxAgeSeconds,
                                @Value("${app.onboarding.receipt.step-ttl-minutes}") Integer receiptStepTtlMinutes,
-                               MbrsJoinMapper mbrsJoinMapper
+                               MbrsJoinMapper mbrsJoinMapper,
+                               PasswordEncoder passwordEncoder
     ) {
         this.nonceUtil = nonceUtil;
         this.receiptService = receiptService;
@@ -56,6 +58,7 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
         this.onbMaxAgeSeconds = onbMaxAgeSeconds;
         this.receiptStepTtlMinutes = receiptStepTtlMinutes;
         this.mbrsJoinMapper = mbrsJoinMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -100,12 +103,13 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
 //           "gndrCd": "M",
 //           "mbrsBrdt": "19940101"
 //         }
+        PrsnAuthReqVO prsnAuthReqVO = new PrsnAuthReqVO("김민정","010-3843-2389","ENCRYPTED_CI_VALUE", "M", "19940101");
 
         // receipt 발급 (Step3로 넘길 데이터)
         String receipt = receiptService.issueReceiptFromMap(
                 ctx.getOnb(),
                 0, // step index
-                new PrsnAuthReqVO("010-3843-2389","ENCRYPTED_CI_VALUE", "M", "19940101"), // 인증 데이터
+                prsnAuthReqVO, // 인증 데이터
                 Duration.ofMinutes(receiptStepTtlMinutes)
         );
 
@@ -180,7 +184,7 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
 
         MbrsJoinReqVO reqVO = new MbrsJoinReqVO(
                 req.getMbrsId(),
-                req.getMbrsNm(),
+                authReq.getMbrsNm(),
                 req.getMailAddr(),
                 authReq.getMbrsMbphNo(),
                 req.getMbrsTelNo(),

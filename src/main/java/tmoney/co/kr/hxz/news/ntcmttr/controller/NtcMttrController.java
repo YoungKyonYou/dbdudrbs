@@ -25,8 +25,9 @@ public class NtcMttrController {
      * tbhxzm113 HXZ_공지사항관리
      *
      * [process]
-     * 1. 검색 조건(제목, 내용)으로 HXZ_공지사항관리 테이블 내 공지사항 내역 호출
-     * 2. 호출된 내역을 페이징으로 감싸서 pageData로 반환
+     * 1. 검색 조건(제목, 내용)으로 HXZ_공지사항관리 테이블 내 사용여부 Y인 공지사항 내역 조회
+     * 2. 교통복지게시일시 순으로 최신순, 메인노출여부가 Y 순으로 호출
+     * 3. 호출된 내역을 페이징으로 감싸서 pageData로 반환
      *
      * @param req
      * @param model

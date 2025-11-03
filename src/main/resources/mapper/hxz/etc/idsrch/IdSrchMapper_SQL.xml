@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tmoney.co.kr.hxz.etc.idsrch.mapper.IdSrchMapper">
+
+    <select id="findMbrsId" parameterType="tmoney.co.kr.hxz.etc.idsrch.vo.IdSrchReqVO" resultType="tmoney.co.kr.hxz.etc.idsrch.vo.IdSrchRspVO">
+        /* sql_id : findMbrsId */
+        /*
+        * 1. 파일 : IdSrchMapper_SQL.xml
+        * 2. 기능 : 아이디 찾기
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.10.28 - 최중혁 : 최초작성
+        */
+        select mbr_id      as mbrid
+             , rgt_dtm     as rgtdtm
+          from ohxzown.tbhxzm101
+         where mbrs_nm  = #{req.mbrsNm}
+           and mbrs_brdt = #{req.mbrsBrdt}
+           and mbrs_mbph_no = #{req.mbrsMbphNo}
+         limit 1;
+    </select>
+</mapper>

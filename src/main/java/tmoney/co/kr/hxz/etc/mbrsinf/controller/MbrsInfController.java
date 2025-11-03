@@ -23,6 +23,7 @@ public class MbrsInfController {
      *
      * [process]
      * 1. 회원ID(mbrsId)를 통해서 회원 정보 상세 조회
+     * 2. 로그인을 한 상태이므로, 회원상태코드(휴면, 탈퇴)에 대한 예외처리하지 않음
      *
      * @param mbrsId
      * @param model
