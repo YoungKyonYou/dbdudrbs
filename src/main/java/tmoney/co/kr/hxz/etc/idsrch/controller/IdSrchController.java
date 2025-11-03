@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import tmoney.co.kr.hxz.etc.idsrch.service.IdSrchService;
@@ -42,7 +43,7 @@ public class IdSrchController {
      */
     @GetMapping("/idSrchRst.do")
     public String findMbrsId(
-            @RequestBody IdSrchReqVO req,
+            @ModelAttribute IdSrchReqVO req,
             Model model
     ) {
         IdSrchRspVO content = idSrchService.findMbrsId(req);
