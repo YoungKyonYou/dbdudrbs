@@ -29,7 +29,7 @@ public class MbrsJoinReqVO {
     @Size(max = 64, message = "이메일은 길이가 64이하여야 합니다.")
     private String mailAddr;
     /** 회원 휴대폰 번호 */
-    @NotNull(message = "휴대전화번호는 필수 입력입니다.")
+    @NotNull(message = "휴대전화번호는 필수입니다.")
     @Pattern(regexp = "^01[0-9]{8,9}$", message = "휴대전화번호 형식이 올바르지 않습니다.")
     private String mbrsMbphNo;
     /** 회원 전화번호 */
@@ -56,12 +56,15 @@ public class MbrsJoinReqVO {
     /** 탈퇴 일시 */
     private String scsnDtm;
     /** 본인 인증 CI 암호값 */
+    @NotNull(message = "본인 인증 CI 암호값은 필수입니다.")
     @Size(max = 200, message = "본인인증CI암호화값은 길이가 200이하여야 합니다.")
     private String prsnAuthCiEncVal;
     /** 성별 코드 */
+    @NotNull(message = "성별 코드는 필수입니다.")
     @Size(max = 1, message = "성별코드는 길이가 1 이하여야 합니다.")
     private String gndrCd;
     /** 회원생년월일 */
+    @NotNull(message = "회원생년월일은 필수입니다.")
     @Pattern(regexp = "^[0-9]{8}$", message = "생년월일은 8자리 숫자여야 합니다.")
     private String mbrsBrdt;
     /** 회원 탈퇴 구분 코드 */
