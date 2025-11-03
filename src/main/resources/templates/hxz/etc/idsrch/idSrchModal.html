@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{component/header :: layout(~{::content})}">
+  <th:block th:fragment="content">
+    <!-- <div id="breadcrumb">
+            <div class="container">
+                <nav>
+                    <ul>
+                        <li>홈</li>
+                        <li>마이페이지</li>
+                        <li aria-current="page">회원정보</li>
+                    </ul>
+                </nav>
+            </div>
+        </div> -->
+
+
+    <main id="contents">
+      <section class="section">
+        <div class="container size-sm">
+          <div class="login-wrap">
+            <div class="login-header">
+              <h2 class="section-title">아이디 찾기</h2>
+              <p>가입 당시 입력된 아래의 정보를 입력해주세요.</p>
+            </div>
+            <nav class="tabs" aria-label="페이지 이동">
+              <a class="tab is-active" href="#" aria-current="page">아이디 찾기</a>
+              <a class="tab" href="#">비밀번호 찾기</a>
+            </nav>
+            <div class="gray-outer">
+              <div class="form-box">
+                <form action="" method="post" novalidate>
+                  <!-- 성명 -->
+                  <div>
+                    <p class="field-title">성명</p>
+                    <label for="fullName" class="sr-only">성명</label>
+                    <input id="fullName" name="fullName" type="text" class="text-field size-lg"
+                      placeholder="성명을 입력해주세요." autocomplete="name" inputmode="text" required aria-required="true"
+                      minlength="2" maxlength="30" pattern="^[가-힣a-zA-Z·\\s]{2,30}$"
+                      aria-describedby="nameHelp nameErr">
+                  </div>
+
+                  <!-- 생년월일 -->
+                  <div>
+                    <p class="field-title">생년월일</p>
+                    <label for="birth" class="sr-only">생년월일</label>
+                    <input id="birth" name="birth" type="text" class="text-field size-lg" placeholder="예) 19850501"
+                      autocomplete="bday" inputmode="numeric" required aria-required="true" maxlength="10"
+                      pattern="^\\d{4}-\\d{2}-\\d{2}$" aria-describedby="birthHelp birthErr">
+                  </div>
+
+                  <!-- 휴대전화번호 -->
+                  <div>
+                    <p class="field-title">휴대전화번호</p>
+                    <fieldset>
+                      <legend class="sr-only">휴대전화번호</legend>
+                      <div class="flex align-center gap8">
+                        <label for="mobile1" class="sr-only">국번</label>
+                        <input id="mobile1" name="mobile1" type="text" class="text-field size-lg" aria-readonly="true"
+                          inputmode="numeric" pattern="[0-9]*">
+                        <span class="flex-bar" aria-hidden="true">-</span>
+
+                        <label for="mobile2" class="sr-only">중간번호</label>
+                        <input id="mobile2" name="mobile2" type="text" class="text-field size-lg" aria-readonly="true"
+                          inputmode="numeric" pattern="[0-9]*">
+                        <span class="flex-bar" aria-hidden="true">-</span>
+
+                        <label for="mobile3" class="sr-only">끝번호</label>
+                        <input id="mobile3" name="mobile3" type="text" class="text-field size-lg" aria-readonly="true"
+                          inputmode="numeric" pattern="[0-9]*">
+                      </div>
+                    </fieldset>
+                  </div>
+
+                  <button type="submit" class="btn btn-primary btn-icon-right size-lg" data-modal-open="alert-1">
+                    <i class="icon icon-search"></i>아이디 찾기
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+
+    <!-- Modal -->
+    <div class="modal" id="alert-1" role="alertdialog" aria-modal="true" aria-labelledby="alert-1-title"
+      aria-describedby="alert-1-desc" aria-hidden="true">
+      <div class="modal-overlay" data-modal-close></div>
+
+      <div class="modal-container" role="document" tabindex="-1">
+        <!-- <header class="modal-header">
+      <h2 id="alert-1-title" class="modal-title">안내</h2>
+      <button type="button" class="modal-close" aria-label="닫기" data-modal-close></button>
+    </header> -->
+
+        <section class="modal-body">
+          <div class="modal-icon" aria-hidden="true">
+            <i class="icon icon-caution"></i>
+          </div>
+          <p class="modal-desc">
+            아이디나 비밀번호가 맞지 않습니다.<br />다시 확인해 주십시오.
+          </p>
+        </section>
+
+        <footer class="modal-footer">
+          <button type="button" class="btn btn-darken-line size-lg" data-modal-close data-modal-default>
+            확인
+          </button>
+        </footer>
+      </div>
+    </div>
+
+
+    <script></script>
+
+  </th:block>
+</th:block>
+
+</html>

@@ -1,5 +1,4 @@
 <!doctype html>
-
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <th:block th:replace="~{component/header :: layout(~{::content})}">
   <th:block th:fragment="content">
@@ -12,67 +11,88 @@
               <h2 class="section-title">회원가입</h2>
               <ol class="step-box" role="list" aria-label="회원가입 단계">
                 <li>
-                  <div class="circle" aria-hidden="true">
-                    <span>1</span>
-                    <i class="icon document"></i>
-                  </div>
+                  <div class="circle" aria-hidden="true"><span>1</span><i class="icon document"></i></div>
                   <p>약관동의</p>
                 </li>
                 <li aria-current="step" class="active">
-                  <div class="circle" aria-hidden="true">
-                    <span>2</span>
-                    <i class="icon lock"></i>
-                  </div>
+                  <div class="circle" aria-hidden="true"><span>2</span><i class="icon lock"></i></div>
                   <p>본인인증 <span class="sr-only">(현재 단계)</span></p>
                 </li>
                 <li>
-                  <div class="circle" aria-hidden="true">
-                    <span>3</span>
-                    <i class="icon write"></i>
-                  </div>
+                  <div class="circle" aria-hidden="true"><span>3</span><i class="icon write"></i></div>
                   <p>정보입력</p>
                 </li>
                 <li>
-                  <div class="circle" aria-hidden="true">
-                    <span>4</span>
-                    <i class="icon check"></i>
-                  </div>
+                  <div class="circle" aria-hidden="true"><span>4</span><i class="icon check"></i></div>
                   <p>가입완료</p>
                 </li>
               </ol>
             </div>
           </div>
         </div>
+
         <div class="container size-sm">
           <div class="join-wrap">
             <div class="gray-outer">
               <div class="step2-box" role="group" aria-label="본인인증 수단 선택">
                 <button type="button" class="auth-btn kakao" data-method="kakao">
-                  <i class="icon" aria-hidden="true"></i>
-                  <span>카카오뱅크 인증</span>
+                  <i class="icon" aria-hidden="true"></i><span>카카오뱅크 인증</span>
                 </button>
-
                 <button type="button" class="auth-btn toss" data-method="toss">
-                  <i class="icon" aria-hidden="true"></i>
-                  <span>토스 인증</span>
+                  <i class="icon" aria-hidden="true"></i><span>토스 인증</span>
                 </button>
-
                 <button type="button" class="auth-btn phone" data-method="phone">
-                  <i class="icon" aria-hidden="true"></i>
-                  <span>휴대폰 인증</span>
+                  <i class="icon" aria-hidden="true"></i><span>휴대폰 인증</span>
                 </button>
-
                 <button type="button" class="auth-btn ipin" data-method="ipin">
-                  <i class="icon" aria-hidden="true"></i>
-                  <span>아이핀 인증</span>
+                  <i class="icon" aria-hidden="true"></i><span>아이핀 인증</span>
                 </button>
               </div>
             </div>
           </div>
         </div>
       </section>
-
     </main>
+
+    <script th:inline="javascript">
+      /*<![CDATA[*/
+      const signup = /*[[${signup}]]*/ {};
+      const nonce = signup.nonce;
+
+      document.querySelectorAll('.auth-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const method = btn.dataset.method;
+
+          fetch('/etc/mbrsjoin/step2/complete', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Nonce': signup.nonce
+            },
+            credentials: 'include',
+            body: JSON.stringify({ method: method })
+          })
+            .then(res => res.json())
+            .then(data => {
+              console.log('STEP2 완료:', data);
+
+              // Step2 완료 데이터 저장
+              sessionStorage.setItem('rcpt2', data.receipt);
+              sessionStorage.setItem('step2Nonce', data.nextNonce);
+
+              // STEP3 화면으로 이동
+              window.location.href = '/etc/mbrsjoin/step3.do';
+            })
+            .catch(err => {
+              console.error(err);
+              alert('본인인증 실패. 다시 시도해주세요.');
+            });
+        });
+      });
+
+      /*]]>*/
+    </script>
+
   </th:block>
 </th:block>
 

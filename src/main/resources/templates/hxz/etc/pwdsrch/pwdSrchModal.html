@@ -2,7 +2,6 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <th:block th:replace="~{component/header :: layout(~{::content})}">
   <th:block th:fragment="content">
-
     <main id="contents">
       <section class="section">
         <div class="container size-sm">
@@ -29,7 +28,7 @@
                   </div>
                   <div class="btn-wrap">
                     <button type="button" class="btn btn-darken-line size-lg">취소</button>
-                    <button type="button" class="btn btn-primary size-lg">다음</button>
+                    <button type="button" class="btn btn-primary size-lg" data-modal-open="alert-1">다음</button>
                   </div>
                 </form>
               </div>
@@ -39,6 +38,36 @@
       </section>
 
     </main>
+
+    <!-- Modal -->
+    <div class="modal" id="alert-1" role="alertdialog" aria-modal="true" aria-labelledby="alert-1-title"
+      aria-describedby="alert-1-desc" aria-hidden="true">
+      <div class="modal-overlay" data-modal-close></div>
+
+      <div class="modal-container" role="document" tabindex="-1">
+        <!-- <header class="modal-header">
+      <h2 id="alert-1-title" class="modal-title">안내</h2>
+      <button type="button" class="modal-close" aria-label="닫기" data-modal-close></button>
+    </header> -->
+
+        <section class="modal-body">
+          <div class="modal-icon" aria-hidden="true">
+            <i class="icon icon-caution"></i>
+          </div>
+          <p class="modal-desc">
+            입력하신 정보가 존재하지 않습니다.
+          </p>
+        </section>
+
+        <footer class="modal-footer">
+          <button type="button" class="btn btn-darken-line size-lg" data-modal-close data-modal-default>
+            확인
+          </button>
+        </footer>
+      </div>
+    </div>
+
+    <script></script>
 
   </th:block>
 </th:block>

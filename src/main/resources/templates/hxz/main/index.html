@@ -286,10 +286,9 @@
           </div>
 
           <div class="list-box">
-            <!-- pageData가 null일 수 있으므로 안전하게 처리 -->
-            <a th:each="row : ${pageData != null ? #lists.take(pageData.content, 5) : {}}"
-              th:href="@{'/news/ntcmttr/ntcMttrDtl/' + ${row.bltnNo}}" class="list-item" data-aos="fade-up"
-              data-aos-offset="100" data-aos-easing="ease-out-cubic" data-aos-duration="1000">
+            <!-- mainNtc 리스트에서 최근 5개 표시 -->
+            <a th:each="row : ${mainNtc}" th:href="@{'/news/ntcmttr/ntcMttrDtl/' + ${row.bltnNo}}" class="list-item"
+              data-aos="fade-up" data-aos-offset="100" data-aos-easing="ease-out-cubic" data-aos-duration="1000">
 
               <span th:if="${row.mainExpsYn == 'Y'}" class="badge primary">공지</span>
               <span class="title" th:text="${row.ntcMttrTtlNm}">공지 제목</span>
@@ -303,13 +302,14 @@
             </a>
 
             <!-- 공지 없음 처리 -->
-            <p th:if="${pageData == null or #lists.isEmpty(pageData.content)}" class="no-data"
+            <p th:if="${mainNtc == null or #lists.isEmpty(mainNtc)}" class="no-data"
               style="text-align:center; color:#888; margin-top:20px;">
               등록된 공지사항이 없습니다.
             </p>
           </div>
         </div>
       </section>
+
 
       <!-- <section class="section section7">
         <div class="container">

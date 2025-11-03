@@ -36,7 +36,6 @@
                 <div class="container">
                     <div class="join-wrap">
                         <div class="line-box-wrap">
-
                             <!-- 약관 3개 반복 영역 -->
                             <div class="agreement" data-required="true">
                                 <div class="line-box">
@@ -70,76 +69,91 @@
                                     <button type="button" class="btn btn-darkgray size-md view">약관내용 확인</button>
                                 </div>
                             </div>
-
                         </div>
 
-                        <!-- 🔹 disabled 제거 -->
-                        <button type="button" class="btn btn-primary size-lg finish ">다음</button>
+                        <!-- 다음 버튼 -->
+                        <button type="button" class="btn btn-primary size-lg finish btn-disabled">다음</button>
                     </div>
                 </div>
             </section>
         </main>
 
-
-
-        <script>
+        <script th:inline="javascript">
             (function () {
                 const agreements = document.querySelectorAll('.agreement');
                 const nextBtn = document.querySelector('.finish');
 
-                agreements.forEach(ag => {
+                agreements.forEach((ag, idx) => {
                     const viewBtn = ag.querySelector('.view');
                     const disagreeBtn = ag.querySelector('.disagree');
-
-                    // 초기 상태
                     ag.dataset.agreed = "false";
 
-                    // 약관내용 확인 클릭 → 동의
+                    // 동의 버튼 클릭
                     viewBtn.addEventListener('click', () => {
                         viewBtn.textContent = '동의';
-                        viewBtn.classList.remove('btn-darkgray');
-                        viewBtn.classList.add('btn-primary');
-
-                        disagreeBtn.classList.remove('btn-warning');
-                        disagreeBtn.classList.add('btn-darken-line');
-
+                        viewBtn.classList.replace('btn-darkgray', 'btn-primary');
+                        disagreeBtn.classList.replace('btn-warning', 'btn-darken-line');
                         ag.dataset.agreed = "true";
+                        saveAgreement(idx, true);
                         updateNextBtn();
                     });
 
+                    // 동의하지 않음 버튼 클릭
                     disagreeBtn.addEventListener('click', () => {
                         viewBtn.textContent = '약관내용 확인';
-                        viewBtn.classList.remove('btn-primary');
-                        viewBtn.classList.add('btn-darkgray');
-
-                        disagreeBtn.classList.remove('btn-darken-line');
-                        disagreeBtn.classList.add('btn-warning');
-
+                        viewBtn.classList.replace('btn-primary', 'btn-darkgray');
+                        disagreeBtn.classList.replace('btn-darken-line', 'btn-warning');
                         ag.dataset.agreed = "false";
+                        saveAgreement(idx, false);
                         updateNextBtn();
                     });
                 });
 
-                function updateNextBtn() {
-                    const allAgreed = Array.from(agreements).every(ag => ag.dataset.agreed === "true");
-                    if (allAgreed) {
-                        nextBtn.classList.remove('btn-disabled');
-                    } else {
-                        nextBtn.classList.add('btn-disabled');
+                // 동의 상태 sessionStorage 저장
+                function saveAgreement(idx, agreed) {
+                    // idx 기준: 0=이용약관, 1=개인정보, 2=행정정보
+                    if (idx === 0) {
+                        sessionStorage.setItem('mrkgUtlzAgrmYn', agreed ? 'Y' : 'N');
+                    } else if (idx === 1) {
+                        sessionStorage.setItem('smsRcvAgrmYn', agreed ? 'Y' : 'N');
+                    } else if (idx === 2) {
+                        sessionStorage.setItem('mailRcvAgrmYn', agreed ? 'Y' : 'N');
                     }
                 }
 
-                nextBtn.addEventListener('click', () => {
+                function updateNextBtn() {
+                    const allAgreed = Array.from(agreements).every(ag => ag.dataset.agreed === "true");
+                    if (allAgreed) nextBtn.classList.remove('btn-disabled');
+                    else nextBtn.classList.add('btn-disabled');
+                }
+
+                nextBtn.addEventListener('click', async () => {
                     const notAgreed = Array.from(agreements).filter(ag => ag.dataset.agreed !== "true");
                     if (notAgreed.length > 0) {
-                        const notAgreedTitles = notAgreed.map(ag => ag.querySelector('.top-box').textContent.trim());
-                        alert(`${notAgreedTitles.join(', ')}에 대한 확인 및 동의를 진행해 주세요.`);
+                        const titles = notAgreed.map(ag => ag.querySelector('.top-box').textContent.trim());
+                        alert(`${titles.join(', ')}에 대한 확인 및 동의를 진행해 주세요.`);
                         return;
                     }
-                    window.location.href = '/etc/mbrsjoin/step2.do';
+
+                    try {
+                        const res = await fetch('/etc/mbrsjoin/start', {
+                            method: 'GET',
+                            credentials: 'include'  // 쿠키 포함
+                        });
+
+                        if (!res.ok) throw new Error(`Step2 진입 실패: ${res.status}`);
+
+                        // Step2 페이지로 이동
+                        window.location.href = '/etc/mbrsjoin/step2.do';
+                    } catch (err) {
+                        alert(err.message);
+                    }
                 });
+
             })();
         </script>
+
+
     </th:block>
 </th:block>
 
