@@ -1136,7 +1136,7 @@
             return text;
         }
     }
-    async function sendSafe(url, method = 'POST', data = null, signal, headers, expect = 'json', clientErrorMsg = '요청에 실패했습니다.', otherErrorMsg = '오류가 발생했습니다.') {
+    async function sendSafe(url, { method = 'POST', data = null, signal, headers, expect = 'json', clientErrorMsg = '요청에 실패했습니다.', otherErrorMsg = '오류가 발생했습니다.' } = {}) {
         // send 함수 호출 결과를 out 변수에 저장
         try {
             console.log(url, method, data, signal, headers, expect, clientErrorMsg, otherErrorMsg);

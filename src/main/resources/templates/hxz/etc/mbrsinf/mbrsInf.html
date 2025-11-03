@@ -203,13 +203,12 @@
                         buttons: 'ok-close',
                         onOk: async function saveOne() {
                             try {
-                                const res = await Common.sendSafe(
-                                    '/etc/mbrsinf/',
-                                    'POST',
-                                    applied,
-                                    undefined,
-                                    { 'Content-Type': 'application/json' }
-                                );
+                                const res = await Common.sendSafe('/etc/mbrsinf/', {
+                                    method: 'POST',
+                                    data: applied,
+                                    headers: { 'Content-Type': 'application/json' }
+                                });
+
 
                                 if (res && (res.ok || res.success)) {
                                     Common.modalShow({ title: '완료', message: '변경 되었습니다.', buttons: 'close' });

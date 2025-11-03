@@ -204,13 +204,11 @@
                         buttons: 'ok-close',
                         onOk: async function saveOne() {
                             try {
-                                const res = await Common.sendSafe(
-                                    '/mypage/mbrsinf/',
-                                    'POST',
-                                    JSON.stringify(applied),
-                                    undefined,
-                                    { 'Content-Type': 'application/json' }
-                                );
+                                const res = await Common.sendSafe('/mypage/mbrsinf/', {
+                                    method: 'POST',
+                                    data: applied,  // sendSafe 내부에서 JSON.stringify 처리 가능
+                                    headers: { 'Content-Type': 'application/json' }
+                                });
 
                                 if (res && (res.ok || res.success)) {
                                     Common.modalShow({ title: '완료', message: '변경 되었습니다.', buttons: 'close' });
