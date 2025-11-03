@@ -26,6 +26,10 @@ public class MbrsJoinInstReqVO {
     @Size(max = 64, message = "이메일은 길이가 64이하여야 합니다.")
     private String mailAddr;
 
+    /** 회원 휴대폰 번호 */
+    @Pattern(regexp = "^01[0-9]{8,9}$", message = "휴대전화번호 형식이 올바르지 않습니다.")
+    private String mbrsMbphNo;
+
     /** 회원 전화번호 */
     @Pattern(regexp = "^[0-9]+$", message = "전화번호는 숫자만 입력 가능합니다.")
     @Size(max = 20, message = "전화번호는 길이가 20이하여야 합니다.")

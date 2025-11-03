@@ -17,6 +17,7 @@ import tmoney.co.kr.hxz.common.onboard.service.ReceiptService;
 import tmoney.co.kr.hxz.common.onboard.util.NonceUtil;
 import tmoney.co.kr.hxz.common.onboard.util.OnboardingWebUtil;
 import tmoney.co.kr.hxz.common.onboard.vo.SignupVO;
+import tmoney.co.kr.hxz.common.type.PrsnAuthType;
 import tmoney.co.kr.hxz.error.exception.DomainExceptionCode;
 import tmoney.co.kr.hxz.etc.mbrsjoin.mapper.MbrsJoinMapper;
 import tmoney.co.kr.hxz.etc.mbrsjoin.service.MbrsJoinService;
@@ -92,12 +93,35 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
             @CookieValue("onb") String token,
             @RequestHeader("X-Nonce") String nonce,
             HttpServletRequest req,
-            HttpServletResponse res
+            HttpServletResponse res,
+            String authType
     ) {
         // nonce/token 검증
         PrecheckContext ctx = flow.precheck(token, nonce, 0);
 
         // 본인 인증 결과 payload 예시
+        PrsnAuthType type = PrsnAuthType.fromDesc(authType);
+
+        switch (type) {
+            case TOSS:
+//                processTossAuth();
+                break;
+
+            case KAKAO:
+//                processKakaoAuth();
+                break;
+
+            case PHONE:
+//                processPhoneAuth();
+                break;
+
+            case IPIN:
+//                processIpinAuth();
+                break;
+
+            default:
+                throw new IllegalArgumentException("지원하지 않는 인증 유형: " + authType);
+        }
 //         {
 //           "prsnAuthCiEncVal": "ENCRYPTED_CI_VALUE",
 //           "gndrCd": "M",
@@ -186,7 +210,7 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
                 req.getMbrsId(),
                 authReq.getMbrsNm(),
                 req.getMailAddr(),
-                authReq.getMbrsMbphNo(),
+                authReq.getMbrsMbphNo() == null ? req.getMbrsMbphNo() : authReq.getMbrsMbphNo() ,
                 req.getMbrsTelNo(),
                 req.getPwd(),
                 "00",
