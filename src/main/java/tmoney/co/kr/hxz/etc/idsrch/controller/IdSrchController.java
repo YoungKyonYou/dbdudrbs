@@ -11,6 +11,8 @@ import tmoney.co.kr.hxz.etc.idsrch.service.IdSrchService;
 import tmoney.co.kr.hxz.etc.idsrch.vo.IdSrchReqVO;
 import tmoney.co.kr.hxz.etc.idsrch.vo.IdSrchRspVO;
 
+import javax.validation.Valid;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/etc/idsrch")
@@ -37,18 +39,18 @@ public class IdSrchController {
      *
      * [process]
      * 1. 이름, 생년월일, 휴대폰 번호를 통해서 회원ID 조회
-     * 2. 로그인을 한 상태이므로, 회원상태코드(휴면, 탈퇴)에 대한 예외처리하지 않음
+     * 2. 로그인을 안 한 상태이므로, 회원상태코드(휴면, 탈퇴)에 대한 예외처리하지 않음
      *
      * @param
      */
-    @GetMapping("/idSrchRst.do")
+    @GetMapping("/idSrch2.do")
     public String findMbrsId(
-            @ModelAttribute IdSrchReqVO req,
+            @ModelAttribute @Valid IdSrchReqVO req,
             Model model
     ) {
         IdSrchRspVO content = idSrchService.findMbrsId(req);
 
         model.addAttribute("content", content);
-        return "/hxz/etc/idsrch/idSrchRst";
+        return "/hxz/etc/idsrch/idSrch2";
     }
 }

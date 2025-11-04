@@ -99,7 +99,8 @@
 
       const clone = (obj) => {
         try { return structuredClone(obj); } catch { return JSON.parse(JSON.stringify(obj || {})); }
-      };
+      };rt
+
 
       function saveReceipt(step, receipt) {
         if (receipt) sessionStorage.setItem('rcpt' + step, receipt);
