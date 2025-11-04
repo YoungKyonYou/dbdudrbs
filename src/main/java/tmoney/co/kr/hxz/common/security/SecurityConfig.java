@@ -36,14 +36,13 @@ public class SecurityConfig {
                 .and()
 
                 .exceptionHandling()
-                .authenticationEntryPoint((req, res, e) -> res.sendRedirect("/signup/start"))
-                .accessDeniedHandler((req, res, e) -> res.sendRedirect("/signup/start"))
+                .authenticationEntryPoint((req, res, e) -> res.sendRedirect("/etc/mbrsjoin/start"))
+                .accessDeniedHandler((req, res, e) -> res.sendRedirect("/etc/mbrsjoin/start"))
                 .and()
 
                 .authorizeHttpRequests(auth -> auth
-                        .antMatchers("/css/**", "/js/**", "/images/**", "/signup/start").permitAll()
-                        .antMatchers("/signup", "/signup/**").access(onboardingAuthz) // 여기만 커스텀 권한
-                        .antMatchers("/etc/**").access(onboardingAuthz)
+                        .antMatchers("/css/**", "/js/**", "/images/**", "/etc/mbrsjoin/start").permitAll()
+                        .antMatchers("/etc/mbrsjoin", "/etc/mbrsjoin/**").access(onboardingAuthz) // 여기만 커스텀 권한
                         .anyRequest().permitAll() // 필요하면 authenticated()로 바꾸세요
                 )
 

@@ -25,7 +25,7 @@ public class OnboardingClaimsFilter extends OncePerRequestFilter {
         String path = req.getRequestURI();
 
         // (A) /signup/complete 는 onb_done 만 확인하고 통과 (onb 없어도 OK)
-        if ("/signup/complete".equals(path)) {
+        if ("/etc/mbrsjoin/step4.do".equals(path)) {
             String done = readCookie(req, "onb_done");
             if (done != null) {
                 try {
@@ -39,17 +39,17 @@ public class OnboardingClaimsFilter extends OncePerRequestFilter {
         }
 
         // (B) 그 외 /signup/** 는 기존대로 onb 쿠키 검증
-        if (path.startsWith("/signup")) {
+        if (path.startsWith("/etc/mbrsjoin")) {
             String tok = readCookie(req, "onb");
             if (tok == null) {
-                res.sendRedirect("/signup/start");
+                res.sendRedirect("/etc/mbrsjoin/start");
                 return;
             }
             try {
                 JWTClaimsSet claims = tokens.verify(tok);
                 req.setAttribute("claims", claims);
             } catch (Exception e) {
-                res.sendRedirect("/signup/start");
+                res.sendRedirect("/etc/mbrsjoin/start");
                 return;
             }
         }

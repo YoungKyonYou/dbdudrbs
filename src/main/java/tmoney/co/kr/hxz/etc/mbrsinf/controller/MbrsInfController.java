@@ -55,7 +55,7 @@ public class MbrsInfController {
     @PostMapping("/")
     @ResponseBody
     public ResponseEntity<?> updateMbrsInf(
-            @Valid @RequestBody MbrsUpdReqVO req
+            @RequestBody @Valid MbrsUpdReqVO req
     ) {
         mbrsInfService.updateMbrsInf(req);
         return ResponseEntity.ok().build();

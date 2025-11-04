@@ -17,8 +17,7 @@ public interface MbrsJoinService {
     Map<String, String> submitAuthResult(@CookieValue("onb") String token,
                                          @RequestHeader("X-Nonce") String nonce,
                                          HttpServletRequest req,
-                                         HttpServletResponse res,
-                                         String prsnAuthType);
+                                         HttpServletResponse res);
 
     Map<String, String> submitInfResult(@CookieValue("onb") String token,
                                         @RequestHeader("X-Nonce") String nonce,
@@ -33,4 +32,9 @@ public interface MbrsJoinService {
     void insertMbrsJoin(String finalToken, MbrsJoinFinalizeVO body);
 
     boolean readMbrsCountById(String checkId);
+
+    void mbrsJoinComplete(
+            @CookieValue(value="onb_done", required=false) String finalToken,
+            HttpServletRequest req, HttpServletResponse res
+    );
 }

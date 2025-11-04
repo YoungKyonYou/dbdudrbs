@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.server.ResponseStatusException;
 import tmoney.co.kr.hxz.common.onboard.domain.PrecheckContext;
 import tmoney.co.kr.hxz.common.onboard.service.OnboardingFlowService;
 import tmoney.co.kr.hxz.common.onboard.service.ReceiptService;
@@ -30,6 +31,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.Duration;
 import java.util.Map;
+
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @Service
 @Validated
@@ -93,14 +97,13 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
             @CookieValue("onb") String token,
             @RequestHeader("X-Nonce") String nonce,
             HttpServletRequest req,
-            HttpServletResponse res,
-            String authType
+            HttpServletResponse res
     ) {
         // nonce/token 검증
         PrecheckContext ctx = flow.precheck(token, nonce, 0);
 
         // 본인 인증 결과 payload 예시
-        PrsnAuthType type = PrsnAuthType.fromDesc(authType);
+        PrsnAuthType type = PrsnAuthType.fromDesc("toss");
 
         switch (type) {
             case TOSS:
@@ -120,7 +123,7 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
                 break;
 
             default:
-                throw new IllegalArgumentException("지원하지 않는 인증 유형: " + authType);
+                throw new IllegalArgumentException("지원하지 않는 인증 유형: " + "toss");
         }
 //         {
 //           "prsnAuthCiEncVal": "ENCRYPTED_CI_VALUE",
@@ -237,5 +240,26 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
     @Transactional(readOnly = true)
     public boolean readMbrsCountById(String checkId) {
         return mbrsJoinMapper.readMbrsCountById(checkId) > 0;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void mbrsJoinComplete(
+            @CookieValue(value="onb_done", required=false) String finalToken,
+            HttpServletRequest req, HttpServletResponse res
+    ) {
+        if (finalToken == null) {
+            throw new ResponseStatusException(FORBIDDEN, "Missing final token");
+        }
+
+        JWTClaimsSet c = flow.verifyDoneToken(finalToken); // done=true, step>=4, mask==REQUIRED_MASK
+        String jti = c.getJWTID();
+
+        boolean firstUse = jtiCache.asMap().putIfAbsent("final:" + jti, Boolean.TRUE) == null;
+        if (!firstUse) throw new ResponseStatusException(CONFLICT, "Final token replay");
+
+        // 렌더 후 쿠키 정리
+        OnboardingWebUtil.expireCookie(req, res, "onb_done");
+        OnboardingWebUtil.expireCookie(req, res, "onb");
     }
 }

@@ -80,10 +80,9 @@ public class MbrsJoinController {
     public Map<String, String> submitAuthResult(
             @CookieValue("onb") String token,
             @RequestHeader("X-Nonce") String nonce,
-            @RequestParam("authType") String authType,
             HttpServletRequest req, HttpServletResponse res) {
 
-        Map<String, String> result = mbrsJoinService.submitAuthResult(token, nonce, req, res, authType);
+        Map<String, String> result = mbrsJoinService.submitAuthResult(token, nonce, req, res);
         // 프론트로 응답 (step3 이동 시 사용)
         return result;
     }
@@ -111,7 +110,7 @@ public class MbrsJoinController {
     public Map<String, String> submitInf(
             @CookieValue("onb") String token,
             @RequestHeader("X-Nonce") String nonce,
-            @Valid @RequestBody MbrsJoinInstReqVO payload,
+            @RequestBody @Valid MbrsJoinInstReqVO payload,
             HttpServletRequest req, HttpServletResponse res) {
 
         Map<String, String> result = mbrsJoinService.submitInfResult(token, nonce, payload, req, res);
@@ -136,7 +135,7 @@ public class MbrsJoinController {
     @ResponseBody
     public ResponseEntity<?> insertMbrsJoin(
             @CookieValue("onb_done") String finalToken,
-            @Valid @RequestBody MbrsJoinFinalizeVO body
+            @RequestBody @Valid MbrsJoinFinalizeVO body
     ) {
         mbrsJoinService.insertMbrsJoin(finalToken, body);
         return ResponseEntity.ok().build();
@@ -158,7 +157,7 @@ public class MbrsJoinController {
     @PostMapping("/checkId")
     @ResponseBody
     public ResponseEntity<?> readMbrsCountById(
-            @Valid @RequestBody CheckIdReqVO req
+            @RequestBody @Valid CheckIdReqVO req
     ) {
         boolean isCheckId = mbrsJoinService.readMbrsCountById(req.getMbrsId());
         if (isCheckId) {
@@ -179,7 +178,11 @@ public class MbrsJoinController {
      * @return
      */
     @GetMapping("/step4.do")
-    public String mbrsJoinStep4() {
+    public String mbrsJoinStep4(
+            @CookieValue(value="onb_done", required=false) String finalToken,
+            HttpServletRequest req, HttpServletResponse res
+    ) {
+        mbrsJoinService.mbrsJoinComplete(finalToken, req, res);
         return "/hxz/etc/mbrsjoin/step4";
     }
 }
