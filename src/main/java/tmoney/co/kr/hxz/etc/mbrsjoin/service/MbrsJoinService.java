@@ -4,7 +4,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestHeader;
 import tmoney.co.kr.hxz.common.onboard.vo.SignupVO;
-import tmoney.co.kr.hxz.common.type.PrsnAuthType;
 import tmoney.co.kr.hxz.etc.mbrsjoin.vo.MbrsJoinInstReqVO;
 import tmoney.co.kr.hxz.etc.mbrsjoin.vo.rcpt.MbrsJoinFinalizeVO;
 
@@ -17,7 +16,8 @@ public interface MbrsJoinService {
     Map<String, String> submitAuthResult(@CookieValue("onb") String token,
                                          @RequestHeader("X-Nonce") String nonce,
                                          HttpServletRequest req,
-                                         HttpServletResponse res);
+                                         HttpServletResponse res,
+                                         String authType);
 
     Map<String, String> submitInfResult(@CookieValue("onb") String token,
                                         @RequestHeader("X-Nonce") String nonce,

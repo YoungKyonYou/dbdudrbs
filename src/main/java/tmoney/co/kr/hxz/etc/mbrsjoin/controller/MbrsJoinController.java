@@ -80,9 +80,10 @@ public class MbrsJoinController {
     public Map<String, String> submitAuthResult(
             @CookieValue("onb") String token,
             @RequestHeader("X-Nonce") String nonce,
+            @RequestParam("authType") String authType,
             HttpServletRequest req, HttpServletResponse res) {
 
-        Map<String, String> result = mbrsJoinService.submitAuthResult(token, nonce, req, res);
+        Map<String, String> result = mbrsJoinService.submitAuthResult(token, nonce, req, res, authType);
         // 프론트로 응답 (step3 이동 시 사용)
         return result;
     }

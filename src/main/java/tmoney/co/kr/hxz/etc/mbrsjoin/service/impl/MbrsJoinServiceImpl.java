@@ -97,13 +97,14 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
             @CookieValue("onb") String token,
             @RequestHeader("X-Nonce") String nonce,
             HttpServletRequest req,
-            HttpServletResponse res
+            HttpServletResponse res,
+            String authType
     ) {
         // nonce/token 검증
         PrecheckContext ctx = flow.precheck(token, nonce, 0);
 
         // 본인 인증 결과 payload 예시
-        PrsnAuthType type = PrsnAuthType.fromDesc("toss");
+        PrsnAuthType type = PrsnAuthType.fromDesc(authType);
 
         switch (type) {
             case TOSS:
