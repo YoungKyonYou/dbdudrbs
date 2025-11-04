@@ -33,22 +33,24 @@
 
         <div class="container size-sm">
           <div class="join-wrap">
-            <form class="step-form" data-step="2" action="/etc/mbrsjoin/step2/complete">
-              <!-- 서버에서 발급한 nonce 초기값 -->
-              <input type="hidden" name="nonce" value="/*[[${signup.nonce}]]*/">
+            <!-- form: step2 인증 -->
+            <form id="step2Form" class="step-form" data-step="0" action="/etc/mbrsjoin/step2/complete" method="POST">
+              <!-- nonce hidden -->
+              <input type="hidden" name="nonce" th:value="${signup.nonce}" />
+
               <div class="gray-outer">
                 <div class="step2-box" role="group" aria-label="본인인증 수단 선택">
-                  <button type="button" class="auth-btn kakao" data-method="kakao">
-                    <i class="icon"></i><span>카카오뱅크 인증</span>
+                  <button type="button" class="auth-btn" data-method="kakao">
+                    <i class="icon"></i>카카오뱅크 인증
                   </button>
-                  <button type="button" class="auth-btn toss" data-method="toss">
-                    <i class="icon"></i><span>토스 인증</span>
+                  <button type="button" class="auth-btn" data-method="toss">
+                    <i class="icon"></i>토스 인증
                   </button>
-                  <button type="button" class="auth-btn phone" data-method="phone">
-                    <i class="icon"></i><span>휴대폰 인증</span>
+                  <button type="button" class="auth-btn" data-method="phone">
+                    <i class="icon"></i>휴대폰 인증
                   </button>
-                  <button type="button" class="auth-btn ipin" data-method="ipin">
-                    <i class="icon"></i><span>아이핀 인증</span>
+                  <button type="button" class="auth-btn" data-method="ipin">
+                    <i class="icon"></i>아이핀 인증
                   </button>
                 </div>
               </div>
@@ -61,86 +63,94 @@
     <script th:inline="javascript">
       (function () {
         let sending = false;
+        const clone = (obj) => {
+          try { return structuredClone(obj); } catch { return JSON.parse(JSON.stringify(obj || {})); }
+        };
 
         function saveReceipt(step, receipt) {
           if (receipt) sessionStorage.setItem('rcpt' + step, receipt);
         }
+        function saveStepPayload(step, payload) {
+          sessionStorage.setItem('step' + step, JSON.stringify(payload || {}));
+        }
 
-        async function submitAjax(form) {
+        const advanceUI = (doneStep) => {
+          const doneForm = document.querySelector(`form.step-form[data-step="${doneStep}"]`);
+          if (doneForm) {
+            doneForm.classList.add('dim');
+            doneForm.querySelectorAll('input,button,select,textarea').forEach(el => el.disabled = true);
+          }
+          const nextForm = document.querySelector(`form.step-form[data-step="${doneStep + 1}"]`);
+          if (nextForm) {
+            nextForm.classList.remove('dim');
+            nextForm.querySelectorAll('input,button,select,textarea').forEach(el => el.disabled = false);
+            nextForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        };
+
+        async function submitStep2(form, authMethod) {
           if (sending) return;
           sending = true;
-
+          form.classList.add('dim');
+          const all = (window.Common && Common.collectFromForm)
+            ? Common.collectFromForm(form)
+            : Object.fromEntries(new FormData(form));
           const step = parseInt(form.getAttribute('data-step'), 10);
-          const action = form.getAttribute('action');
-          const payload = Object.fromEntries(new FormData(form));
+          const nonce = all.nonce || '';
+          // const nonce = form.querySelector('input[name="nonce"]').value;
+          const payload = clone(all);
+          // FormData 생성
+          const body = new FormData();
+          body.append('authType', authMethod);
+          console.log([...body.entries()]); // authType 포함 확인
 
-          // nonce를 헤더로 전달
-          const nonceInput = form.querySelector('input[name="nonce"]');
-          const headers = {};
-          if (nonceInput && nonceInput.value) headers['X-Nonce'] = nonceInput.value;
 
-          // body에는 nonce 제외
-          delete payload.nonce;
-
+          delete all.nonce;
+          const headers = { 'X-Nonce': nonce }; // Content-Type 제거
+          saveStepPayload(step, clone(payload));
           try {
-            const res = await Common.sendSafe(action, {
-              method: 'POST',
-              data: payload,
-              headers: headers,
-              expect: 'json',
-              clientErrorMsg: '요청에 실패했습니다.',
-              otherErrorMsg: '오류가 발생했습니다.'
-            });
+            const out = await Common.sendSafe(
+              form.getAttribute('action'),
+              { method: 'POST', data: body, headers, expect: 'json' }
+            );
 
-            if (!res || res.ok === false) return;
+            if (!out || out.ok === false) return;
 
             // 영수증 저장
-            saveReceipt(step, res.data.receipt || null);
+            saveReceipt(step, out.data.receipt || out.data.rcpt || null);
 
-            // 다음 step nonce 주입
-            if (res.data.nextNonce) {
-              const nextForm = document.querySelector('form[data-step="' + (step + 1) + '"]');
+            // 다음 nonce 주입
+            if (out.data.nextNonce) {
+              const nextForm = document.querySelector(`form.step-form[data-step="${step + 1}"]`);
               if (nextForm) {
-                let nextInput = nextForm.querySelector('input[name="nonce"]');
-                if (!nextInput) {
-                  nextInput = document.createElement('input');
-                  nextInput.type = 'hidden';
-                  nextInput.name = 'nonce';
-                  nextForm.appendChild(nextInput);
-                }
-                nextInput.value = res.data.nextNonce;
+                const nextNonceInput = nextForm.querySelector('input[name="nonce"]');
+                if (nextNonceInput) nextNonceInput.value = out.data.nextNonce;
               }
             }
 
-            alert('인증 성공! 영수증: ' + res.data.receipt);
+            Common.MiniSPA.go('/etc/mbrsjoin/step3.do')
 
           } catch (e) {
-            alert('오류 발생: ' + (e.message || '알 수 없는 오류'));
+            (window.Common?.modalShow || alert)({
+              title: '오류',
+              message: e?.message || '요청 처리 중 오류가 발생했습니다.',
+              buttons: 'close'
+            });
           } finally {
             sending = false;
+            form.classList.remove('dim');
           }
         }
 
-        // 인증 버튼 클릭 이벤트
-        document.querySelectorAll('.auth-btn').forEach(btn => {
-          btn.addEventListener('click', function () {
-            const form = btn.closest('form.step-form');
-            if (!form) return;
-
-            // hidden input으로 authMethod 설정
-            let input = form.querySelector('input[name="authType"]');
-            if (!input) {
-              input = document.createElement('input');
-              input.type = 'hidden';
-              input.name = 'authType';
-              form.appendChild(input);
-            }
-            input.value = btn.getAttribute('data-method');
-
-            // ajax 전송
-            submitAjax(form);
+        // 버튼 클릭 이벤트
+        document.querySelectorAll('#step2Form .auth-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const method = btn.dataset.method;
+            console.log('인증 방식:', method); // debug
+            submitStep2(document.getElementById('step2Form'), method);
           });
         });
+
       })();
     </script>
 

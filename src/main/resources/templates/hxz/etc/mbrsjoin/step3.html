@@ -100,13 +100,12 @@
 
     <script>
       (function () {
+        // 1. 이전 단계 확인
+        const step0 = sessionStorage.getItem('step0');
         const rcpt0 = sessionStorage.getItem('rcpt0');
-        const rcpt1 = sessionStorage.getItem('rcpt1');
-        const step2Nonce = sessionStorage.getItem('step2Nonce');
-
-        if (!rcpt0 || !rcpt1 || !step2Nonce) {
-          alert("이전 단계 정보가 누락되었습니다. Step1부터 다시 진행해주세요.");
-          window.location.href = '/etc/mbrsjoin/step1.do';
+        if (!step0 || !rcpt0) {
+          alert('이전 단계 정보가 누락되었습니다. Step1부터 진행해주세요.');
+          location.href = '/etc/mbrsjoin/step1.do';
           return;
         }
 
@@ -119,125 +118,52 @@
         const pwdMsg = document.getElementById('pwdMsg');
         const pwdConfirmMsg = document.getElementById('pwdConfirmMsg');
 
-        // ✅ 정규식 정의
-        const idRegex = /^[a-z][a-z0-9_]{5,14}$/;
-        const pwdRegex = /^(?=.*[a-zA-Z])(?:(?=.*\d)|(?=.*[^a-zA-Z0-9])).{8,20}$/;
-
         let idChecked = false;
 
-        // ✅ 아이디 입력 시 실시간 유효성 검사
-        userId.addEventListener('input', () => {
-          const idValue = userId.value.trim();
-          idMsg.textContent = "";
-
-          if (!idRegex.test(idValue)) {
-            idMsg.textContent = "❌ 아이디는 영문 소문자로 시작, 6~15자 (숫자·_ 가능)";
-            idMsg.style.color = "red";
-            idChecked = false;
-            return;
-          }
-          idMsg.textContent = "✅ 형식 일치";
-          idMsg.style.color = "green";
-          idChecked = false; // 중복체크 다시 필요
-        });
+        // 2. 아이디 체크
+        userId.addEventListener('input', () => { idChecked = false; });
 
         // ✅ 아이디 중복체크
         checkBtn.addEventListener('click', async () => {
-          const id = userId.value.trim();
-          if (!idRegex.test(id)) {
-            idMsg.textContent = "❌ 아이디 형식이 올바르지 않습니다.";
-            idMsg.style.color = "red";
-            return;
-          }
-
-          try {
-            const res = await fetch('/etc/mbrsjoin/checkId', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ mbrsId: id })
-            });
-
-            const msg = await res.text();
-            if (msg.includes("사용")) {
-              idMsg.textContent = "✅ 사용 가능한 아이디입니다.";
-              idMsg.style.color = "green";
-              idChecked = true;
-            } else {
-              idMsg.textContent = "❌ 이미 존재하는 아이디입니다.";
-              idMsg.style.color = "red";
-              idChecked = false;
-            }
-          } catch {
-            idMsg.textContent = "❌ 서버 오류, 다시 시도해주세요.";
-            idMsg.style.color = "red";
-            idChecked = false;
-          }
+          const idValue = userId.value.trim();
+          if (!/^[a-z][a-z0-9_]{5,14}$/.test(idValue)) return;
+          const res = await fetch('/etc/mbrsjoin/checkId', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mbrsId: idValue })
+          });
+          const text = await res.text();
+          if (text.includes('사용 가능한')) { idChecked = true; idMsg.textContent = '✅ 사용 가능'; }
+          else { idChecked = false; idMsg.textContent = '❌ 이미 사용 중'; }
         });
 
-        // ✅ 비밀번호 유효성 검사
+        // 3. 비밀번호 체크
         function checkPassword() {
-          const password = pwd.value.trim();
+          const pass = pwd.value.trim();
+          const confirm = pwdConfirm.value.trim();
           const idValue = userId.value.trim();
 
-          if (!pwdRegex.test(password)) {
-            pwdMsg.textContent = "❌ 비밀번호는 8~20자, 영문 포함 + 숫자 또는 특수문자 필요";
-            pwdMsg.style.color = "red";
-          } else if (idValue && password.includes(idValue)) {
-            pwdMsg.textContent = "❌ 비밀번호에 아이디를 포함할 수 없습니다.";
-            pwdMsg.style.color = "red";
-          } else {
-            pwdMsg.textContent = "✅ 사용 가능한 비밀번호입니다.";
-            pwdMsg.style.color = "green";
+          if (!/^(?=.*[a-zA-Z])(?:(?=.*\d)|(?=.*[!@#$%^&*?_~]))[A-Za-z\d!@#$%^&*?_~]{8,20}$/.test(pass)) {
+            pwdMsg.textContent = '❌ 비밀번호 조건 불일치'; return;
           }
+          if (idValue && pass.toLowerCase().includes(idValue.toLowerCase())) {
+            pwdMsg.textContent = '❌ 비밀번호에 아이디 포함'; return;
+          }
+          pwdMsg.textContent = '✅ 사용 가능';
 
-          if (!pwdConfirm.value) {
-            pwdConfirmMsg.textContent = "";
-            return;
-          }
-          if (pwd.value === pwdConfirm.value) {
-            pwdConfirmMsg.textContent = "✅ 비밀번호 일치";
-            pwdConfirmMsg.style.color = "green";
-          } else {
-            pwdConfirmMsg.textContent = "❌ 비밀번호 불일치";
-            pwdConfirmMsg.style.color = "red";
-          }
+          pwdConfirmMsg.textContent = pass === confirm ? '✅ 비밀번호 일치' : '❌ 불일치';
         }
-
         pwd.addEventListener('input', checkPassword);
         pwdConfirm.addEventListener('input', checkPassword);
 
-        // ✅ 최종 제출
-        form.addEventListener('submit', async (e) => {
+        // 4. 폼 제출
+        form.addEventListener('submit', async e => {
           e.preventDefault();
-
-          const idValue = userId.value.trim();
-          const password = pwd.value.trim();
-
-          // 입력값 검증
-          if (!idRegex.test(idValue)) {
-            alert("아이디 형식을 확인해주세요.");
-            return;
-          }
-          if (!idChecked) {
-            alert("아이디 중복확인을 해주세요.");
-            return;
-          }
-          if (!pwdRegex.test(password)) {
-            alert("비밀번호 형식을 확인해주세요.");
-            return;
-          }
-          if (password.includes(idValue)) {
-            alert("비밀번호에 아이디를 포함할 수 없습니다.");
-            return;
-          }
-          if (password !== pwdConfirm.value.trim()) {
-            alert("비밀번호가 일치하지 않습니다.");
-            return;
-          }
+          if (!idChecked) { alert('아이디 중복확인 필요'); return; }
 
           const postData = {
-            mbrsId: idValue,
-            pwd: password,
+            mbrsId: userId.value.trim(),
+            pwd: pwd.value.trim(),
             cfmPwd: pwdConfirm.value.trim(),
             mrkgUtlzAgrmYn: sessionStorage.getItem('mrkgUtlzAgrmYn') || 'N',
             smsRcvAgrmYn: sessionStorage.getItem('smsRcvAgrmYn') || 'N',
@@ -251,27 +177,23 @@
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'X-Nonce': step2Nonce
+                'X-Nonce': step0  // ✅ precheck 통과를 위한 nonce
               },
               body: JSON.stringify(postData),
               credentials: 'include'
             });
-
-            if (!res.ok) throw new Error(`서버 오류: ${res.status}`);
-
             const data = await res.json();
-
-            // ✅ Step3 완료 시 receipt(rcpt2) 저장
-            sessionStorage.setItem('rcpt2', data.receipt || '');
-            sessionStorage.setItem('step2', '2');
-
-            alert("✅ 회원정보 입력 완료!");
-            window.location.href = '/etc/mbrsjoin/step4.do';
+            sessionStorage.setItem('rcpt3', data.receipt);
+            sessionStorage.setItem('step3', JSON.stringify(postData));
+            alert('회원정보 입력 완료!');
+            Common.MiniSPA.go('/etc/mbrsjoin/step4.do')
           } catch (err) {
-            alert(`❌ 요청 실패: ${err.message}`);
+            alert('❌ 서버 요청 실패: ' + err.message);
           }
         });
+
       })();
+
     </script>
 
 

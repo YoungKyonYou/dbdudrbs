@@ -1069,58 +1069,43 @@
     // headers: 추가 헤더 (기본값: {} )
     // signal: AbortSignal (선택적)
     // expect: 응답 형식 기대값 (기본값: 'json')
-    async function send(url, method = 'POST', data = null, headers = {}, signal, expect = 'json') {
-        // 기본 헤더 설정: JSON 형식으로 Accept와 Content-Type 지정
-        // 기존 헤더와 병합
-        headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json; charset=utf-8',
-            ...headers
-        };
+    async function send(url, { method = 'POST', data = null, headers = {}, signal, expect = 'json' } = {}) {
+        // 기본 Accept 헤더
+        headers = { 'Accept': 'application/json, text/plain;q=0.9', ...headers };
 
-        // Fetch 초기화 객체 설정
-        // 캐시: no-store (캐싱하지 않음)
-        // signal: AbortController 신호 (취소 가능)
-        let init = {
+        const init = {
             method,
             headers,
             cache: 'no-store',
-            credential: 'same-origin',
-            signal: signal || undefined  // signal이 제공되면 사용, 아니면 생략
+            credentials: 'same-origin',
+            signal
         };
 
+        console.log(init, 'int')
         if (data != null) {
             if (data instanceof FormData) {
                 init.body = data;
-
-
             } else if (data instanceof URLSearchParams) {
-                init.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
+                headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
                 init.body = data.toString();
             } else if (headers['Content-Type'] === 'application/x-www-form-urlencoded;charset=UTF-8') {
-                // body = new URLSearchParams(data).toString();
                 init.body = new URLSearchParams(data).toString();
             } else {
-                init.headers['Content-Type'] = 'application/json;charset=UTF-8';
+                headers['Content-Type'] = 'application/json;charset=UTF-8';
                 init.body = JSON.stringify(data);
             }
         }
 
-        let payload = null;
-        // show:
-        const res = await fetch(url, init);
+        const res = await fetch(url, init); // headers 포함됨
         const ct = res.headers.get('content-type') || '';
         const text = await res.text();
 
-        if (res.ok) {
+        if (!res.ok) {
+            let payload = null;
             if (ct.includes('application/json')) {
-                try {
-                    payload = JSON.parse(text);
-                } catch (e) {
-                }
+                try { payload = JSON.parse(text); } catch { }
             }
-        } else {
-            const err = new Error((payload && payload.message) ? payload.message : `HTTP ${res.status}`);
+            const err = new Error((payload?.message) || `HTTP ${res.status}`);
             err.name = 'FetchJsonError';
             err.status = res.status;
             err.payload = payload;
@@ -1129,19 +1114,22 @@
             throw err;
         }
 
-        if (expect === "text" || ct.includes("application/json")) return text;
-        try {
-            return JSON.parse(text);
-        } catch {
-            return text;
-        }
+        return expect === 'json' && ct.includes('application/json') ? JSON.parse(text) : text;
     }
+
     async function sendSafe(url, { method = 'POST', data = null, signal, headers, expect = 'json', clientErrorMsg = '요청에 실패했습니다.', otherErrorMsg = '오류가 발생했습니다.' } = {}) {
         // send 함수 호출 결과를 out 변수에 저장
         try {
             console.log(url, method, data, signal, headers, expect, clientErrorMsg, otherErrorMsg);
 
-            const out = await send(url, method, data, headers, signal, expect);
+            // const out = await send(url, method, data, headers, signal, expect);
+            const out = await send(url, {
+                method,
+                data,
+                headers,
+                signal,
+                expect
+            });
 
             // 성공 시 결과를 그대로 반환 (ok: true, status: 200, payload: out 등)
             return { ok: true, data: out };

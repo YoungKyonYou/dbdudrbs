@@ -180,7 +180,6 @@
                     const emailLocal = editForm.querySelector('#emailLocal');
                     const emailDomain = editForm.querySelector('#emailDomain');
 
-                    // 이메일 도메인 점 포함 검사
                     const domainPattern = /^[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/;
                     if (!domainPattern.test(emailDomain.value)) {
                         Common.modalShow({
@@ -205,11 +204,9 @@
                             try {
                                 const res = await Common.sendSafe('/etc/mbrsinf/', {
                                     method: 'POST',
-                                    data: applied,
-                                    headers: { 'Content-Type': 'application/json' }
+                                    headers: { 'Content-Type': 'application/json' },
+                                    data: applied    // ← 수정: data로 전달
                                 });
-
-
                                 if (res && (res.ok || res.success)) {
                                     Common.modalShow({ title: '완료', message: '변경 되었습니다.', buttons: 'close' });
                                     editForm.querySelectorAll('input.editable-field').forEach(input => input.setAttribute('readonly', true));
@@ -223,6 +220,7 @@
                         }
                     });
                 });
+
             })();
         </script>
 

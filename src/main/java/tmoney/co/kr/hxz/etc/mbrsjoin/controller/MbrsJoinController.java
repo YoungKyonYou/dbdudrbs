@@ -87,7 +87,7 @@ public class MbrsJoinController {
     //     // 프론트로 응답 (step3 이동 시 사용)
     //     return result;
     // }
-   @PostMapping(value = "/step2/complete", produces = "application/json")
+       @PostMapping(value = "/step2/complete", produces = "application/json")
     @ResponseBody
     public Map<String, String> submitAuthResult(
             @CookieValue("onb") String token,
@@ -99,6 +99,8 @@ public class MbrsJoinController {
         // 프론트로 응답 (step3 이동 시 사용)
         return result;
     }
+
+
     /**
      * 회원 가입 화면 조회 step3
      *

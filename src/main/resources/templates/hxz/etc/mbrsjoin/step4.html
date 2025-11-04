@@ -41,6 +41,7 @@
             </div>
           </div>
         </div>
+
         <div class="container size-sm">
           <div class="join-wrap">
             <div class="fin-box">
@@ -51,10 +52,10 @@
                   </p>
 
                   <div class="btn-wrap">
-                    <a href="" class="btn btn-primary size-lg" id="" role="button">
+                    <a href="" class="btn btn-primary size-lg" id="supportBtn" role="button">
                       지원 사업 가입하기
                     </a>
-                    <a onclick="Common.MiniSPA.go('/etc/lgn/login.do')" class="btn btn-darken-link size-lg" id=""
+                    <a onclick="Common.MiniSPA.go('/etc/lgn/login.do')" class="btn btn-darken-link size-lg"
                       role="button">
                       로그인
                     </a>
@@ -65,8 +66,56 @@
           </div>
         </div>
       </section>
-
     </main>
+
+    <script>
+      (async function () {
+        // Step3 완료 후 rcpt3가 없는 경우 다시 Step3로 이동
+        const rcpt3 = sessionStorage.getItem('rcpt3');
+        const step3Data = sessionStorage.getItem('step3');
+
+        if (!rcpt3 || !step3Data) {
+          alert('Step3 정보가 누락되었습니다. Step3부터 다시 진행해주세요.');
+          window.location.href = '/etc/mbrsjoin/step3.do';
+          return;
+        }
+
+        // Step4 최종 token 전송
+        async function sendStep4() {
+          try {
+            const res = await fetch('/etc/mbrsjoin/step4/complete', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Final-Token': rcpt3 // 서버에서 요구하는 final token
+              },
+              body: JSON.stringify({}),
+              credentials: 'include'
+            });
+
+            if (!res.ok) throw new Error(`서버 오류: ${res.status}`);
+            const data = await res.json();
+
+            console.log('Step4 완료:', data);
+          } catch (err) {
+            alert(`Step4 요청 실패: ${err.message}`);
+            window.location.href = '/etc/mbrsjoin/step3.do';
+          }
+        }
+
+        // Step4 요청
+        await sendStep4();
+
+        // 지원사업 버튼 클릭 시 이동 (예시)
+        document.getElementById('supportBtn').addEventListener('click', function (e) {
+          e.preventDefault();
+          // Step4 완료 후 서버에서 전달 받은 값에 따라 링크를 변경 가능
+          Common.MiniSPA.go('/etc/support/registration.do');
+        });
+
+      })();
+    </script>
+
   </th:block>
 </th:block>
 
