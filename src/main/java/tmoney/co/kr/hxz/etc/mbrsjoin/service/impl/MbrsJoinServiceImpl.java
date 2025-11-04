@@ -184,11 +184,11 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
         JWTClaimsSet c = flow.verifyDoneToken(finalToken);
         String onb = (String) c.getClaim("onb");
 
-        receiptService.verifyAndConsumeFromMap(OnboardingWebUtil.reqOr("rcpt1", body.getRcpt1()), onb, 0, body.getStep1());
-        receiptService.verifyAndConsumeFromMap(OnboardingWebUtil.reqOr("rcpt2", body.getRcpt2()), onb, 1, body.getStep2());
+        receiptService.verifyAndConsumeFromMap(OnboardingWebUtil.reqOr("rcpt0", body.getRcpt0()), onb, 0, body.getStep0());
+        receiptService.verifyAndConsumeFromMap(OnboardingWebUtil.reqOr("rcpt1", body.getRcpt1()), onb, 1, body.getStep1());
 
-        PrsnAuthReqVO authReq = body.getStep1();
-        MbrsJoinInstReqVO req = body.getStep2();
+        PrsnAuthReqVO authReq = body.getStep0();
+        MbrsJoinInstReqVO req = body.getStep1();
 
         // 아이디 중복 체크
         if (readMbrsCountById(req.getMbrsId())) {
@@ -206,8 +206,7 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
         }
 
         // 암호화
-//        String encodeMbrsNm = passwordEncoder.encode(req.getMbrsNm());
-//        String encodePwd = passwordEncoder.encode(req.getPwd());
+        String encodePwd = passwordEncoder.encode(req.getPwd());
 
 
         MbrsJoinReqVO reqVO = new MbrsJoinReqVO(
@@ -216,7 +215,7 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
                 req.getMailAddr(),
                 authReq.getMbrsMbphNo() == null ? req.getMbrsMbphNo() : authReq.getMbrsMbphNo() ,
                 req.getMbrsTelNo(),
-                req.getPwd(),
+                encodePwd,
                 "00",
                 0,
                 null,

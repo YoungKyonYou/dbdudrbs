@@ -75,19 +75,7 @@ public class MbrsJoinController {
     /**
      * [STEP 2 완료 → STEP 3 진입용] 본인인증 결과 수신
      */
-    // @PostMapping(value = "/step2/complete", consumes = "application/json", produces = "application/json")
-    // @ResponseBody
-    // public Map<String, String> submitAuthResult(
-    //         @CookieValue("onb") String token,
-    //         @RequestHeader("X-Nonce") String nonce,
-    //         @RequestParam("authType") String authType,
-    //         HttpServletRequest req, HttpServletResponse res) {
-
-    //     Map<String, String> result = mbrsJoinService.submitAuthResult(token, nonce, req, res, authType);
-    //     // 프론트로 응답 (step3 이동 시 사용)
-    //     return result;
-    // }
-       @PostMapping(value = "/step2/complete", produces = "application/json")
+    @PostMapping(value = "/step2/complete", produces = "application/json")
     @ResponseBody
     public Map<String, String> submitAuthResult(
             @CookieValue("onb") String token,
@@ -121,7 +109,7 @@ public class MbrsJoinController {
      */
     @PostMapping(value = "/step3/complete", consumes = "application/json", produces = "application/json")
     @ResponseBody
-    public Map<String, String> submitInf(
+    public Map<String, String> submitInfResult(
             @CookieValue("onb") String token,
             @RequestHeader("X-Nonce") String nonce,
             @RequestBody @Valid MbrsJoinInstReqVO payload,
@@ -182,10 +170,15 @@ public class MbrsJoinController {
 
 
     /**
-     * 회원 가입 화면 조회 step4
+     * 회원 가입 화면 조회 step4 + 회원 정보 추가
+     *
+     * tbhxzm101 HXZ_회원정보
+     * tbhxzh101 HXZ_회원정보변경이력
      *
      * [process]
-     * 1. 회원 가입 화면 step4 조회
+     * 1. HXZ_회원정보 테이블 내의 회원 정보 추가
+     * 2. HXZ_회원정보변경이력 테이블 회원정보 변경 이력 추가
+     * 3. 회원 가입 화면 step4 조회
      *
      * @param
      * @param
@@ -194,7 +187,8 @@ public class MbrsJoinController {
     @GetMapping("/step4.do")
     public String mbrsJoinStep4(
             @CookieValue(value="onb_done", required=false) String finalToken,
-            HttpServletRequest req, HttpServletResponse res
+            HttpServletRequest req,
+            HttpServletResponse res
     ) {
         mbrsJoinService.mbrsJoinComplete(finalToken, req, res);
         return "/hxz/etc/mbrsjoin/step4";

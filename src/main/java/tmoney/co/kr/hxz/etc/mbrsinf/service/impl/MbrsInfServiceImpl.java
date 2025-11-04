@@ -95,7 +95,7 @@ public class MbrsInfServiceImpl implements MbrsInfService {
         MbrsInfRspVO rspVO = readMbrsInf(mbrsId);
 
         // 이전 비밀번호 동일 여부 판별
-        if (rspVO.getPwd().equals(newPwd)) {
+        if (passwordEncoder.matches(newPwd, rspVO.getPwd())) {
             throw DomainExceptionCode.PASSWORD_DUPLICATION.newInstance();
         }
 
@@ -106,7 +106,7 @@ public class MbrsInfServiceImpl implements MbrsInfService {
                 rspVO.getMailAddr(),
                 rspVO.getMbrsMbphNo(),
                 rspVO.getMbrsTelNo(),
-                newPwd,
+                passwordEncoder.encode(newPwd),
                 rspVO.getMbrsStaCd(),
                 rspVO.getPwdErrNcnt(),
                 rspVO.getDsprRgtInhrNo(),

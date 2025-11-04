@@ -13,4 +13,18 @@ public class StringUtils {
         String t = s.trim();
         return t.isEmpty() ? null : t;
     }
+
+    public boolean hasText(String str) {
+        return (str != null && !str.isEmpty() && containsText(str));
+    }
+
+    public boolean containsText(CharSequence str) {
+        int strLen = str.length();
+        for (int i = 0; i < strLen; i++) {
+            if (!Character.isWhitespace(str.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

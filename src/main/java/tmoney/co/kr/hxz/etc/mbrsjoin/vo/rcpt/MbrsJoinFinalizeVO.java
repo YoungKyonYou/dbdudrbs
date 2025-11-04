@@ -9,9 +9,9 @@ import javax.validation.Valid;
 @Data
 public class MbrsJoinFinalizeVO {
     @Valid
-    private PrsnAuthReqVO step1;
+    private PrsnAuthReqVO step0;
     @Valid
-    private MbrsJoinInstReqVO step2;
+    private MbrsJoinInstReqVO step1;
+    private String rcpt0;
     private String rcpt1;
-    private String rcpt2;
 }
