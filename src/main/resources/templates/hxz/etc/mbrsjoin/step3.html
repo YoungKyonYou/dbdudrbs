@@ -123,7 +123,6 @@
         // 2. 아이디 체크
         userId.addEventListener('input', () => { idChecked = false; });
 
-        // ✅ 아이디 중복체크
         checkBtn.addEventListener('click', async () => {
           const idValue = userId.value.trim();
           if (!/^[a-z][a-z0-9_]{5,14}$/.test(idValue)) return;
@@ -168,8 +167,6 @@
             mrkgUtlzAgrmYn: sessionStorage.getItem('mrkgUtlzAgrmYn') || 'N',
             smsRcvAgrmYn: sessionStorage.getItem('smsRcvAgrmYn') || 'N',
             mailRcvAgrmYn: sessionStorage.getItem('mailRcvAgrmYn') || 'N',
-            rcpt0,
-            rcpt1
           };
 
           try {
@@ -186,13 +183,14 @@
             sessionStorage.setItem('rcpt3', data.receipt);
             sessionStorage.setItem('step3', JSON.stringify(postData));
             alert('회원정보 입력 완료!');
-            Common.MiniSPA.go('/etc/mbrsjoin/step4.do')
+            location.href = '/etc/mbrsjoin/step4.do';
           } catch (err) {
             alert('❌ 서버 요청 실패: ' + err.message);
           }
         });
 
       })();
+
 
     </script>
 
