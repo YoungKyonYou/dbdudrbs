@@ -82,4 +82,5 @@ public class MbrsJoinReqVO {
     private String mailRcvAgrmYn;
     /** BizTalk 수신 동의 여부 */
     private String bztlRcvAgrmYn;
+   
 }
