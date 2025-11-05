@@ -85,7 +85,7 @@
     <update id="updateFaqInqrNcnt" parameterType="String">
         /* sql_id : updateFaqInqrNcnt */
         /*
-        * 1. 파일 : NtcMttrMapper_SQL.xml
+        * 1. 파일 : FaqMapper_SQL.xml
         * 2. 기능 : 자주묻는질문 조회 건수 수정
         * 3. 작성자 : 최중혁
         * 4. 변경이력 :
