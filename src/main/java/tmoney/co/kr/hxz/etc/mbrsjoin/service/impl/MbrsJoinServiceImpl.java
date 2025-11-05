@@ -147,7 +147,8 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
 
         return Map.of(
                 "receipt", receipt,
-                "nextNonce", nextNonce
+                "nextNonce", nextNonce,
+                "payload", prsnAuthReqVO.toString()
         );
     }
 

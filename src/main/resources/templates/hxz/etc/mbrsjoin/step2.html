@@ -40,17 +40,24 @@
 
               <div class="gray-outer">
                 <div class="step2-box" role="group" aria-label="본인인증 수단 선택">
-                  <button type="button" class="auth-btn" data-method="kakao">
-                    <i class="icon"></i>카카오뱅크 인증
+                  <button type="button" class="auth-btn kakao" data-method="kakao">
+                    <i class="icon" aria-hidden="true"></i>
+                    <span>카카오뱅크 인증</span>
                   </button>
-                  <button type="button" class="auth-btn" data-method="toss">
-                    <i class="icon"></i>토스 인증
+
+                  <button type="button" class="auth-btn toss" data-method="toss">
+                    <i class="icon" aria-hidden="true"></i>
+                    <span>토스 인증</span>
                   </button>
-                  <button type="button" class="auth-btn" data-method="phone">
-                    <i class="icon"></i>휴대폰 인증
+
+                  <button type="button" class="auth-btn phone" data-method="phone">
+                    <i class="icon" aria-hidden="true"></i>
+                    <span>휴대폰 인증</span>
                   </button>
-                  <button type="button" class="auth-btn" data-method="ipin">
-                    <i class="icon"></i>아이핀 인증
+
+                  <button type="button" class="auth-btn ipin" data-method="ipin">
+                    <i class="icon" aria-hidden="true"></i>
+                    <span>아이핀 인증</span>
                   </button>
                 </div>
               </div>
@@ -63,51 +70,27 @@
     <script th:inline="javascript">
       (function () {
         let sending = false;
-        const clone = (obj) => {
-          try { return structuredClone(obj); } catch { return JSON.parse(JSON.stringify(obj || {})); }
-        };
 
         function saveReceipt(step, receipt) {
           if (receipt) sessionStorage.setItem('rcpt' + step, receipt);
         }
-        function saveStepPayload(step, payload) {
-          sessionStorage.setItem('step' + step, JSON.stringify(payload || {}));
-        }
 
-        const advanceUI = (doneStep) => {
-          const doneForm = document.querySelector(`form.step-form[data-step="${doneStep}"]`);
-          if (doneForm) {
-            doneForm.classList.add('dim');
-            doneForm.querySelectorAll('input,button,select,textarea').forEach(el => el.disabled = true);
-          }
-          const nextForm = document.querySelector(`form.step-form[data-step="${doneStep + 1}"]`);
-          if (nextForm) {
-            nextForm.classList.remove('dim');
-            nextForm.querySelectorAll('input,button,select,textarea').forEach(el => el.disabled = false);
-            nextForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-        };
+        function saveStepPayload(step, payload) {
+          if (payload) sessionStorage.setItem('step' + step, JSON.stringify(payload));
+        }
 
         async function submitStep2(form, authMethod) {
           if (sending) return;
           sending = true;
           form.classList.add('dim');
-          const all = (window.Common && Common.collectFromForm)
-            ? Common.collectFromForm(form)
-            : Object.fromEntries(new FormData(form));
-          const step = parseInt(form.getAttribute('data-step'), 10);
-          const nonce = all.nonce || '';
-          // const nonce = form.querySelector('input[name="nonce"]').value;
-          const payload = clone(all);
-          // FormData 생성
+
+          const nonceInput = form.querySelector('input[name="nonce"]');
+          const nonce = nonceInput ? nonceInput.value : '';
           const body = new FormData();
           body.append('authType', authMethod);
-          console.log([...body.entries()]); // authType 포함 확인
 
+          const headers = { 'X-Nonce': nonce };
 
-          delete all.nonce;
-          const headers = { 'X-Nonce': nonce }; // Content-Type 제거
-          saveStepPayload(step, clone(payload));
           try {
             const out = await Common.sendSafe(
               form.getAttribute('action'),
@@ -116,10 +99,34 @@
 
             if (!out || out.ok === false) return;
 
-            // 영수증 저장
+            const step = parseInt(form.getAttribute('data-step'), 10);
+            const payloadRaw = out.data?.payload;
+            console.log(out.data, '?data')
+            let payloadParsed = null;
+
+            if (payloadRaw && typeof payloadRaw === 'string') {
+              try {
+                const jsonStr = payloadRaw
+                  .replace(/^[^{]*\(/, '{')
+                  .replace(/\)$/, '}')
+                  .replace(/(\w+)=/g, '"$1":')
+                  .replace(/, /g, ',')
+                  .replace(/'/g, '"');
+
+                payloadParsed = JSON.parse(jsonStr);
+              } catch (err) {
+                console.warn('⚠️ payload 파싱 실패:', err);
+                payloadParsed = { raw: payloadRaw };
+              }
+            }
+
+            saveStepPayload(step, {
+              ...out.data,
+              payload: payloadParsed || payloadRaw
+            });
             saveReceipt(step, out.data.receipt || out.data.rcpt || null);
 
-            // 다음 nonce 주입
+
             if (out.data.nextNonce) {
               const nextForm = document.querySelector(`form.step-form[data-step="${step + 1}"]`);
               if (nextForm) {
@@ -128,7 +135,10 @@
               }
             }
 
-            Common.MiniSPA.go('/etc/mbrsjoin/step3.do')
+            console.log('✅ Step2 payload 저장 완료:', payloadParsed || payloadRaw);
+
+            // ✅ 다음 페이지로 이동
+            Common.MiniSPA.go(`/etc/mbrsjoin/${authMethod}/step3.do`);
 
           } catch (e) {
             (window.Common?.modalShow || alert)({
@@ -142,11 +152,11 @@
           }
         }
 
-        // 버튼 클릭 이벤트
+        // 인증 버튼 클릭 이벤트
         document.querySelectorAll('#step2Form .auth-btn').forEach(btn => {
           btn.addEventListener('click', () => {
             const method = btn.dataset.method;
-            console.log('인증 방식:', method); // debug
+            console.log('인증 방식 선택됨:', method);
             submitStep2(document.getElementById('step2Form'), method);
           });
         });

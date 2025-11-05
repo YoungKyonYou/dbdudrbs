@@ -99,8 +99,12 @@ public class MbrsJoinController {
      * @param
      * @return
      */
-    @GetMapping("/step3.do")
-    public String readMbrsJoinStep3() {
+    @GetMapping("/{authType}/step3.do")
+    public String readMbrsJoinStep3(
+            @PathVariable("authType") String authType,
+            Model model
+    ) {
+        model.addAttribute("authType", authType);
         return "/hxz/etc/mbrsjoin/step3";
     }
 
