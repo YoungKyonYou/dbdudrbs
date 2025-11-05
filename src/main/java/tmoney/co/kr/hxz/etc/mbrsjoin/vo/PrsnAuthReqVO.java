@@ -12,7 +12,6 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 public class PrsnAuthReqVO {
     /** 회원명 */
     @Size(max = 100,

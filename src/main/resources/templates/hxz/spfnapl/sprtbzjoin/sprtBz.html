@@ -2,6 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <th:block th:replace="~{component/header :: layout(~{::content})}">
   <th:block th:fragment="content">
+
     <main id="contents">
       <section class="section">
         <div class="container fluid">
@@ -229,6 +230,20 @@
       </section>
 
     </main>
+    <script>
+      // 페이지 로드 후 초기화
+      (function () {
+        const up = new FileUploader('#evidenceUploader');
+
+        // 선택: 에러/변경 콜백
+        up.on('error', (e) => {
+          const msg = e.type === 'ext'
+            ? '허용되지 않은 확장자입니다.'
+            : '파일 크기가 제한을 초과했습니다.';
+          alert(msg);
+        });
+      })();
+    </script>
   </th:block>
 </th:block>
 

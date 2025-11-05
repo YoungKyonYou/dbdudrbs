@@ -78,6 +78,42 @@
       </section>
 
     </main>
+
+
+    <!-- JS: 주민등록번호 인증 처리 -->
+    <script>
+      (function () {
+        const form = document.getElementById("rsdcAuthForm");
+
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const rrn1 = document.getElementById("rrn1").value.trim();
+          const rrn2 = document.getElementById("rrn2").value.trim();
+          if (!rrn1 || !rrn2) {
+            alert("주민등록번호를 모두 입력해주세요.");
+            return;
+          }
+
+          try {
+            const res = await Common.sendSafe(`/spfnapl/rsdcAuth.do?rrn1=${rrn1}&rrn2=${rrn2}`, {
+              method: 'POST',
+              expect: 'json',
+              clientErrorMsg: '인증 정보를 확인할 수 없습니다.',
+              otherErrorMsg: '서버 통신 중 오류가 발생했습니다.'
+            });
+
+            if (res?.ok) {
+              Common.MiniSPA.go('/spfnapl/sprtBz.do');
+            }
+          } catch (err) {
+            console.error(err);
+            alert("거주지 인증 중 오류가 발생했습니다.");
+          }
+        });
+      })();
+    </script>
+
   </th:block>
 </th:block>
 

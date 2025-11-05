@@ -104,7 +104,7 @@ public class MbrsJoinController {
             @PathVariable("authType") String authType,
             Model model
     ) {
-        model.addAttribute("authType", authType);
+       model.addAttribute("authType", authType);
         return "/hxz/etc/mbrsjoin/step3";
     }
 
