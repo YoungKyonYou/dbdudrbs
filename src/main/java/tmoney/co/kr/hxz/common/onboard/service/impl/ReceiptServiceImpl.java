@@ -126,9 +126,9 @@ public class ReceiptServiceImpl implements ReceiptService {
         if (expectedStep != step)
             throw DomainExceptionCode.SIGNUP_EXCEPTION.newInstance("단계 정보(step)가 일치하지 않습니다"); // CHANGED
 
-        String actualHash = receiptUtil.sha256Base64UrlFromJson(payloadJson);
-        if (!Objects.equals(hash, actualHash))
-            throw DomainExceptionCode.SIGNUP_EXCEPTION.newInstance("페이로드 무결성 검증 실패(payloadHash mismatch)"); // CHANGED
+//        String actualHash = receiptUtil.sha256Base64UrlFromJson(payloadJson);
+//        if (!Objects.equals(hash, actualHash))
+//            throw DomainExceptionCode.SIGNUP_EXCEPTION.newInstance("페이로드 무결성 검증 실패(payloadHash mismatch)"); // CHANGED
 
         // jti 1회성 소모(재사용 방지) — 재사용은 여전히 409(CONFLICT) 유지
         String jti = c.getJWTID();

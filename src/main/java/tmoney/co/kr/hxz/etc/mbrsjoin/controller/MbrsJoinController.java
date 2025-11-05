@@ -137,7 +137,7 @@ public class MbrsJoinController {
      * @param body
      * @return
      */
-    @PostMapping
+    @PostMapping(value="/finalize", consumes="application/json")
     @ResponseBody
     public ResponseEntity<?> insertMbrsJoin(
             @CookieValue("onb_done") String finalToken,
