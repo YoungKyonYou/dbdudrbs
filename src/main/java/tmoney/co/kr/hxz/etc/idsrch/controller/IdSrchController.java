@@ -50,7 +50,7 @@ public class IdSrchController {
     ) {
         IdSrchRspVO content = idSrchService.findMbrsId(req);
 
-        model.addAttribute("content", content);
+        model.addAttribute("result", content);
         return "/hxz/etc/idsrch/idSrch2";
     }
 }

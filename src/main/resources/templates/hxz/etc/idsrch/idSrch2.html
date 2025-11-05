@@ -2,45 +2,36 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <th:block th:replace="~{component/header :: layout(~{::content})}">
   <th:block th:fragment="content">
-    <!-- <div id="breadcrumb">
-            <div class="container">
-                <nav>
-                    <ul>
-                        <li>홈</li>
-                        <li>마이페이지</li>
-                        <li aria-current="page">회원정보</li>
-                    </ul>
-                </nav>
-            </div>
-        </div> -->
-
     <main id="contents">
       <section class="section">
         <div class="container size-sm">
           <div class="login-wrap">
             <div class="login-header">
               <h2 class="section-title">아이디 찾기</h2>
-              <p>가입 당시 입력된 아래의 정보를 입력해주세요.</p>
+              <p>회원님의 아이디를 확인해주세요.</p>
             </div>
+
             <nav class="tabs" aria-label="페이지 이동">
               <a class="tab is-active" onclick="Common.MiniSPA.go('/etc/idsrch/idSrch.do')" aria-current="page">아이디
                 찾기</a>
               <a class="tab" onclick="Common.MiniSPA.go('/etc/pwdsrch/pwdSrch.do')">비밀번호 찾기</a>
             </nav>
+
             <div class="gray-outer">
               <div class="fin-box">
-                <p class="complete-msg">
-                  <span>가입하신 아이디는 </span>
-                  <strong class="color-blue">Tmoney***</strong>
-                  <span>입니다.</span>
-                </p>
+                <div th:if="${result != null}">
+                  <p class="field-title">회원님의 아이디는 다음과 같습니다.</p>
+                  <p class="text-lg font-bold" th:text="${result.mbrsId}">exampleId</p>
+                  <p>가입일시: <span th:text="${result.rgtDtm}">2024-01-01</span></p>
+                </div>
+
+                <div th:if="${result == null}">
+                  <p class="text-gray">조회된 회원 정보가 없습니다.</p>
+                </div>
                 <div class="btn-wrap">
-                  <a href="" class="btn btn-darken-link size-lg" id="" role="button">
-                    메인으로
-                  </a>
-                  <a href="" class="btn btn-primary btn-icon-right size-lg" id="" role="button">
-                    <i class="icon icon-enter"></i>
-                    로그인
+                  <a href="/" class="btn btn-darken-link size-lg" role="button">메인으로</a>
+                  <a href="/login/login.do" class="btn btn-primary btn-icon-right size-lg" role="button">
+                    <i class="icon icon-enter"></i>로그인
                   </a>
                 </div>
               </div>
@@ -48,12 +39,7 @@
           </div>
         </div>
       </section>
-
     </main>
-
-
-    <script></script>
-
   </th:block>
 </th:block>
 
