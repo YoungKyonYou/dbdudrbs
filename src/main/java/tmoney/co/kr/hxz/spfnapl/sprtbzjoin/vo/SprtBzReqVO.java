@@ -1,4 +1,4 @@
-package tmoney.co.kr.hxz.spfnapl.sprtbz.vo;
+package tmoney.co.kr.hxz.spfnapl.sprtbzjoin.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

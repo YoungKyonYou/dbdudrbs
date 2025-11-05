@@ -48,9 +48,9 @@ public class IdSrchController {
             @ModelAttribute @Valid IdSrchReqVO req,
             Model model
     ) {
-        IdSrchRspVO content = idSrchService.findMbrsId(req);
+        IdSrchRspVO result = idSrchService.findMbrsId(req);
 
-        model.addAttribute("content", content);
+        model.addAttribute("result", result);
         return "/hxz/etc/idsrch/idSrch2";
     }
 }

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tmoney.co.kr.hxz.spfnapl.sprtbzjoin.mapper.SprtBzJoinMapper">
+
+    <!--
+        서비스 ID별 서비스 유형 및 회원유형/기관별 범위 조회
+        파라미터: tpwSvcId, orgCd
+    -->
+    <select id="readSprtBz" parameterType="tmoney.co.kr.hxz.spfnapl.sprtbzjoin.vo.SprtBzReqVO" resultType="tmoney.co.kr.hxz.spfnapl.sprtbzjoin.vo.SprtBzRspVO">
+        /* sql_id : readSprtBz */
+        /*
+        * 1. 파일 : SprtBzJoinMapper_SQL.xml
+        * 2. 기능 : 서비스 ID별 서비스 유형 및 회원유형/기관별 범위 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.05 - 최중혁 : 최초작성
+        */
+        select m201.org_cd              as orgCd
+             , m201.tpw_svc_id          as tpwSvcId
+             , m201.tpw_svc_nm          as tpwSvcNm
+             , m202.tpw_svc_typ_id      as tpwSvcTypId
+             , m202.tpw_svc_typ_nm      as tpwSvcTypNm
+             , m202.tpw_mbrs_typ_cd     as tpwMbrsTypCd
+             , m103.mbrs_typ_ctg_sno    as mbrsTypCtgSno
+             , m103.tpw_mbrs_typ_cd_nm  as tpwMbrsTypCdNm
+             , m103.tpw_mbrs_ctg_cd     as tpwMbrsCtgCd
+             , case
+               when m103.tpw_mbrs_ctg_cd = '01' then '일반'
+               else '기타'
+                end                     as mbrsClsNm
+             , m104.typ_adpt_min_val    as typAplyMinVal
+             , m104.typ_adpt_max_val    as typAplyMaxVal
+             , m201.use_yn as svcUseYn
+             , m202.use_yn as svcTypUseYn
+             , m103.use_yn as mbrsTypUseYn
+             , m104.use_yn as orgTypUseYn
+          from ohxzown.tbhxzm201 m201
+         inner join ohxzown.tbhxzm202 m202
+            on m201.tpw_svc_id = m202.tpw_svc_id
+          left join ohxzown.tbhxzm103 m103
+            on m202.tpw_mbrs_typ_cd = m103.tpw_mbrs_typ_cd
+          left join ohxzown.tbhxzm104 m104
+            on m201.org_cd = m104.org_cd
+           and m202.tpw_mbrs_typ_cd = m104.tpw_mbrs_typ_cd
+         where 1=1
+         <if test="req.tpwSvcId != null and req.tpwSvcId != ''">
+           and m201.tpw_svc_id = #{req.tpwSvcId}
+         </if>
+         <if test="req.orgCd != null and req.orgCd != ''">
+           and m201.org_cd = #{req.orgCd}
+         </if>
+         order by m201.tpw_svc_id
+             , m202.tpw_svc_typ_sno
+             , m103.mbrs_typ_ctg_sno
+    </select>
+
+</mapper>

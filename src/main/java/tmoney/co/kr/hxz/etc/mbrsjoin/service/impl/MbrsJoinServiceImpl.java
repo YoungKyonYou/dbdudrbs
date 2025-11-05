@@ -131,7 +131,8 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
 //           "gndrCd": "M",
 //           "mbrsBrdt": "19940101"
 //         }
-        PrsnAuthReqVO prsnAuthReqVO = new PrsnAuthReqVO("김민정","010-3843-2389","ENCRYPTED_CI_VALUE", "M", "19940101");
+        String prsnAuthReqVO = String.valueOf(new PrsnAuthReqVO("김민정","010-3843-2389","ENCRYPTED_CI_VALUE", "M", "19940101"));
+        String payload = prsnAuthReqVO;
 
         // receipt 발급 (Step3로 넘길 데이터)
         String receipt = receiptService.issueReceiptFromMap(
@@ -148,7 +149,7 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
         return Map.of(
                 "receipt", receipt,
                 "nextNonce", nextNonce,
-                "payload", prsnAuthReqVO.toString()
+                "payload", payload
         );
     }
 

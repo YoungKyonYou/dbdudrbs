@@ -1,5 +1,7 @@
 package tmoney.co.kr.hxz.etc.mbrsjoin.vo;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
@@ -32,4 +34,14 @@ public class PrsnAuthReqVO {
     /** 회원생년월일 */
     @Pattern(regexp = "^[0-9]{8}$", message = "생년월일은 8자리 숫자여야 합니다.")
     private String mbrsBrdt;
+
+    // ✅ JSON 형태로 toString() 오버라이드
+    @Override
+    public String toString() {
+        try {
+            return new ObjectMapper().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            return super.toString(); // 실패 시 기본 toString()
+        }
+    }
 }
