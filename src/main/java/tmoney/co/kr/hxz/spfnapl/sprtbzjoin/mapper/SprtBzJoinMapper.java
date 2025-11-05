@@ -5,5 +5,5 @@ import tmoney.co.kr.hxz.annotation.HxzDb;
 
 @HxzDb
 @Mapper
-public interface SprtBzMapper {
+public interface SprtBzJoinMapper {
 }

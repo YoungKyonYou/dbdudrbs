@@ -1,9 +1,6 @@
 package tmoney.co.kr.hxz.etc.mbrsjoin.vo;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -13,6 +10,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class PrsnAuthReqVO {
     /** 회원명 */
     @Size(max = 100,
