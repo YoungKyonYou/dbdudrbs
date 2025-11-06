@@ -154,14 +154,15 @@
                     if (!sendBtn) return;
                     const rowId = sendBtn.dataset.id;
                     if (rowId) {
-                        window.location.href = `/mypage/mbrsinf/${rowId}/pwdForm.do`;
+
+                        Common.MiniSPA.go(`/mypage/mbrsinf/${rowId}/pwdForm.do`)
                     }
                 });
 
                 // 회원탈퇴
                 deleteBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    window.location.href = `/mypage/mbrsinf/mbrsScsn.do`;
+                    Common.MiniSPA.go(`/mypage/mbrsinf/mbrsScsn.do`)
                 });
 
                 // 저장

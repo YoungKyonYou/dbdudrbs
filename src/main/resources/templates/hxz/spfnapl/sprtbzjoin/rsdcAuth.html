@@ -45,7 +45,7 @@
               <p class="guide-text">※ 행정안전부 행정정보공동이용센터와 연계한 인증으로 이용자가 많을 경우 약 5분 정도 소요됩니다.</p>
             </div>
             <div class="form-box">
-              <form action="" method="post" novalidate>
+              <form id="rsdcAuthForm" action="" method="post" novalidate>
                 <fieldset>
                   <p class="field-title">주민등록번호</p>
                   <legend class="sr-only">주민등록번호</legend>
@@ -66,11 +66,12 @@
                   </div>
                 </fieldset>
 
-                <button type="button" class="btn btn-primary btn-icon-right size-lg">
+                <button type="submit" class="btn btn-primary btn-icon-right size-lg">
                   <i class="icon icon-finish" aria-hidden="true"></i>
                   거주지 인증
                 </button>
               </form>
+
             </div>
 
           </div>
@@ -80,7 +81,6 @@
     </main>
 
 
-    <!-- JS: 주민등록번호 인증 처리 -->
     <script>
       (function () {
         const form = document.getElementById("rsdcAuthForm");

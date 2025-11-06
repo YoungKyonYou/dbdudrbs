@@ -69,6 +69,121 @@
       </section>
 
     </main>
+    <script th:inline="javascript">
+      (function () {
+        /** ─────────────────────────────────────────────
+         *  공통 셀렉터 함수 정의
+         *  ───────────────────────────────────────────── */
+        const $ = (sel, el = document) => el.querySelector(sel);
+
+        /** ─────────────────────────────────────────────
+         *  서버 응답(response) 처리
+         *  ───────────────────────────────────────────── */
+        const res = /*[[${response}]]*/ null;
+
+        if (res) {
+          if (res.code === 'LOGIN_TAKEOVER') {
+            // 중복 로그인(다른 세션이 접속 중)
+            Common.modalShow({
+              message: res.message,
+              title: '알림',
+              buttons: 'ok-close',
+              onOk: takeover // takeover 함수 실행
+            });
+          } else if (res.message) {
+            // 일반 알림 메시지
+            Common.modalShow({
+              message: res.message,
+              title: '알림',
+              buttons: 'close'
+            });
+          }
+        }
+
+        /** ─────────────────────────────────────────────
+         *  takeover: 기존 세션 접속 해제 및 새 로그인 시도
+         *  ───────────────────────────────────────────── */
+        async function takeover() {
+          const res = await fetch("/auth/takeover", { method: 'POST' });
+          if (res && res.ok) {
+            window.location.href = '/page/dashboard/index';
+          }
+        }
+
+        /** ─────────────────────────────────────────────
+         *  요소 캐싱
+         *  ───────────────────────────────────────────── */
+        const btnLogin = $('.btn.btn-login');
+        const inputs = document.querySelectorAll('.login-wrap .text-field');
+        const inputId = inputs?.[0];  // 아이디 입력창
+        const inputPw = inputs?.[1];  // 비밀번호 입력창
+
+        if (!btnLogin || !inputId || !inputPw) return;
+
+
+
+        /** ─────────────────────────────────────────────
+         *  submitNativeLogin:
+         *  숨은 폼을 만들어 /login 으로 직접 제출
+         *  ───────────────────────────────────────────── */
+        const submitNativeLogin = (username, password) => {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = '/login';
+          form.style.display = 'none';
+
+          const hid = (name, value) => {
+            const i = document.createElement('input');
+            i.type = 'hidden';
+            i.name = name;
+            i.value = value;
+            return i;
+          };
+
+          // 아이디 / 비밀번호 필드 추가
+          form.appendChild(hid('username', username));
+          form.appendChild(hid('password', password));
+
+          // (선택) 로그인 유지 체크박스가 있다면 추가
+          // form.appendChild(hid('remember-me', 'on'));
+
+          document.body.appendChild(form);
+          form.submit(); // Spring Security 기본 처리 (성공 → redirect, 실패 → /login?error)
+        };
+
+        /** ─────────────────────────────────────────────
+         *  doLogin: 로그인 시도 함수
+         *  ───────────────────────────────────────────── */
+        const doLogin = () => {
+          const username = (inputId.value || '').trim();
+          const password = inputPw.value || '';
+          if (!username || !password) {
+            // 입력값 누락 시 알림
+            alert('아이디와 비밀번호를 입력해 주세요.');
+            return;
+          }
+          submitNativeLogin(username, password);
+        };
+
+        /** ─────────────────────────────────────────────
+         *  버튼 클릭 이벤트
+         *  ───────────────────────────────────────────── */
+        btnLogin.addEventListener('click', (e) => {
+          e.preventDefault();
+          doLogin();
+        });
+
+        /** ─────────────────────────────────────────────
+         *  엔터 키로 로그인
+         *  ───────────────────────────────────────────── */
+        [inputId, inputPw].forEach(el => el.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            doLogin();
+          }
+        }));
+      })()
+    </script>
 
   </th:block>
 </th:block>

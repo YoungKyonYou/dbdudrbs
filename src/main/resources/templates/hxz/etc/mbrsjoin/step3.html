@@ -111,6 +111,7 @@
                     </label>
                   </div>
 
+                  <!-- 광고성 정보 수신 동의 -->
                   <fieldset class="control-group checkbox-group vertical">
                     <legend class="field-title">광고성 정보 수신 동의</legend>
 
@@ -138,6 +139,7 @@
                     </div>
                     <p id="adReceiveHelp" class="guide-text">언제든 설정에서 수신 여부를 변경할 수 있습니다.</p>
                   </fieldset>
+
                 </div>
 
                 <button type="submit" class="btn btn-primary size-lg">완료</button>
@@ -157,7 +159,7 @@
           Common.modalShow({
             title: '알림',
             message: '이전 단계 정보가 누락되었습니다. Step1부터 진행해주세요.',
-            buttons: ['닫기']
+            buttons: 'close'
           });
           Common.MiniSPA.go('/etc/mbrsjoin/step1.do');
           return;
@@ -172,6 +174,10 @@
         const pwdMsg = document.getElementById('pwdMsg');
         const pwdConfirmMsg = document.getElementById('pwdConfirmMsg');
 
+        const mrkgUtlzAgrmYn = document.getElementById('check-arg-1')?.checked ? 'Y' : 'N';
+        const mailRcvAgrmYn = document.getElementById('chk-email')?.checked ? 'Y' : 'N';
+        const smsRcvAgrmYn = document.getElementById('chk-sms')?.checked ? 'Y' : 'N';
+        const ntfcYn = (mailRcvAgrmYn === 'Y' || smsRcvAgrmYn === 'Y') ? 'Y' : 'N';
         let idChecked = false;
         let sending = false;
 
@@ -185,14 +191,53 @@
         checkBtn.addEventListener('click', async () => {
           const idValue = userId.value.trim();
           const idPattern = /^[a-z][a-z0-9_]{5,14}$/;
+
+          // 아이디 형식 검증
           if (!idPattern.test(idValue)) {
-            Common.modalShow({ title: '알림', message: '아이디 형식이 올바르지 않습니다.', buttons: ['닫기'] });
+            if (idMsg) idMsg.textContent = '❌ 아이디 형식이 올바르지 않습니다. (영문 소문자로 시작, 6~15자)';
+            Common.modalShow({
+              title: '알림',
+              message: '❌ 아이디 형식이 올바르지 않습니다. (영문 소문자로 시작, 6~15자)',
+              buttons: 'close'
+            });
             return;
           }
-          const res = await Common.sendSafe('/etc/mbrsjoin/checkId', { method: 'POST', data: { mbrsId: idValue }, expect: 'text' });
-          idChecked = res?.data?.includes('사용 가능한');
-          Common.modalShow({ title: idChecked ? '사용 가능' : '사용 불가', message: idChecked ? '✅ 사용 가능한 아이디입니다.' : '❌ 이미 사용 중인 아이디입니다.', buttons: ['닫기'] });
+
+          try {
+            const res = await Common.sendSafe('/etc/mbrsjoin/checkId', {
+              method: 'POST',
+              data: { mbrsId: idValue },
+              expect: 'text'
+            });
+
+            const text = res?.data || '';
+            idChecked = text.includes('사용 가능한');
+            if (idChecked) {
+              if (idMsg) idMsg.textContent = '✅ 사용 가능한 아이디입니다.';
+              Common.modalShow({
+                title: '사용 가능',
+                message: '✅ 사용 가능한 아이디입니다.',
+                buttons: 'close'
+              });
+            } else {
+              if (idMsg) idMsg.textContent = '❌ 이미 사용 중인 아이디입니다.';
+              Common.modalShow({
+                title: '사용 불가',
+                message: '❌ 이미 사용 중인 아이디입니다.',
+                buttons: 'close'
+              });
+            }
+
+          } catch (err) {
+            if (idMsg) idMsg.textContent = '❌ 서버 오류로 확인에 실패했습니다.';
+            Common.modalShow({
+              title: '오류',
+              message: '❌ 서버 오류로 아이디 확인에 실패했습니다.',
+              buttons: 'close'
+            });
+          }
         });
+
 
         function checkPassword() {
           const pass = pwd.value.trim();
@@ -203,6 +248,8 @@
           if (idValue && pass.toLowerCase().includes(idValue.toLowerCase())) { pwdMsg.textContent = '❌ 비밀번호에 아이디 포함 불가'; pwdConfirmMsg.textContent = ''; return false; }
           pwdMsg.textContent = '✅ 사용 가능';
           pwdConfirmMsg.textContent = pass === confirm ? '✅ 비밀번호 일치' : '❌ 비밀번호 불일치';
+
+
           return pass === confirm;
         }
 
@@ -225,9 +272,10 @@
             mbrsMbphNo: '01012345678',
             mbrsTelNo: '021234567',
             mailAddr: email,
-            smsRcvAgrmYn: sessionStorage.getItem('smsRcvAgrmYn') || 'N',
-            mailRcvAgrmYn: sessionStorage.getItem('mailRcvAgrmYn') || 'N',
-            mrkgUtlzAgrmYn: sessionStorage.getItem('mrkgUtlzAgrmYn') || 'N'
+
+            mrkgUtlzAgrmYn,
+            smsRcvAgrmYn,
+            mailRcvAgrmYn
           };
 
           const headers = { 'X-Nonce': step0Obj.nextNonce };
@@ -248,14 +296,12 @@
               rcpt0: rcpt0,
               rcpt1: sessionStorage.getItem('rcpt1')
             };
-            // 이후 finalize 호출
             const finalizeRes = await Common.sendSafe(form.getAttribute('action'), { method: 'POST', data: payload, headers, expect: 'json' });
             if (!finalizeRes || finalizeRes.ok === false) { sending = false; form.classList.remove('dim'); return; }
 
             Common.MiniSPA.go('/etc/mbrsjoin/step4.do');
           } catch (e) {
             alert('❌ 서버 요청 실패: ' + (e?.message || e));
-            console.log(e.message, '?error')
           } finally {
             sending = false;
             form.classList.remove('dim');
@@ -265,8 +311,24 @@
         form.addEventListener('submit', async e => {
           e.preventDefault();
           const idPattern = /^[a-z][a-z0-9_]{5,14}$/;
-          if (!idPattern.test(userId.value.trim())) { Common.modalShow({ title: '알림', message: '아이디 형식이 올바르지 않습니다.', buttons: ['닫기'] }); return; }
-          if (!idChecked) { Common.modalShow({ title: '알림', message: '아이디 중복 확인이 필요합니다.', buttons: ['닫기'] }); return; }
+          if (!idPattern.test(userId.value.trim())) { Common.modalShow({ title: '알림', message: '아이디 형식이 올바르지 않습니다.', buttons: 'close' }); return; }
+          if (!idChecked) { Common.modalShow({ title: '알림', message: '아이디 중복 확인이 필요합니다.', buttons: 'close' }); return; }
+          if (pwd.value.length < 8 || pwd.value.length > 20) {
+            Common.modalShow({
+              title: '알림',
+              message: '비밀번호는 8~20자여야 합니다.',
+              buttons: 'close'
+            });
+            return false;
+          }
+          if (pwd.value !== pwdConfirm.value) {
+            Common.modalShow({
+              title: '알림',
+              message: '비밀번호가 일치하지 않습니다.',
+              buttons: 'close'
+            });
+            return false;
+          }
           if (!checkPassword()) return;
           await submitStep3(form);
         });
