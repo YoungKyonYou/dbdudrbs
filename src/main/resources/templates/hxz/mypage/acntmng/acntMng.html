@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{component/header :: layout(~{::content})}">
+  <th:block th:fragment="content">
+
+    <div class="mypage-nav">
+      <div class="container fluid">
+        <nav>
+          <ul>
+            <li><a href="#">개명처리</a></li>
+            <li><a href="#">나의지자체</a></li>
+            <li><a href="#">지원금 신청결과</a></li>
+            <li><a href="#">지원금 내역 조회</a></li>
+            <li><a href="#">이용내역 조회</a></li>
+            <li><a href="#">카드관리</a></li>
+            <li class="active"><a href="#" aria-current="page">계좌관리</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <main id="contents">
+      <section class="section">
+        <div class="container">
+          <div class="mypage-wrap">
+            <div class="mypage-header">
+              <h2 class="section-title">계좌관리</h2>
+            </div>
+            <div class="mng-wrap">
+              <div class="table-wrap type-row visible">
+                <div class="form-box">
+                  <table>
+                    <tbody>
+                      <tr>
+                        <th scope="row">현재 은행명</th>
+                        <td id="currentBank">-</td>
+                        <th scope="row">현재 계좌번호</th>
+                        <td id="currentAccount">-</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">변경 은행명</th>
+                        <td colspan="3">
+                          <select id="bankSelect" class="text-field size-md fluid">
+                            <option value="">은행 선택</option>
+                          </select>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th scope="row">변경 계좌번호</th>
+                        <td colspan="3">
+                          <input id="acctNumber" type="text" class="text-field size-md fluid" placeholder="숫자만 입력"
+                            pattern="[0-9]{6,20}" inputmode="numeric">
+                          <button type="button" id="btnVerify" class="btn btn-darkgray size-md">계좌 인증</button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th scope="row">변경 예금주명</th>
+                        <td colspan="3">
+                          <input id="acctHolder" type="text" class="text-field size-md fluid" placeholder="예금주명 입력">
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="btn-wrap">
+                <button type="button" id="btnChange" class="btn btn-primary size-lg">변경</button>
+              </div>
+
+              <div>
+                <h3 class="section-sub-title">변경이력</h3>
+                <div class="table-wrap type-col">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th scope="col">순번</th>
+                        <th scope="col">변경일</th>
+                        <th scope="col">변경 후 은행명</th>
+                        <th scope="col">변경 후 계좌번호</th>
+                        <th scope="col">변경 전 은행명</th>
+                        <th scope="col">변경 전 계좌번호</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr th:if="${acntHistory == null or #lists.isEmpty(acntHistory)}">
+                        <td colspan="6" style="text-align:center;">등록된 계좌가 없습니다.</td>
+                      </tr>
+                      <tr th:each="row, iterStat : ${acntHistory}">
+                        <td th:text="${acntHistory.size() - iterStat.index}">1</td>
+                        <td th:text="${#dates.format(row.acntRgtDt, 'yyyy.MM.dd')}">2025.11.06</td>
+                        <td th:text="${row.newBank}">신한은행</td>
+                        <td th:text="${row.newAcctNo}">1234567890</td>
+                        <td th:text="${row.oldBank}">국민은행</td>
+                        <td th:text="${row.oldAcctNo}">0987654321</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+
+    <script>
+      (async function () {
+        const currentBank = document.getElementById("currentBank");
+        const currentAccount = document.getElementById("currentAccount");
+        const currentHolder = document.getElementById("currentHolder");
+        const historyBody = document.getElementById("historyBody");
+        const acctNumberInput = document.getElementById("acctNumber");
+        const acctHolderInput = document.getElementById("acctHolder");
+        const btnVerify = document.getElementById("btnVerify");
+        const btnChange = document.getElementById("btnChange");
+        const bankSelect = document.getElementById("bankSelect");
+
+        const bankList = [
+          { code: "088", name: "신한은행" },
+          { code: "004", name: "국민은행" },
+          { code: "011", name: "농협은행" }
+        ];
+
+        // 은행 select 옵션 생성
+        bankList.forEach(b => {
+          const opt = document.createElement("option");
+          opt.value = b.code;
+          opt.textContent = b.name;
+          bankSelect.appendChild(opt);
+        });
+
+        let verifiedAccount = null;
+
+        // 기존 계좌 불러오기
+        const listRes = await sendSafe('/mypage/acntMng/list', { method: 'GET', expect: 'json' });
+        if (listRes?.ok && Array.isArray(listRes.data) && listRes.data.length) {
+          const latest = listRes.data[0];
+          currentBank.textContent = latest.bnkNm || '-';
+          currentAccount.textContent = latest.acntNo || '-';
+          currentHolder.textContent = latest.ooaNm || '-';
+
+          historyBody.innerHTML = listRes.data.map((row, idx) => `
+      <tr>
+        <td>${listRes.data.length - idx}</td>
+        <td>${row.acntRgtDt ? row.acntRgtDt.replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3') : '-'}</td>
+        <td>${row.bnkNm || '-'}</td>
+        <td>${row.acntNo || '-'}</td>
+        <td>-</td>
+        <td>-</td>
+      </tr>
+    `).join('');
+        } else {
+          historyBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">등록된 계좌가 없습니다.</td></tr>';
+        }
+
+        // 계좌 인증
+        btnVerify.addEventListener('click', async () => {
+          const acctNo = acctNumberInput.value.trim();
+          const bankCode = bankSelect.value;
+
+          if (!bankCode) {
+            alert("은행을 선택해주세요.");
+            return;
+          }
+
+          if (!acctNo.match(/^[0-9]{6,20}$/)) {
+            alert("계좌번호는 6~20자리 숫자만 입력 가능합니다.");
+            return;
+          }
+
+          const res = await sendSafe('/mypage/acntMng/verify', {
+            method: 'POST',
+            data: { bankCode, accountNo: acctNo }
+          });
+
+          if (res?.ok) {
+            verifiedAccount = { acctNo, acctHolder: res.data.ooaNm, bankCode };
+            acctHolderInput.value = res.data.ooaNm;
+            alert("계좌 인증이 완료되었습니다.");
+          } else {
+            verifiedAccount = null;
+            alert(res?.message || "계좌 인증 실패");
+          }
+        });
+
+        // 계좌 변경
+        btnChange.addEventListener('click', async () => {
+          if (!verifiedAccount) {
+            alert("먼저 계좌 인증을 진행해주세요.");
+            return;
+          }
+
+          const res = await sendSafe('/mypage/acntMng/change', {
+            method: 'POST',
+            data: {
+              oldAcctNo: currentAccount.textContent,
+              oldBank: currentBank.textContent,
+              newAcctNo: verifiedAccount.acctNo,
+              newBank: bankList.find(b => b.code === verifiedAccount.bankCode).name,
+              acctHolder: verifiedAccount.acctHolder
+            }
+          });
+
+          if (res?.ok) {
+            alert("계좌번호가 변경되었습니다.");
+            const oldBank = currentBank.textContent;
+            const oldAcctNo = currentAccount.textContent;
+
+            currentBank.textContent = res.data.newBank;
+            currentAccount.textContent = res.data.newAcctNo;
+            currentHolder.textContent = res.data.acctHolder;
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+        <td>1</td>
+        <td>${new Date().toISOString().slice(0, 10).replace(/-/g, '.')}</td>
+        <td>${res.data.newBank}</td>
+        <td>${res.data.newAcctNo}</td>
+        <td>${oldBank}</td>
+        <td>${oldAcctNo}</td>
+      `;
+            historyBody.prepend(tr);
+
+            verifiedAccount = null;
+            acctNumberInput.value = '';
+            acctHolderInput.value = '';
+            bankSelect.value = '';
+          } else {
+            alert(res?.message || "계좌 변경 실패");
+          }
+        });
+      })();
+    </script>
+  </th:block>
+</th:block>
+
+</html>
