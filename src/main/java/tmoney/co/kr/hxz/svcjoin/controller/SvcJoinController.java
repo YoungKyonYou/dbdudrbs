@@ -141,7 +141,8 @@ public class SvcJoinController {
     ) {
         List<SvcJoinRspVO> result = svcJoinService.readSvcJoin(req);
         model.addAttribute("result", result);
-        return "/hxz/sprtbzjoin/sprtBz";
+        // return "/hxz/sprtbzjoin/sprtBz";
+        return "/hxz/svcJoin/sprtBz";
     }
 
     /**
@@ -166,7 +167,9 @@ public class SvcJoinController {
         String mbrsId = "tmoney001";
         svcJoinService.svcJoin(req, mbrsId);
         model.addAttribute("mbrsId", mbrsId);
-        return "/hxz/sprtbzjoin/sprtBz";
+        
+        //return "/hxz/sprtbzjoin/sprtBz";
+         return "/hxz/svcJoinFn/sprtBz";
     }
 
     /**
