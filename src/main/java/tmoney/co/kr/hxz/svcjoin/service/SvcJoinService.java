@@ -2,6 +2,7 @@ package tmoney.co.kr.hxz.svcjoin.service;
 
 import tmoney.co.kr.hxz.svcjoin.vo.rsdc.RsdcAuthReqVO;
 import tmoney.co.kr.hxz.svcjoin.vo.svccncn.SvcCncnReqVO;
+import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinInstReqVO;
 import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinReqVO;
 import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinRspVO;
 import tmoney.co.kr.hxz.svcjoin.vo.orginf.OrgInfReqVO;
@@ -18,5 +19,5 @@ public interface SvcJoinService {
 
     List<SvcJoinRspVO> readSvcJoin(SvcJoinReqVO req);
 
-    void svcJoin(SvcJoinReqVO req, String mbrsId);
+    void svcJoin(SvcJoinInstReqVO req, String mbrsId);
 }

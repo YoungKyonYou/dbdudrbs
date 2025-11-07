@@ -9,8 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class SvcJoinReqVO {
-    private String mbrsId = "tmoney001";
-    private String tpwSvcId;
-    private String orgCd;
+public class SvcJoinInstReqVO {
+    private String tpwSvcId = "SVC010";
+    private String orgCd= "ORG0002";
 }

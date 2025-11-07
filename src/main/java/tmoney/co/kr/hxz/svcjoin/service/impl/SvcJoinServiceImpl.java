@@ -10,6 +10,7 @@ import tmoney.co.kr.hxz.svcjoin.vo.prevsvc.PrevSvcRspVO;
 import tmoney.co.kr.hxz.svcjoin.vo.rsdc.RsdcAuthReqVO;
 import tmoney.co.kr.hxz.svcjoin.vo.rsdc.RsdcAuthRspVO;
 import tmoney.co.kr.hxz.svcjoin.vo.svccncn.SvcCncnReqVO;
+import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinInstReqVO;
 import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinReqVO;
 import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinRspVO;
 import tmoney.co.kr.hxz.svcjoin.vo.orginf.OrgInfReqVO;
@@ -55,7 +56,7 @@ public class SvcJoinServiceImpl implements SvcJoinService {
 
 
         // 3. 행정동코드관리를 통해 해당 주소지의 기관코드 불러오기 (리스트가 될 수도 있음)
-//      String orgCd = svcJoinMapper.selectOrgCdByAddoCdAndStdoCd(req.getAddoCd(), req.getStdoCd());
+//      String orgCd = svcJoinMapper.readOrgCdByAddoCd(req.getAddoCd());
         String orgCd = "ORG0002";
         if (orgCd == null) {
 //            res.setMsg("해당 지역 정보가 존재하지 않습니다.");
@@ -74,6 +75,10 @@ public class SvcJoinServiceImpl implements SvcJoinService {
 
         // 5. 이전 서비스 내역 조회
         List<PrevSvcRspVO> prevSvcList = svcJoinMapper.readPrevSvcInf(mbrsId);
+
+        if (prevSvcList.isEmpty()) {
+            return "거주지 인증 완료";
+        }
 
         // 6. 이전 내역의 기관코드와 다를 경우 해지하시겠습니까 모달 요청
         if (req.getOrgCd().equals(prevSvcList.get(0).getOrgCd())) {
@@ -103,7 +108,7 @@ public class SvcJoinServiceImpl implements SvcJoinService {
     @Override
     @Transactional(readOnly = true)
     public void svcCncn(SvcCncnReqVO req, String mbrsId) {
-        
+
     }
 
     @Override
@@ -114,7 +119,7 @@ public class SvcJoinServiceImpl implements SvcJoinService {
 
     @Override
     @Transactional
-    public void svcJoin(SvcJoinReqVO req, String mbrsId) {
-
+    public void svcJoin(SvcJoinInstReqVO req, String mbrsId) {
+        svcJoinMapper.insertSvcJoin(req, mbrsId);
     }
 }

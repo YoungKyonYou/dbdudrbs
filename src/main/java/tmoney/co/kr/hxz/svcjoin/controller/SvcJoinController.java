@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import tmoney.co.kr.hxz.svcjoin.service.SvcJoinService;
 import tmoney.co.kr.hxz.svcjoin.vo.rsdc.RsdcAuthReqVO;
 import tmoney.co.kr.hxz.svcjoin.vo.svccncn.SvcCncnReqVO;
+import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinInstReqVO;
 import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinReqVO;
 import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinRspVO;
 import tmoney.co.kr.hxz.svcjoin.vo.orginf.OrgInfReqVO;
@@ -157,18 +158,14 @@ public class SvcJoinController {
      * @return
      */
     @PostMapping(value = "/svcJoin")
-    public String svcJoin(
-//            @RequestPart SvcReqVO req,
+    public String insertSvcJoin(
+            @RequestPart SvcJoinInstReqVO req,
             @RequestPart(value = "file", required = false) MultipartFile file,
             Model model
     ) {
         String mbrsId = "tmoney001";
-        String tpwSvcId = "SVC010";
-        String orgCd = "ORG0002";
-        SvcJoinReqVO req =  new SvcJoinReqVO(mbrsId, tpwSvcId, orgCd);
-        List<SvcJoinRspVO> result = svcJoinService.readSvcJoin(req);
+        svcJoinService.svcJoin(req, mbrsId);
         model.addAttribute("mbrsId", mbrsId);
-        model.addAttribute("result", result);
         return "/hxz/sprtbzjoin/sprtBz";
     }
 
