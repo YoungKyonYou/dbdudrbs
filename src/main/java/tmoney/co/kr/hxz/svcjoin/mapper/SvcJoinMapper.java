@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import tmoney.co.kr.hxz.annotation.HxzDb;
 import tmoney.co.kr.hxz.svcjoin.vo.prevsvc.PrevSvcRspVO;
 import tmoney.co.kr.hxz.svcjoin.vo.rsdc.RsdcAuthInstReqVO;
+import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.BankCdRspVO;
 import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinInstReqVO;
 import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinReqVO;
 import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinRspVO;
@@ -29,4 +30,6 @@ public interface SvcJoinMapper {
     List<SvcJoinRspVO> readSvcJoin(@Param("req") SvcJoinReqVO req);
 
     void insertSvcJoin(@Param("req") SvcJoinInstReqVO req, @Param("mbrsId") String mbrsId);
+
+    List<BankCdRspVO> readCmnBankCdList();
 }

@@ -10,6 +10,7 @@ import tmoney.co.kr.hxz.svcjoin.vo.prevsvc.PrevSvcRspVO;
 import tmoney.co.kr.hxz.svcjoin.vo.rsdc.RsdcAuthReqVO;
 import tmoney.co.kr.hxz.svcjoin.vo.rsdc.RsdcAuthRspVO;
 import tmoney.co.kr.hxz.svcjoin.vo.svccncn.SvcCncnReqVO;
+import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.BankCdRspVO;
 import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinInstReqVO;
 import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinReqVO;
 import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinRspVO;
@@ -116,6 +117,12 @@ public class SvcJoinServiceImpl implements SvcJoinService {
     public List<SvcJoinRspVO> readSvcJoin(SvcJoinReqVO req) {
         return svcJoinMapper.readSvcJoin(req);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BankCdRspVO> readCmnBankCdList() {
+        return svcJoinMapper.readCmnBankCdList();
+    };
 
     @Override
     @Transactional
