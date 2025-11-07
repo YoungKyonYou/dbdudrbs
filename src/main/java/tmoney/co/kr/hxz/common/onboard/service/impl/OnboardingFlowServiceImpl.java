@@ -43,7 +43,7 @@ public class OnboardingFlowServiceImpl implements OnboardingFlowService {
     }
 
     /** 4단계(0~3) 전체 완료 마스크 0b1111 */
-    public static final int REQUIRED_MASK = (1 << 4) - 1;
+    public static final int REQUIRED_MASK = (1 << 2) - 1;
 
     /** 시작 토큰 발급 */
     @Override

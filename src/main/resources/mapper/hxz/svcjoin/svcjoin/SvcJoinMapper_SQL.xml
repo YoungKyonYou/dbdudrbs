@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tmoney.co.kr.hxz.svcjoin.mapper.SvcJoinMapper">
+
+    <select id="readOrgInf" resultType="tmoney.co.kr.hxz.svcjoin.vo.orginf.OrgInfRspVO" parameterType="tmoney.co.kr.hxz.svcjoin.vo.orginf.OrgInfReqVO">
+        /* sql_id : readOrgInf */
+        /*
+        * 1. 파일 : SvcJoinMapper_SQL.xml
+        * 2. 기능 : 지자체 기관 연계 정보 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.06 - 최중혁 : 최초작성
+        */
+        select m009.org_cd             as orgCd
+             , m009.tpw_org_nm         as tpwOrgNm
+             , m201.tpw_svc_id     as tpwSvcId
+             , m201.tpw_svc_nm     as tpwSvcNm
+          from ohxzown.tbhxzm009 m009
+          join ohxzown.tbhxzm201 m201
+            on m009.org_cd = m201.org_cd
+         where m009.org_cd = #{req.orgCd}
+           and m201.tpw_svc_id = #{req.tpwSvcId}
+           and m009.use_yn = upper('y')
+           and m201.use_yn = upper('y')
+         limit 1
+    </select>
+
+
+<!--    &lt;!&ndash; 행정동코드관리에서 기관코드 조회 &ndash;&gt;-->
+<!--    <select id="selectOrgCdByAddoCdAndStdoCd" resultType="map">-->
+<!--        SELECT org_cd, addo_nm, stdo_nm-->
+<!--        FROM ohxzown.tbhxzm008-->
+<!--        WHERE addo_cd = #{addoCd}-->
+<!--        AND stdo_cd = #{stdoCd}-->
+<!--    </select>-->
+
+    <select id="readSvcInf" resultType="tmoney.co.kr.hxz.svcjoin.vo.prevsvc.PrevSvcRspVO" parameterType="String">
+        /* sql_id : readSvcInf */
+        /*
+        * 1. 파일 : SvcJoinMapper_SQL.xml
+        * 2. 기능 : 현재 가입하려는 서비스 내역 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.06 - 최중혁 : 최초작성
+        */
+        select m201.tpw_svc_id         as tpwSvcId
+             , m201.tpw_svc_nm         as tpwSvcNm
+             , m202.tpw_svc_typ_id     as tpwSvcTypId
+             , m202.tpw_svc_typ_nm     as tpwSvcTypNm
+             , m202.sprt_dplc_yn       as sprtDplcYn
+          from ohxzown.tbhxzm201 m201
+          join ohxzown.tbhxzm202 m202
+            on m201.tpw_svc_id = m202.tpw_svc_id
+         where m201.tpw_svc_id = #{tpwSvcId}
+           and m201.use_yn = upper('y')
+    </select>
+
+    <select id="readPrevSvcInf" resultType="tmoney.co.kr.hxz.svcjoin.vo.prevsvc.PrevSvcRspVO" parameterType="String">
+        /* sql_id : readPrevSvcInf */
+        /*
+        * 1. 파일 : SvcJoinMapper_SQL.xml
+        * 2. 기능 : 현재 가입된 이전 서비스 내역 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.06 - 최중혁 : 최초작성
+        */
+        select m201.org_cd             as orgCd
+             , m102.tpw_svc_id         as tpwSvcId
+             , m201.tpw_svc_nm         as tpwSvcNm
+             , m102.tpw_svc_typ_id     as tpwSvcTypId
+             , m202.tpw_svc_typ_nm     as tpwSvcTypNm
+             , m202.sprt_dplc_yn       as sprtDplcYn
+          from ohxzown.tbhxzm102 m102
+          join ohxzown.tbhxzm201 m201
+            on m102.tpw_svc_id = m201.tpw_svc_id
+          join ohxzown.tbhxzm202 m202
+            on m201.tpw_svc_id = m202.tpw_svc_id
+         where m102.mbrs_id = #{mbrsId}
+           and m102.tpw_mbrs_svc_sta_cd = '04'
+           and m201.use_yn = upper('y')
+           and m202.use_yn = upper('y')
+    </select>
+
+<!--    &lt;!&ndash; 거주지 인증 이력 저장 &ndash;&gt;-->
+<!--    <insert id="insertRsdcAuthHist" parameterType="tmoney.co.kr.hxz.rsdc.vo.RsdcAuthReqVO">-->
+<!--        INSERT INTO ohxzown.tbhxzh103 (-->
+<!--        tpw_svc_id, tpw_svc_typ_id, mbrs_id,-->
+<!--        tpw_rsdc_auth_ct_dt, tpw_rsdc_auth_dt, tpw_rsdc_auth_hst_sqno,-->
+<!--        addo_cd, stdo_cd, rgsr_id, rgt_dtm-->
+<!--        ) VALUES (-->
+<!--        'SVC0001', 'TYPE0001', #{mbrsId},-->
+<!--        TO_CHAR(NOW(), 'YYYYMMDD'),-->
+<!--        TO_CHAR(NOW(), 'YYYYMMDD'),-->
+<!--        NEXTVAL('SEQ_TPW_RSDC_AUTH_HST'),-->
+<!--        #{addoCd}, #{stdoCd}, #{rgsrId}, TO_CHAR(NOW(), 'YYYYMMDDHH24MISS')-->
+<!--        )-->
+<!--    </insert>-->
+    <!--
+        서비스 ID별 서비스 유형 및 회원유형/기관별 범위 조회
+        파라미터: tpwSvcId, orgCd
+    -->
+    <select id="readSvcJoin" parameterType="tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinReqVO" resultType="tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinRspVO">
+        /* sql_id : readSvcJoin */
+        /*
+        * 1. 파일 : SvcJoinMapper_SQL.xml
+        * 2. 기능 : 서비스 ID별 서비스 유형 및 회원유형/기관별 범위 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.05 - 최중혁 : 최초작성
+        */
+        select m201.org_cd              as orgCd
+             , m201.tpw_svc_id          as tpwSvcId
+             , m201.tpw_svc_nm          as tpwSvcNm
+             , m202.tpw_svc_typ_id      as tpwSvcTypId
+             , m202.tpw_svc_typ_nm      as tpwSvcTypNm
+             , m202.tpw_mbrs_typ_cd     as tpwMbrsTypCd
+             , m103.mbrs_typ_ctg_sno    as mbrsTypCtgSno
+             , m103.tpw_mbrs_typ_cd_nm  as tpwMbrsTypCdNm
+             , m103.tpw_mbrs_ctg_cd     as tpwMbrsCtgCd
+             , case
+               when m103.tpw_mbrs_ctg_cd = '01' then '일반'
+               else '기타'
+                end                     as mbrsClsNm
+             , m104.typ_adpt_min_val    as typAplyMinVal
+             , m104.typ_adpt_max_val    as typAplyMaxVal
+             , m201.use_yn as svcUseYn
+             , m202.use_yn as svcTypUseYn
+             , m103.use_yn as mbrsTypUseYn
+             , m104.use_yn as orgTypUseYn
+          from ohxzown.tbhxzm201 m201
+         inner join ohxzown.tbhxzm202 m202
+            on m201.tpw_svc_id = m202.tpw_svc_id
+          left join ohxzown.tbhxzm103 m103
+            on m202.tpw_mbrs_typ_cd = m103.tpw_mbrs_typ_cd
+          left join ohxzown.tbhxzm104 m104
+            on m201.org_cd = m104.org_cd
+           and m202.tpw_mbrs_typ_cd = m104.tpw_mbrs_typ_cd
+         where 1 = 1
+         <if test="req.tpwSvcId != null and req.tpwSvcId != ''">
+           and m201.tpw_svc_id = #{req.tpwSvcId}
+         </if>
+         <if test="req.orgCd != null and req.orgCd != ''">
+           and m201.org_cd = #{req.orgCd}
+         </if>
+         order by m201.tpw_svc_id
+             , m202.tpw_svc_typ_sno
+             , m103.mbrs_typ_ctg_sno
+    </select>
+
+</mapper>

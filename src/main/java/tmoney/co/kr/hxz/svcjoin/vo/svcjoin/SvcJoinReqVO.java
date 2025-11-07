@@ -1,4 +1,4 @@
-package tmoney.co.kr.hxz.spfnapl.sprtbzjoin.vo;
+package tmoney.co.kr.hxz.svcjoin.vo.svcjoin;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class SprtBzReqVO {
+public class SvcJoinReqVO {
     private String mbrsId;
     private String tpwSvcId;
     private String orgCd;

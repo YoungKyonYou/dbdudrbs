@@ -1,15 +1,15 @@
-package tmoney.co.kr.hxz.spfnapl.sprtbzjoin.vo;
+package tmoney.co.kr.hxz.svcjoin.vo.svcjoin;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-public class SprtBzRspVO {
+public class SvcJoinRspVO {
     private String orgCd;             // 기관코드
     private String tpwSvcId;          // 서비스ID
     private String tpwSvcNm;          // 서비스명
