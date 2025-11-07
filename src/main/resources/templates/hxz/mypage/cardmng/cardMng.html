@@ -146,11 +146,10 @@
           });
         });
 
-        // 카드 변경
+
         document.getElementById('btnCardChange').addEventListener('click', () => {
           const formData = collectFromForm('#cardChangeForm');
 
-          // 자리수 체크
           const len = parseInt(formData.cardLength);
           let cardNo = formData.card_1 + formData.card_2 + formData.card_3 + formData.card_4;
           if ((len === 15 && cardNo.length !== 15) || (len === 16 && cardNo.length !== 16)) {
