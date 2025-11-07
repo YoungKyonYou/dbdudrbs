@@ -44,8 +44,8 @@
                                         <p class="field-title" id="ft-mobile">휴대전화번호</p>
                                         <div class="flex align-center gap8" role="group" aria-labelledby="ft-mobile">
                                             <input type="tel" class="text-field size-lg editable-field"
-                                                th:field="*{mbrsMbphNo}" readonly pattern="^01[016789]-\d{3,4}-\d{4}$"
-                                                title="휴대전화번호 형식에 맞게 입력해주세요. 예: 010-1234-5678">
+                                                th:field="*{mbrsMbphNo}" readonly pattern="^01[016789]\d{7,8}$"
+                                                inputmode="numeric" title="휴대전화번호는 숫자만 입력해주세요. 예: 01012345678">
                                             <button type="button" class="btn btn-darkgray size-lg edit-btn"
                                                 data-target="mbrsMbphNo">
                                                 수정<span class="sr-only"> - 휴대전화번호</span>
@@ -126,6 +126,7 @@
             </section>
         </main>
 
+
         <script th:inline="javascript" type="text/javascript">
             (function () {
                 const editForm = document.getElementById('mbrsForm');
@@ -154,33 +155,39 @@
                     if (!sendBtn) return;
                     const rowId = sendBtn.dataset.id;
                     if (rowId) {
-                        window.location.href = `/etc/mbrsinf/${rowId}/pwdForm.do`;
+                        Common.MiniSPA.go(`/etc/mbrsinf/${rowId}/pwdForm.do`);
                     }
                 });
 
                 // 회원탈퇴
                 deleteBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    window.location.href = `/etc/mbrsinf/mbrsScsn.do`;
+                    Common.MiniSPA.go(`/mypage/mbrsinf/mbrsScsn.do`);
                 });
 
                 // 저장
                 saveBtn.addEventListener('click', async (e) => {
                     e.preventDefault();
 
+                    // ✅ 1. 유효성 검사
                     const inputs = editForm.querySelectorAll('input.editable-field:not([readonly])');
-                    for (let input of inputs) {
+                    for (const input of inputs) {
                         if (!input.checkValidity()) {
-                            Common.modalShow({ title: '입력 오류', message: input.title, buttons: 'close' });
+                            Common.modalShow({
+                                title: '입력 오류',
+                                message: input.title || '입력값을 확인해주세요.',
+                                buttons: 'close'
+                            });
                             input.focus();
                             return;
                         }
                     }
 
+                    // ✅ 2. 이메일 도메인 검사
                     const emailLocal = editForm.querySelector('#emailLocal');
                     const emailDomain = editForm.querySelector('#emailDomain');
-
                     const domainPattern = /^[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/;
+
                     if (!domainPattern.test(emailDomain.value)) {
                         Common.modalShow({
                             title: '입력 오류',
@@ -191,39 +198,54 @@
                         return;
                     }
 
+                    // ✅ 3. 데이터 수집
                     const applied = Common.collectFromForm(editForm);
                     applied.mailAddr = `${emailLocal.value}@${emailDomain.value}`;
                     delete applied.emailLocal;
                     delete applied.emailDomain;
 
+                    // ✅ 4. 저장 확인 모달
                     Common.modalShow({
-                        message: '저장하시겠습니까?',
                         title: '알림',
+                        message: '저장하시겠습니까?',
                         buttons: 'ok-close',
-                        onOk: async function saveOne() {
+                        onOk: async () => {
                             try {
-                                const res = await Common.sendSafe('/etc/mbrsinf/', {
+                                const { ok, data, status } = await Common.sendSafe('/etc/mbrsinf/', {
                                     method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    data: applied    // ← 수정: data로 전달
+                                    headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+                                    data: applied,
+                                    clientErrorMsg: '회원 정보 저장에 실패했습니다.',
+                                    otherErrorMsg: '서버 오류가 발생했습니다.'
                                 });
-                                if (res && (res.ok || res.success)) {
-                                    Common.modalShow({ title: '완료', message: '변경 되었습니다.', buttons: 'close' });
-                                    editForm.querySelectorAll('input.editable-field').forEach(input => input.setAttribute('readonly', true));
+
+                                if (ok) {
+                                    Common.modalShow({
+                                        title: '완료',
+                                        message: '변경되었습니다.',
+                                        buttons: 'close',
+                                        onClose: () => {
+                                            editForm.querySelectorAll('input.editable-field')
+                                                .forEach(i => i.setAttribute('readonly', true));
+                                        }
+                                    });
                                 } else {
-                                    Common.modalShow({ title: '오류', message: '저장에 실패했습니다.', buttons: 'close' });
+                                    console.warn('저장 실패:', status, data);
                                 }
+
                             } catch (error) {
-                                Common.modalShow({ title: '오류', message: '서버 요청 중 오류가 발생했습니다.', buttons: 'close' });
-                                console.error(error);
+                                console.error('요청 중 오류:', error);
+                                Common.modalShow({
+                                    title: '오류',
+                                    message: '서버 요청 중 오류가 발생했습니다.',
+                                    buttons: 'close'
+                                });
                             }
                         }
                     });
                 });
-
             })();
         </script>
-
     </th:block>
 </th:block>
 

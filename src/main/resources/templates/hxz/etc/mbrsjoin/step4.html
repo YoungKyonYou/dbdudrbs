@@ -11,29 +11,25 @@
               <ol class="step-box" role="list" aria-label="회원가입 단계">
                 <li>
                   <div class="circle" aria-hidden="true">
-                    <span>1</span>
-                    <i class="icon document"></i>
+                    <span>1</span><i class="icon document"></i>
                   </div>
                   <p>약관동의</p>
                 </li>
                 <li>
                   <div class="circle" aria-hidden="true">
-                    <span>2</span>
-                    <i class="icon lock"></i>
+                    <span>2</span><i class="icon lock"></i>
                   </div>
                   <p>본인인증</p>
                 </li>
                 <li>
                   <div class="circle" aria-hidden="true">
-                    <span>3</span>
-                    <i class="icon write"></i>
+                    <span>3</span><i class="icon write"></i>
                   </div>
                   <p>정보입력</p>
                 </li>
                 <li aria-current="step" class="active">
                   <div class="circle" aria-hidden="true">
-                    <span>4</span>
-                    <i class="icon check"></i>
+                    <span>4</span><i class="icon check"></i>
                   </div>
                   <p>가입완료 <span class="sr-only">(현재 단계)</span></p>
                 </li>
@@ -52,7 +48,7 @@
                   </p>
 
                   <div class="btn-wrap">
-                    <a href="" class="btn btn-primary size-lg" id="supportBtn" role="button">
+                    <a href="#" class="btn btn-primary size-lg" id="supportBtn" role="button">
                       지원 사업 가입하기
                     </a>
                     <a onclick="Common.MiniSPA.go('/etc/lgn/login.do')" class="btn btn-darken-link size-lg"
@@ -68,54 +64,45 @@
       </section>
     </main>
 
-    <script>
+    <script th:inline="javascript">
       (async function () {
-        // Step3 완료 후 rcpt3가 없는 경우 다시 Step3로 이동
-        const rcpt3 = sessionStorage.getItem('rcpt3');
-        const step3Data = sessionStorage.getItem('step3');
+        try {
+          // ✅ 쿠키에서 최종 토큰 확인
+          const finalToken = (document.cookie.match(/(^|;)\s*onb_done=([^;]+)/)?.[2]) || null;
 
-        if (!rcpt3 || !step3Data) {
-          alert('Step3 정보가 누락되었습니다. Step3부터 다시 진행해주세요.');
-          window.location.href = '/etc/mbrsjoin/step3.do';
-          return;
-        }
+          // ✅ 서버에 완료 알림 (단순히 검증 + 세션 정리용)
+          const res = await fetch('/etc/mbrsjoin/step4.do', {
+            method: 'GET',
+            credentials: 'include'
+          });
 
-        // Step4 최종 token 전송
-        async function sendStep4() {
-          try {
-            const res = await fetch('/etc/mbrsjoin/step4/complete', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-Final-Token': rcpt3 // 서버에서 요구하는 final token
-              },
-              body: JSON.stringify({}),
-              credentials: 'include'
-            });
+          if (!res.ok) {
+            let msg = '서버 오류가 발생했습니다.';
+            if (res.status === 403) msg = '토큰이 없거나 만료되었습니다.';
+            if (res.status === 409) msg = '이미 완료된 가입입니다.';
+            (window.Common?.modalShow || alert)({ title: '안내', message: msg, buttons: 'close' });
 
-            if (!res.ok) throw new Error(`서버 오류: ${res.status}`);
-            const data = await res.json();
-
-            console.log('Step4 완료:', data);
-          } catch (err) {
-            alert(`Step4 요청 실패: ${err.message}`);
-            window.location.href = '/etc/mbrsjoin/step3.do';
+            Common.MiniSPA.go(`/etc/mbrsjoin/step3.do`)
+            return;
           }
+          sessionStorage.clear();
+          // ✅ 완료 후 버튼 활성화
+          document.getElementById('supportBtn')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            Common.MiniSPA.go('/spfnapl/rsdcAuth.do');
+          });
+
+        } catch (err) {
+          console.error(err);
+          (Common.modalShow || alert)({
+            title: '오류',
+            message: `Step4 요청 실패: ${err.message}`,
+            buttons: 'close'
+          });
+          // window.location.href = '/etc/mbrsjoin/step3.do';
         }
-
-        // Step4 요청
-        await sendStep4();
-
-        // 지원사업 버튼 클릭 시 이동 (예시)
-        document.getElementById('supportBtn').addEventListener('click', function (e) {
-          e.preventDefault();
-          // Step4 완료 후 서버에서 전달 받은 값에 따라 링크를 변경 가능
-          Common.MiniSPA.go('/etc/support/registration.do');
-        });
-
       })();
     </script>
-
   </th:block>
 </th:block>
 

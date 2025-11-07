@@ -79,6 +79,28 @@
           if (payload) sessionStorage.setItem('step' + step, JSON.stringify(payload));
         }
 
+        // ✅ 각 인증 방식별 팝업 URL 정의
+        const AUTH_URLS = {
+          kakao: '/etc/mbrsjoin/kakaoAuth.do',
+          toss: '/etc/mbrsjoin/tossAuth.do',
+          phone: '/etc/mbrsjoin/phoneAuth.do',
+          ipin: '/etc/mbrsjoin/ipinAuth.do'
+        };
+
+        // ✅ 팝업 열기
+        function openAuthPopup(method) {
+          const popupUrl = AUTH_URLS[method];
+          if (!popupUrl) return alert('지원하지 않는 인증 방식입니다.');
+
+          const w = 460;
+          const h = 600;
+          const left = (window.screen.width - w) / 2;
+          const top = (window.screen.height - h) / 2;
+          const options = `width=${w},height=${h},left=${left},top=${top},resizable=no,scrollbars=yes`;
+
+          window.open(popupUrl, `${method}AuthPopup`, options);
+        }
+
         async function submitStep2(form, authMethod) {
           if (sending) return;
           sending = true;
@@ -101,7 +123,7 @@
 
             const step = parseInt(form.getAttribute('data-step'), 10);
             const payloadRaw = out.data?.payload;
-            console.log(out.data, '?data')
+
             let payloadParsed = null;
 
             if (payloadRaw && typeof payloadRaw === 'string') {
@@ -112,7 +134,6 @@
                   .replace(/(\w+)=/g, '"$1":')
                   .replace(/, /g, ',')
                   .replace(/'/g, '"');
-
                 payloadParsed = JSON.parse(jsonStr);
               } catch (err) {
                 console.warn('⚠️ payload 파싱 실패:', err);
@@ -126,7 +147,6 @@
             });
             saveReceipt(step, out.data.receipt || out.data.rcpt || null);
 
-
             if (out.data.nextNonce) {
               const nextForm = document.querySelector(`form.step-form[data-step="${step + 1}"]`);
               if (nextForm) {
@@ -135,13 +155,11 @@
               }
             }
 
-            console.log('✅ Step2 payload 저장 완료:', payloadParsed || payloadRaw);
-
-            // ✅ 다음 페이지로 이동
+            // ✅ 인증 완료 후 step3 이동
             Common.MiniSPA.go(`/etc/mbrsjoin/${authMethod}/step3.do`);
 
           } catch (e) {
-            (window.Common?.modalShow || alert)({
+            (Common.modalShow)({
               title: '오류',
               message: e?.message || '요청 처리 중 오류가 발생했습니다.',
               buttons: 'close'
@@ -152,11 +170,15 @@
           }
         }
 
-        // 인증 버튼 클릭 이벤트
+        // ✅ 인증 버튼 클릭 이벤트
         document.querySelectorAll('#step2Form .auth-btn').forEach(btn => {
           btn.addEventListener('click', () => {
             const method = btn.dataset.method;
-            console.log('인증 방식 선택됨:', method);
+
+            // 1️⃣ 팝업 열기
+            openAuthPopup(method);
+
+            // 2️⃣ 기존 submit 로직 유지 (팝업과 병행)
             submitStep2(document.getElementById('step2Form'), method);
           });
         });

@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{component/header :: layout(~{::content})}">
+  <th:block th:fragment="content">
+
+    <div class="mypage-nav">
+      <div class="container fluid">
+        <nav>
+          <ul>
+            <li><a href="#">개명처리</a></li>
+            <li><a href="#">나의지자체</a></li>
+            <li><a href="#">지원금 신청결과</a></li>
+            <li><a href="#">지원금 내역 조회</a></li>
+            <li><a href="#">이용내역 조회</a></li>
+            <li class="active"><a href="#" aria-current="page">카드관리</a></li>
+            <li><a href="#">계좌관리</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <main id="contents">
+      <section class="section">
+        <div class="container">
+          <div class="mypage-wrap">
+            <div class="mypage-header">
+              <h2 class="section-title">카드관리</h2>
+            </div>
+
+            <!-- 현재 카드 -->
+            <div class="table-wrap type-row visible">
+              <table>
+                <caption class="sr-only">현재 카드번호</caption>
+                <tbody>
+                  <tr>
+                    <th scope="col">현재 카드번호</th>
+                    <td th:text="${currentCard != null} ? ${currentCard.maskedCardNo} : '등록된 카드 없음'"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- 카드 변경 -->
+            <div class="mng-wrap">
+              <div class="table-wrap type-row visible">
+                <table>
+                  <caption class="sr-only">카드 변경</caption>
+                  <tbody>
+                    <tr>
+                      <th scope="col">변경 카드번호</th>
+                      <td>
+                        <div class="form-box">
+                          <form id="cardChangeForm" th:action="@{/cardMng/change}" method="post" novalidate>
+                            <fieldset>
+                              <legend class="blind">은행/자릿수 선택 및 카드번호 입력</legend>
+                              <div class="flex align-center gap8">
+                                <div class="dropdown size-md">
+                                  <button type="button" id="cardLengthBtn" class="dropdown_button"
+                                    aria-haspopup="listbox" aria-expanded="false">
+                                    <span class="dropdown_value" data-placeholder="15자리">15자리</span>
+                                  </button>
+                                  <ul class="dropdown_list" id="cardLengthList" role="listbox">
+                                    <li role="option" data-value="15">15자리</li>
+                                    <li role="option" data-value="16">16자리</li>
+                                  </ul>
+                                  <input type="hidden" name="cardLength" value="15">
+                                </div>
+                                <p class="guide-text color-red">카드번호 입력 후 반드시 확인하세요.</p>
+                              </div>
+
+                              <div class="flex align-center gap8 mt8">
+                                <div class="card-input-group">
+                                  <input id="card-1" name="card_1" class="text-field size-md" maxlength="4" required>
+                                  <span>-</span>
+                                  <input id="card-2" name="card_2" class="text-field size-md" maxlength="4" required>
+                                  <span>-</span>
+                                  <input id="card-3" name="card_3" class="text-field size-md" maxlength="4" required>
+                                  <span>-</span>
+                                  <input id="card-4" name="card_4" class="text-field size-md" maxlength="4" required>
+                                  <button type="button" id="btnCardVerify"
+                                    class="btn btn-darkgray size-md">카드인증</button>
+                                </div>
+                              </div>
+                            </fieldset>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="btn-wrap">
+                  <button type="button" id="btnCardChange" class="btn btn-primary size-lg">변경</button>
+                </div>
+              </div>
+
+              <!-- 변경 이력 -->
+              <div>
+                <h3 class="section-sub-title">변경이력</h3>
+                <div class="table-wrap type-col scroll-x">
+                  <table>
+                    <caption class="sr-only">카드변경내역</caption>
+                    <colgroup>
+                      <col style="width:80px">
+                      <col style="width:120px">
+                      <col style="width:120px">
+                      <col style="width:160px">
+                    </colgroup>
+                    <thead>
+                      <tr>
+                        <th>순번</th>
+                        <th>지급년월</th>
+                        <th>이용일자</th>
+                        <th>정산금액</th>
+                      </tr>
+                    </thead>
+                    <tbody id="historyBody">
+                      <tr th:each="item : ${historyList}">
+                        <td th:text="${item.sno}"></td>
+                        <td th:text="${item.payYm}"></td>
+                        <td th:text="${item.useDt}"></td>
+                        <td th:text="${item.amount}"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        const cardLengthBtn = document.getElementById('cardLengthBtn');
+        const cardLengthList = document.getElementById('cardLengthList');
+        const cardLengthInput = document.querySelector('input[name="cardLength"]');
+
+        // Dropdown 선택
+        cardLengthList.querySelectorAll('li').forEach(li => {
+          li.addEventListener('click', () => {
+            cardLengthBtn.querySelector('.dropdown_value').textContent = li.dataset.value + '자리';
+            cardLengthInput.value = li.dataset.value;
+          });
+        });
+
+        // 카드 변경
+        document.getElementById('btnCardChange').addEventListener('click', () => {
+          const formData = collectFromForm('#cardChangeForm');
+
+          // 자리수 체크
+          const len = parseInt(formData.cardLength);
+          let cardNo = formData.card_1 + formData.card_2 + formData.card_3 + formData.card_4;
+          if ((len === 15 && cardNo.length !== 15) || (len === 16 && cardNo.length !== 16)) {
+            alert('카드번호 자릿수를 확인해주세요.');
+            return;
+          }
+
+          // 뒷자리 마스킹
+          if (len === 15) cardNo = cardNo.slice(0, 13) + '**';
+          if (len === 16) cardNo = cardNo.slice(0, 14) + '**';
+
+          formData.cardNoMasked = cardNo;
+
+          sendSafe('/cardMng/change', formData)
+            .then(res => {
+              if (res.success) {
+                alert('카드번호가 변경되었습니다.');
+                reloadList('/cardMng/history', '#historyBody');
+                // 현재 카드 갱신
+                document.querySelector('td[th\\:text="${currentCard.maskedCardNo}"]').textContent = cardNo;
+              } else {
+                alert(res.message);
+              }
+            });
+        });
+      })()
+    </script>
+
+  </th:block>
+</th:block>
+
+</html>

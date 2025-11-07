@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{component/header :: layout(~{::content})}">
+  <th:block th:fragment="content">
+
+
+    <div class="mypage-nav">
+      <div class="container fluid">
+        <nav>
+          <ul>
+            <li><a href="#">개명처리</a></li>
+            <li><a href="#">나의지자체</a></li>
+            <li class="active"><a href="#" aria-current="page">지원금 신청결과</a></li>
+            <li><a href="#">지원금 내역 조회</a></li>
+            <li><a href="#">이용내역 조회</a></li>
+            <li><a href="#">카드관리</a></li>
+            <li><a href="#">계좌관리</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <main id="contents">
+      <section class="section">
+        <div class="container size-sm">
+          <div class="mypage-wrap">
+            <div class="mypage-header">
+              <h2 class="section-title">개명처리</h2>
+            </div>
+            <div class="join-wrap">
+              <!-- case1 신청완료 -->
+              <div class="fin-box">
+                <div class="gray-outer">
+                  <div class="step4-box" role="status" aria-live="polite">
+                    <p class="complete-msg">
+                      <strong class="color-darken">티머니</strong>
+                      <span>님</span>
+                      <strong class="color-blue">신청완료</strong>
+                      <span>되었습니다.</span>
+                    </p>
+                    <p>
+                      <span>신청일자: 2025-07-04</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <!-- case2 승인대기 -->
+              <div class="fin-box">
+                <div class="gray-outer">
+                  <div class="step4-box" role="status" aria-live="polite">
+                    <p class="complete-msg">
+                      <strong class="color-darken">티머니</strong>
+                      <span>님</span>
+                      <strong class="color-point">승인대기</strong>
+                      <span>되었습니다.</span>
+                    </p>
+                    <p>
+                      <span>신청일자: 2025-07-04</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <!-- case3 반려처리 -->
+              <div class="fin-box">
+                <div class="gray-outer">
+                  <div class="step4-box" role="status" aria-live="polite">
+                    <p class="complete-msg">
+                      <strong class="color-darken">티머니</strong>
+                      <span>님</span>
+                      <strong class="color-red">반려처리</strong>
+                      <span>되었습니다.</span>
+                    </p>
+                    <p>
+                      <span>신청일자: 2025-07-04</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+
+    </script>
+  </th:block>
+</th:block>
+
+</html>

@@ -13,61 +13,38 @@
 
                         <nav class="tabs" aria-label="페이지 이동">
                             <a class="tab is-active" onclick="Common.MiniSPA.go('/etc/idsrch/idSrch.do')"
-                                aria-current="page">
-                                아이디 찾기
-                            </a>
-                            <a class="tab" onclick="Common.MiniSPA.go('/etc/pwdsrch/pwdSrch.do')">
-                                비밀번호 찾기
-                            </a>
+                                aria-current="page">아이디 찾기</a>
+                            <a class="tab" onclick="Common.MiniSPA.go('/etc/pwdsrch/pwdSrch.do')">비밀번호 찾기</a>
                         </nav>
 
                         <div class="gray-outer">
                             <div class="form-box">
-                                <form id="idSearchForm" action="/etc/idsrch/findMbrsId.do" method="post" novalidate>
-
+                                <form id="idSearchForm" novalidate>
                                     <div>
                                         <p class="field-title">성명</p>
-                                        <label for="mbrsNm" class="sr-only">성명</label>
                                         <input id="mbrsNm" name="mbrsNm" type="text" class="text-field size-lg"
-                                            placeholder="성명을 입력해주세요." autocomplete="name" inputmode="text" required
-                                            aria-required="true" minlength="2" maxlength="30"
+                                            placeholder="성명을 입력해주세요." required minlength="2" maxlength="30"
                                             pattern="^[가-힣a-zA-Z·\\s]{2,30}$">
                                     </div>
 
                                     <div>
                                         <p class="field-title">생년월일</p>
-                                        <label for="mbrsBrdt" class="sr-only">생년월일</label>
                                         <input id="mbrsBrdt" name="mbrsBrdt" type="text" class="text-field size-lg"
-                                            placeholder="예) 19850501" autocomplete="bday" inputmode="numeric" required
-                                            aria-required="true" maxlength="8" pattern="^\\d{8}$">
+                                            placeholder="예) 19850501" required maxlength="8" pattern="^\\d{8}$">
                                     </div>
 
-                                    <!-- 휴대전화번호 -->
                                     <div>
                                         <p class="field-title">휴대전화번호</p>
-                                        <fieldset>
-                                            <legend class="sr-only">휴대전화번호</legend>
-                                            <div class="flex align-center gap8">
-                                                <label for="mbrsMbphNo1" class="sr-only">국번</label>
-                                                <input id="mbrsMbphNo1" name="mbrsMbphNo1" type="text"
-                                                    class="text-field size-lg" inputmode="numeric" pattern="[0-9]*"
-                                                    maxlength="3">
-
-                                                <span class="flex-bar" aria-hidden="true">-</span>
-
-                                                <label for="mbrsMbphNo2" class="sr-only">중간번호</label>
-                                                <input id="mbrsMbphNo2" name="mbrsMbphNo2" type="text"
-                                                    class="text-field size-lg" inputmode="numeric" pattern="[0-9]*"
-                                                    maxlength="4">
-
-                                                <span class="flex-bar" aria-hidden="true">-</span>
-
-                                                <label for="mbrsMbphNo3" class="sr-only">끝번호</label>
-                                                <input id="mbrsMbphNo3" name="mbrsMbphNo3" type="text"
-                                                    class="text-field size-lg" inputmode="numeric" pattern="[0-9]*"
-                                                    maxlength="4">
-                                            </div>
-                                        </fieldset>
+                                        <div class="flex align-center gap8">
+                                            <input id="mbrsMbphNo1" type="text" class="text-field size-lg"
+                                                inputmode="numeric" maxlength="3" required>
+                                            <span class="flex-bar">-</span>
+                                            <input id="mbrsMbphNo2" type="text" class="text-field size-lg"
+                                                inputmode="numeric" maxlength="4" required>
+                                            <span class="flex-bar">-</span>
+                                            <input id="mbrsMbphNo3" type="text" class="text-field size-lg"
+                                                inputmode="numeric" maxlength="4" required>
+                                        </div>
                                     </div>
 
                                     <button type="submit" class="btn btn-primary btn-icon-right size-lg">
@@ -81,46 +58,79 @@
             </section>
         </main>
 
+        <!-- 모달 -->
+        <div class="modal" id="alert-modal" aria-hidden="true">
+            <div class="modal-overlay" data-modal-close></div>
+            <div class="modal-container" role="document" tabindex="-1">
+                <section class="modal-body">
+                    <div class="modal-icon"><i class="icon icon-caution"></i></div>
+                    <p class="modal-desc">입력 정보를 확인해주세요.</p>
+                </section>
+                <footer class="modal-footer">
+                    <button type="button" class="btn btn-darken-line size-lg" data-modal-close>확인</button>
+                </footer>
+            </div>
+        </div>
+
         <script>
-            document.addEventListener("DOMContentLoaded", () => {
+            (function () {
                 const form = document.getElementById("idSearchForm");
+                const modal = document.getElementById("alert-modal");
+
+                const openModal = (msg) => {
+                    modal.querySelector(".modal-desc").textContent = msg;
+                    modal.classList.add("is-active");
+                    modal.setAttribute("aria-hidden", "false");
+                    document.body.style.overflow = "hidden";
+                };
+                const closeModal = () => {
+                    modal.classList.remove("is-active");
+                    modal.setAttribute("aria-hidden", "true");
+                    document.body.style.overflow = "";
+                };
+                modal.querySelectorAll("[data-modal-close]").forEach(btn =>
+                    btn.addEventListener("click", closeModal)
+                );
 
                 form.addEventListener("submit", async (e) => {
                     e.preventDefault();
 
                     const mbrsNm = document.getElementById("mbrsNm").value.trim();
                     const mbrsBrdt = document.getElementById("mbrsBrdt").value.trim();
-                    const mbph1 = document.getElementById("mbrsMbphNo1").value.trim();
-                    const mbph2 = document.getElementById("mbrsMbphNo2").value.trim();
-                    const mbph3 = document.getElementById("mbrsMbphNo3").value.trim();
-                    const mbrsMbphNo = `${mbph1}-${mbph2}-${mbph3}`;
+                    const mb1 = document.getElementById("mbrsMbphNo1").value.trim();
+                    const mb2 = document.getElementById("mbrsMbphNo2").value.trim();
+                    const mb3 = document.getElementById("mbrsMbphNo3").value.trim();
 
-                    const body = {
-                        req: { mbrsNm, mbrsBrdt, mbrsMbphNo }
-                    };
+                    if (!mbrsNm || !mbrsBrdt || !mb1 || !mb2 || !mb3) {
+                        openModal("모든 항목을 입력해주세요.");
+                        return;
+                    }
 
-                    try {
-                        const out = await Common.sendSafe(
-                            form.getAttribute("action"),
-                            {
-                                method: "POST",
-                                data: body,
-                                headers: { "Content-Type": "application/json" },
-                                expect: "json"
-                            }
-                        );
+                    // ✅ 세 번호를 하나로 합침
+                    const mbrsMbphNo = mb1 + mb2 + mb3;
 
-                        if (out?.mbrsId) {
-                            alert(`회원님의 아이디는 [${out.mbrsId}] 입니다.`);
-                        } else {
-                            alert("입력하신 정보로 일치하는 회원이 없습니다.");
-                        }
-                    } catch (err) {
-                        console.error(err);
-                        alert("아이디 조회 중 오류가 발생했습니다.");
+                    const params = new URLSearchParams({
+                        mbrsNm,
+                        mbrsBrdt,
+                        mbrsMbphNo
+                    }).toString();
+
+                    const url = `/etc/idsrch/idSrch2.do?${params}`;
+
+                    const res = await Common.sendSafe(url, {
+                        method: 'GET',
+                        expect: 'text',
+                        clientErrorMsg: '입력하신 정보로 회원을 찾을 수 없습니다.',
+                        otherErrorMsg: '서버 통신 중 오류가 발생했습니다.'
+                    });
+
+                    if (res?.ok) {
+                        document.open();
+                        document.write(res.data);
+                        document.close();
                     }
                 });
-            });
+            })();
         </script>
     </th:block>
 </th:block>

@@ -1081,7 +1081,6 @@
             signal
         };
 
-        console.log(init, 'int')
         if (data != null) {
             if (data instanceof FormData) {
                 init.body = data;
@@ -1120,7 +1119,6 @@
     async function sendSafe(url, { method = 'POST', data = null, signal, headers, expect = 'json', clientErrorMsg = '요청에 실패했습니다.', otherErrorMsg = '오류가 발생했습니다.' } = {}) {
         // send 함수 호출 결과를 out 변수에 저장
         try {
-            console.log(url, method, data, signal, headers, expect, clientErrorMsg, otherErrorMsg);
 
             // const out = await send(url, method, data, headers, signal, expect);
             const out = await send(url, {
@@ -1147,7 +1145,7 @@
                 modalShow({
                     title: '경고',
                     message: msg,
-                    buttons: ['close']
+                    buttons: 'close'
                 });
 
                 // 에러 정보 반환
@@ -1156,13 +1154,12 @@
 
             // 기타 에러인 경우
             console.error(e);
-            console.log(e, '?')
 
             // 에러 모달 표시 (title: '오류', message: otherErrorMsg, buttons: ['닫기'])
             modalShow({
                 title: '오류',
                 message: otherErrorMsg,
-                buttons: ['close']
+                buttons: 'close'
             });
 
             // 에러 정보 반환

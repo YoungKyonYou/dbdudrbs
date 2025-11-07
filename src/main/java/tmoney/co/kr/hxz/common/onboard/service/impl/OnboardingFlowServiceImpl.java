@@ -105,7 +105,7 @@ public class OnboardingFlowServiceImpl implements OnboardingFlowService {
         if (newMask != REQUIRED_MASK)
             throw DomainExceptionCode.SIGNUP_NOT_ALL_STEPS_FINISHED.newInstance("인증 절차가 올바르지 않습니다. 처음부터 다시 진행해주세요.");
 
-        String finalToken = tokens.issueFinal(ctx.getOnb(), 4, newMask, true, Duration.ofSeconds(doneTokenTtlSeconds));
+        String finalToken = tokens.issueFinal(ctx.getOnb(), 2, newMask, true, Duration.ofSeconds(doneTokenTtlSeconds));
         writeCookie(req, res, "onb_done", finalToken, doneTokenTtlSeconds);
         return finalToken;
     }
@@ -117,7 +117,7 @@ public class OnboardingFlowServiceImpl implements OnboardingFlowService {
         boolean done = booleanClaim(c, "done");
         int step = ((Number) c.getClaim("step")).intValue();
         int mask = ((Number) c.getClaim("mask")).intValue();
-        if (!done || step < 4 || mask != REQUIRED_MASK) {
+        if (!done || step < 2 || mask != REQUIRED_MASK) {
             throw DomainExceptionCode.SIGNUP_EXCEPTION.newInstance("인증에 오류가 발생했습니다. 처음부터 다시 진행해주세요.");
         }
         return c;

@@ -104,7 +104,7 @@ public class MbrsJoinController {
             @PathVariable("authType") String authType,
             Model model
     ) {
-        model.addAttribute("authType", authType);
+       model.addAttribute("authType", authType);
         return "/hxz/etc/mbrsjoin/step3";
     }
 
@@ -137,7 +137,7 @@ public class MbrsJoinController {
      * @param body
      * @return
      */
-    @PostMapping
+    @PostMapping(value="/finalize", consumes="application/json")
     @ResponseBody
     public ResponseEntity<?> insertMbrsJoin(
             @CookieValue("onb_done") String finalToken,
