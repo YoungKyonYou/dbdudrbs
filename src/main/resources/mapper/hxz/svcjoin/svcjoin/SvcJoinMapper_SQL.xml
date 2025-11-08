@@ -29,13 +29,37 @@
     </select>
 
 
-<!--    &lt;!&ndash; 행정동코드관리에서 기관코드 조회 &ndash;&gt;-->
-<!--    <select id="selectOrgCdByAddoCdAndStdoCd" resultType="map">-->
-<!--        SELECT org_cd, addo_nm, stdo_nm-->
-<!--        FROM ohxzown.tbhxzm008-->
-<!--        WHERE addo_cd = #{addoCd}-->
-<!--        AND stdo_cd = #{stdoCd}-->
-<!--    </select>-->
+    <!--    &lt;!&ndash; 거주지 인증 이력 저장 &ndash;&gt;-->
+    <!--    <insert id="insertRsdcAuthHist" parameterType="tmoney.co.kr.hxz.rsdc.vo.RsdcAuthReqVO">-->
+    <!--        INSERT INTO ohxzown.tbhxzh103 (-->
+    <!--        tpw_svc_id, tpw_svc_typ_id, mbrs_id,-->
+    <!--        tpw_rsdc_auth_ct_dt, tpw_rsdc_auth_dt, tpw_rsdc_auth_hst_sqno,-->
+    <!--        addo_cd, stdo_cd, rgsr_id, rgt_dtm-->
+    <!--        ) VALUES (-->
+    <!--        'SVC0001', 'TYPE0001', #{mbrsId},-->
+    <!--        TO_CHAR(NOW(), 'YYYYMMDD'),-->
+    <!--        TO_CHAR(NOW(), 'YYYYMMDD'),-->
+    <!--        NEXTVAL('SEQ_TPW_RSDC_AUTH_HST'),-->
+    <!--        #{addoCd}, #{stdoCd}, #{rgsrId}, TO_CHAR(NOW(), 'YYYYMMDDHH24MISS')-->
+    <!--        )-->
+    <!--    </insert>-->
+
+
+
+    <select id="readOrgCdByAddoCd" resultType="String">
+        /* sql_id : readOrgCdByAddoCd */
+        /*
+        * 1. 파일 : SvcJoinMapper_SQL.xml
+        * 2. 기능 : 행정동코드관리에서 기관코드 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.08 - 최중혁 : 최초작성
+        */
+        select org_cd
+          from ohxzown.tbhxzm008
+         where addo_cd = #{addoCd}
+         limit 1;
+    </select>
 
     <select id="readSvcInf" resultType="tmoney.co.kr.hxz.svcjoin.vo.prevsvc.PrevSvcRspVO" parameterType="String">
         /* sql_id : readSvcInf */
@@ -63,7 +87,7 @@
         /* sql_id : readPrevSvcInf */
         /*
         * 1. 파일 : SvcJoinMapper_SQL.xml
-        * 2. 기능 : 현재 가입된 이전 서비스 내역 조회
+        * 2. 기능 : 가입된 이전 서비스 내역 조회
         * 3. 작성자 : 최중혁
         * 4. 변경이력 :
         2025.11.06 - 최중혁 : 최초작성
@@ -85,24 +109,8 @@
            and m102.tpw_mbrs_svc_sta_cd = '04'
     </select>
 
-<!--    &lt;!&ndash; 거주지 인증 이력 저장 &ndash;&gt;-->
-<!--    <insert id="insertRsdcAuthHist" parameterType="tmoney.co.kr.hxz.rsdc.vo.RsdcAuthReqVO">-->
-<!--        INSERT INTO ohxzown.tbhxzh103 (-->
-<!--        tpw_svc_id, tpw_svc_typ_id, mbrs_id,-->
-<!--        tpw_rsdc_auth_ct_dt, tpw_rsdc_auth_dt, tpw_rsdc_auth_hst_sqno,-->
-<!--        addo_cd, stdo_cd, rgsr_id, rgt_dtm-->
-<!--        ) VALUES (-->
-<!--        'SVC0001', 'TYPE0001', #{mbrsId},-->
-<!--        TO_CHAR(NOW(), 'YYYYMMDD'),-->
-<!--        TO_CHAR(NOW(), 'YYYYMMDD'),-->
-<!--        NEXTVAL('SEQ_TPW_RSDC_AUTH_HST'),-->
-<!--        #{addoCd}, #{stdoCd}, #{rgsrId}, TO_CHAR(NOW(), 'YYYYMMDDHH24MISS')-->
-<!--        )-->
-<!--    </insert>-->
-    <!--
-        서비스 ID별 서비스 유형 및 회원유형/기관별 범위 조회
-        파라미터: tpwSvcId, orgCd
-    -->
+
+
     <select id="readSvcJoin" parameterType="tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinReqVO" resultType="tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinRspVO">
         /* sql_id : readSvcJoin */
         /*
@@ -168,7 +176,60 @@
           join tbhxzc002 c002
             on c002.cmn_grp_cd_id = c001.cmn_grp_cd_id
            and c002.use_yn = 'Y'
-         where c001.cmn_grd_cd_desc = '은행코드'
+         where c001.cmn_cd_eng_nm = 'BNK_CD'
     </select>
 
+    <insert id="insertSvcJoin">
+        /* sql_id : insertSvcJoin */
+        /*
+        * 1. 파일 : SvcJoinMapper_SQL.xml
+        * 2. 기능 : 회원 서비스 가입
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.07 - 최중혁 : 최초작성
+        */
+        insert
+          into ohxzown.tbhxzm102
+             ( mbrs_id
+             , mbrs_svc_join_dt
+             , tpw_svc_id
+             , tpw_svc_typ_id
+             , card_no
+             , bnk_cd
+             , acnt_no
+             , ooa_nm
+             , addo_cd
+             , stdo_cd
+             , mvin_dt
+             , mvot_dt
+             , tpw_mbrs_svc_sta_cd
+             , atfl_mng_no
+             , mbrs_svc_cncn_dt
+             , rgsr_id
+             , rgt_dtm
+             , updr_id
+             , upd_dtm
+             )
+        values
+             ( #{mbrsId}
+             , to_char(now(), 'yyyymmdd')
+             , #{req.tpwSvcId}
+             , #{req.tpwSvcTypId}
+             , #{req.cardNo}
+             , #{req.bnkCd}
+             , #{req.acntNo}
+             , #{req.ooaNm}
+             , #{rsdcInf.addoCd}
+             , #{rsdcInf.stdoCd}
+             , #{rsdcInf.mvinDt}
+             , null
+             , '01'
+             , #{req.atflMngNo}
+             , null
+             , #{req.mbrsId}
+             , to_char(now(), 'yyyymmdd24miss')
+             , #{req.mbrsId}
+             , to_char(now(), 'yyyymmdd24miss')
+        );
+    </insert>
 </mapper>

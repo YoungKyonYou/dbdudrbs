@@ -7,14 +7,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tmoney.co.kr.hxz.svcjoin.service.SvcJoinService;
-import tmoney.co.kr.hxz.svcjoin.vo.rsdc.RsdcAuthReqVO;
-import tmoney.co.kr.hxz.svcjoin.vo.svccncn.SvcCncnReqVO;
-import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.BankCdRspVO;
-import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinInstReqVO;
-import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinReqVO;
-import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcJoinRspVO;
 import tmoney.co.kr.hxz.svcjoin.vo.orginf.OrgInfReqVO;
 import tmoney.co.kr.hxz.svcjoin.vo.orginf.OrgInfRspVO;
+import tmoney.co.kr.hxz.svcjoin.vo.rsdc.CmnRspVO;
+import tmoney.co.kr.hxz.svcjoin.vo.rsdc.RsdcAuthReqVO;
+import tmoney.co.kr.hxz.svcjoin.vo.rsdc.RsdcAuthRspVO;
+import tmoney.co.kr.hxz.svcjoin.vo.svccncn.SvcCncnReqVO;
+import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.*;
 
 import java.util.List;
 
@@ -61,25 +60,25 @@ public class SvcJoinController {
      * 3. 거주지 인증 후, 행정동코드로 기관코드 조회(신청한 서비스의 기관코드와 다르면 서비스 가입 불가 모달)
      * 4. 현재 가입하려는 서비스 정보 조회
      * 5. 이전 가입한 서비스 내역 조회
+     * 5-1. 이전 내역이 없을 경우 서비스 유형 선택 화면 이동
      * 6. 이전 내역의 기관코드와 다를 경우 해지하시겠습니까 모달 요청
      * 6-1. 이전 내역의 기관코드가 같지만, 현재 서비스의 지원중복여부가 N일경우
      * 6-2. 이전 내역의 기관코드가 같지만, 이전 내역이 지원중복여부가 N일경우
-     * 7. 이전 내역이 없을 경우 서비스 유형 선택 화면 이동
-     * 7-1. 기관코드가 같은데 현재 서비스유형과 이전 서비스유형이 지원중복여부가 Y일 경우
+     * 7. 기관코드가 같은데 현재 서비스유형과 이전 서비스유형이 지원중복여부가 Y일 경우 서비스 유형 선택 화면 이동
      *
      * @param req
      * @param model
      * @return
      */
     @PostMapping(value = "/rsdcAuth")
-    public ResponseEntity<?> rsdcAuth(
+    public CmnRspVO<RsdcAuthRspVO> rsdcAuth(
             @RequestBody RsdcAuthReqVO req,
             Model model
     ) {
         String mbrsId = "tmoney001";
-        String result = svcJoinService.rsdcAuth(req, mbrsId);
+        CmnRspVO<RsdcAuthRspVO> cmnRspVO = svcJoinService.rsdcAuth(req, mbrsId);
         model.addAttribute("mbrsId", mbrsId);
-        return ResponseEntity.ok().body(result);
+        return cmnRspVO;
     }
 
     /**
@@ -109,11 +108,10 @@ public class SvcJoinController {
             Model model
     ) {
         String mbrsId = "tmoney001";
-        String tpwSvcId = "SVC010";
 
         svcJoinService.svcCncn(req, mbrsId);
         model.addAttribute("mbrsId", mbrsId);
-        return ResponseEntity.ok().body(tpwSvcId);
+        return ResponseEntity.ok().body("");
     }
 
     /**
@@ -162,12 +160,13 @@ public class SvcJoinController {
      */
     @PostMapping(value = "/svcJoin")
     public ResponseEntity<?> insertSvcJoin(
+            @ModelAttribute("rsdcInf") RsdcInfReqVO rsdcInfReqVO,
             @RequestPart SvcJoinInstReqVO req,
             @RequestPart(value = "file", required = false) MultipartFile file,
             Model model
     ) {
         String mbrsId = "tmoney001";
-        svcJoinService.svcJoin(req, mbrsId);
+        svcJoinService.svcJoin(rsdcInfReqVO, req, file, mbrsId);
         model.addAttribute("mbrsId", mbrsId);
         return ResponseEntity.ok().body("success");
     }

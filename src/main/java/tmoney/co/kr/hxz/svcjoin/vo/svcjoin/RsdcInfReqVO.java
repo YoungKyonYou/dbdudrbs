@@ -1,4 +1,4 @@
-package tmoney.co.kr.hxz.svcjoin.vo.addo;
+package tmoney.co.kr.hxz.svcjoin.vo.svcjoin;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AddoCdReqVO {
-    private String addoNm;
-    private String stdoNm;
+public class RsdcInfReqVO {
+    private String addoCd;
+    private String stdoCd;
+    private String mvinDt;
 }

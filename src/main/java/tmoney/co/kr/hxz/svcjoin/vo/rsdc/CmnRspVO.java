@@ -9,8 +9,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class RsdcAuthRspVO {
-    private String addoCd;
-    private String stdoCd;
-    private String mvinDt;
+public class CmnRspVO<T> {
+    private boolean success;
+    private String message;
+    private T data;
+    private String tpwSvcId;
 }

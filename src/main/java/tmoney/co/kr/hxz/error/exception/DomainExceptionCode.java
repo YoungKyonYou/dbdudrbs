@@ -28,9 +28,11 @@ public enum DomainExceptionCode {
     LOGIN_TAKEOVER(AUTH.code + 9, "다른 기기에서 로그인 중입니다. 기존 세션을 종료하시겠습니까?"),
 
     NTC(2500, "정의되지 않은 에러입니다."),
-    NTC_EXCEPTION(NTC.code+1, "%s");
+    NTC_EXCEPTION(NTC.code+1, "%s"),
 
-
+    RSDC_AUTH(5000, "정의되지 않은 에러입니다."),
+    RSDC_AUTH_ERROR(RSDC_AUTH.code + 1, "%s")
+            ;
     private final int code;
     private final String message;
 

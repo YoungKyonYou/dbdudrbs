@@ -10,7 +10,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SvcJoinReqVO {
-    private String mbrsId = "tmoney001";
     private String tpwSvcId;
     private String orgCd;
+    private String addoCd;
+    private String stdoCd;
+    private String mvinDt;
 }

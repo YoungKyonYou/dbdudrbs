@@ -10,6 +10,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SvcCncnReqVO {
-    private String mbrsId = "tmoney001";
     private String tpwSvcId = "SVC010";
 }
