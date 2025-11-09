@@ -29,4 +29,6 @@ public interface SvcJoinMapper {
     void insertSvcJoin(@Param("rsdcInf") RsdcInfReqVO rsdcInfReqVO, @Param("req") SvcJoinInstReqVO req, @Param("mbrsId") String mbrsId);
 
     List<BankCdRspVO> readCmnBankCdList();
+
+    SvcTypInfRspVO readSvcTypInf(@Param("req") SvcTypInfReqVO req);
 }

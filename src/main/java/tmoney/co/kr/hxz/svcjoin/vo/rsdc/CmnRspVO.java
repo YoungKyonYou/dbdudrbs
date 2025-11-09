@@ -13,5 +13,5 @@ public class CmnRspVO<T> {
     private boolean success;
     private String message;
     private T data;
-    private String tpwSvcId;
+    private String prevTpwSvcId;
 }

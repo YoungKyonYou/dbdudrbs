@@ -31,7 +31,11 @@ public enum DomainExceptionCode {
     NTC_EXCEPTION(NTC.code+1, "%s"),
 
     RSDC_AUTH(5000, "정의되지 않은 에러입니다."),
-    RSDC_AUTH_ERROR(RSDC_AUTH.code + 1, "%s")
+    RSDC_AUTH_ERROR(RSDC_AUTH.code + 1, "%s"),
+
+    SVC_TYP(5500, "정의되지 않은 에러입니다."),
+    SVC_TYP_ERROR(SVC_TYP.code + 1, "%s"),
+
             ;
     private final int code;
     private final String message;

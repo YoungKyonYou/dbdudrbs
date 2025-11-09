@@ -78,8 +78,12 @@
           from ohxzown.tbhxzm201 m201
           join ohxzown.tbhxzm202 m202
             on m201.tpw_svc_id = m202.tpw_svc_id
+           and to_char(now(), 'yyyymmdd') &gt;= m202.tpw_svc_typ_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m202.tpw_svc_typ_end_dt
            and m202.use_yn = upper('y')
          where m201.tpw_svc_id = #{tpwSvcId}
+           and to_char(now(), 'yyyymmdd') &gt;= m202.tpw_svc_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m202.tpw_svc_end_dt
            and m201.use_yn = upper('y')
     </select>
 
@@ -101,9 +105,13 @@
           from ohxzown.tbhxzm102 m102
           join ohxzown.tbhxzm201 m201
             on m102.tpw_svc_id = m201.tpw_svc_id
+           and to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
            and m201.use_yn = upper('y')
           join ohxzown.tbhxzm202 m202
             on m201.tpw_svc_id = m202.tpw_svc_id
+           and to_char(now(), 'yyyymmdd') &gt;= m202.tpw_svc_typ_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m202.tpw_svc_typ_end_dt
            and m202.use_yn = upper('y')
          where m102.mbrs_id = #{mbrsId}
            and m102.tpw_mbrs_svc_sta_cd = '04'
@@ -142,11 +150,17 @@
           from ohxzown.tbhxzm201 m201
          inner join ohxzown.tbhxzm202 m202
             on m201.tpw_svc_id = m202.tpw_svc_id
+           and to_char(now(), 'yyyymmdd') &gt;= m202.tpw_svc_typ_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m202.tpw_svc_typ_end_dt
           left join ohxzown.tbhxzm103 m103
             on m202.tpw_mbrs_typ_cd = m103.tpw_mbrs_typ_cd
+           and to_char(now(), 'yyyymmdd') &gt;= m201.vld_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m201.vld_end_dt
           left join ohxzown.tbhxzm104 m104
             on m201.org_cd = m104.org_cd
            and m202.tpw_mbrs_typ_cd = m104.tpw_mbrs_typ_cd
+           and to_char(now(), 'yyyymmdd') &gt;= m201.vld_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m201.vld_end_dt
          where 1 = 1
          <if test="req.tpwSvcId != null and req.tpwSvcId != ''">
            and m201.tpw_svc_id = #{req.tpwSvcId}
@@ -154,6 +168,8 @@
          <if test="req.orgCd != null and req.orgCd != ''">
            and m201.org_cd = #{req.orgCd}
          </if>
+           and to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
            and m201.use_yn = upper('y')
            and m202.use_yn = upper('y')
          order by m201.tpw_svc_id
@@ -177,6 +193,57 @@
             on c002.cmn_grp_cd_id = c001.cmn_grp_cd_id
            and c002.use_yn = 'Y'
          where c001.cmn_cd_eng_nm = 'BNK_CD'
+    </select>
+
+    <select id="readSvcTypInf" resultType="tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcTypInfRspVO" parameterType="tmoney.co.kr.hxz.svcjoin.vo.svcjoin.SvcTypInfReqVO">
+        /* sql_id : readSvcTypInf */
+        /*
+        * 1. 파일 : SvcJoinMapper_SQL.xml
+        * 2. 기능 : 서비스 유형 정보 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.09 - 최중혁 : 최초작성
+        */
+        select m201.org_cd              as orgCd
+             , m201.tpw_svc_id          as tpwSvcId
+             , m202.tpw_svc_typ_id      as tpwSvcTypId
+             , m202.tpw_mbrs_typ_cd     as tpwMbrsTypCd
+             , m103.tpw_mbrs_ctg_cd     as tpwMbrsCtgCd
+             , case
+               when m103.tpw_mbrs_ctg_cd = '01' then '일반'
+               else '기타'
+               end                     as mbrsClsNm
+             , m104.typ_adpt_min_val    as typAplyMinVal
+             , m104.typ_adpt_max_val    as typAplyMaxVal
+          from ohxzown.tbhxzm201 m201
+         inner join ohxzown.tbhxzm202 m202
+            on m201.tpw_svc_id = m202.tpw_svc_id
+           and to_char(now(), 'yyyymmdd') &gt;= m202.tpw_svc_typ_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m202.tpw_svc_typ_end_dt
+          left join ohxzown.tbhxzm103 m103
+            on m202.tpw_mbrs_typ_cd = m103.tpw_mbrs_typ_cd
+           and to_char(now(), 'yyyymmdd') &gt;= m201.vld_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m201.vld_end_dt
+          left join ohxzown.tbhxzm104 m104
+            on m201.org_cd = m104.org_cd
+           and m202.tpw_mbrs_typ_cd = m104.tpw_mbrs_typ_cd
+           and to_char(now(), 'yyyymmdd') &gt;= m201.vld_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m201.vld_end_dt
+         where 1 = 1
+         <if test="req.tpwSvcId != null and req.tpwSvcId != ''">
+           and m201.tpw_svc_id = #{req.tpwSvcId}
+         </if>
+         <if test="req.orgCd != null and req.orgCd != ''">
+           and m201.org_cd = #{req.orgCd}
+         </if>
+           and to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
+           and m201.use_yn = upper('y')
+           and m202.use_yn = upper('y')
+         order by m201.tpw_svc_id
+             , m202.tpw_svc_typ_sno
+             , m103.mbrs_typ_ctg_sno
+         limit 1;
     </select>
 
     <insert id="insertSvcJoin">

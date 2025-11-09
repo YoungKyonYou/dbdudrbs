@@ -9,11 +9,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class SvcJoinReqVO {
-    private String krn;
+public class SvcTypInfReqVO {
+    /** 서비스 ID */
     private String tpwSvcId;
-    private String orgCd;
-    private String addoCd;
-    private String stdoCd;
-    private String mvinDt;
+
+    /** 서비스 유형 ID */
+    private String tpwSvcTypId;
 }

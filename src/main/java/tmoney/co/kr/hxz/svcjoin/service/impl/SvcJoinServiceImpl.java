@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import tmoney.co.kr.hxz.common.file.service.FileStorageService;
+import tmoney.co.kr.hxz.common.util.AgeUtil;
 import tmoney.co.kr.hxz.error.exception.DomainExceptionCode;
 import tmoney.co.kr.hxz.svcjoin.mapper.SvcJoinMapper;
 import tmoney.co.kr.hxz.svcjoin.service.SvcJoinService;
@@ -36,6 +37,16 @@ public class SvcJoinServiceImpl implements SvcJoinService {
     @Transactional(readOnly = true)
     public CmnRspVO<RsdcAuthRspVO> rsdcAuth(RsdcAuthReqVO req, String mbrsId) {
         try {
+            // 주민번호 뒷자리 검사
+            char genderCode = req.getKrn().charAt(7);
+            switch (genderCode) {
+                case '1': case '2': case '5': case '6':
+                    break;
+                case '3': case '4': case '7': case '8':
+                    break;
+                default:
+                    throw DomainExceptionCode.RSDC_AUTH_ERROR.newInstance("잘못된 주민번호 형식입니다.");
+            }
             // 1. 거주지 인증 API
             // processRsdcAuth(req);
 //            RsdcCfmVO(addoCd,orgCd, svcRst, declrDate);
@@ -126,7 +137,7 @@ public class SvcJoinServiceImpl implements SvcJoinService {
 
     @Override
     @Transactional(readOnly = true)
-    public void svcCncn(SvcCncnReqVO req, String mbrsId) {
+    public void svcPrevCncn(SvcCncnReqVO req, String mbrsId) {
 
     }
 
@@ -145,14 +156,30 @@ public class SvcJoinServiceImpl implements SvcJoinService {
     @Override
     @Transactional
     public void svcJoin(RsdcInfReqVO rsdcInfReqVO, SvcJoinInstReqVO req, MultipartFile file, String mbrsId) {
-        // fileSaveMapper로 받은 첨부파일관리번호
-        Long atflMngNo = 123123L;
-        req.setAtflMngNo(atflMngNo);
         try {
+            SvcTypInfReqVO svcTypInfReqVO = new SvcTypInfReqVO(req.getTpwSvcId(), req.getTpwSvcTypId());
+            SvcTypInfRspVO rsp = readSvcTypInf(svcTypInfReqVO);
+
+            if ("기타".equals(rsp.getMbrsClsNm()) && file == null) {
+                throw DomainExceptionCode.SVC_TYP_ERROR.newInstance("첨부 파일이 필요한 유형입니다.");
+            }
+
+            // fileSaveMapper로 받은 첨부파일관리번호
+            Long atflMngNo = 123123L;
+            req.setAtflMngNo(atflMngNo);
+
+            if("일반".equals(rsp.getMbrsClsNm()) && !AgeUtil.isValidAge(req.getKrn(), rsp.getTypAdptMinVal(), rsp.getTypAdptMaxVal())) {
+                throw DomainExceptionCode.SVC_TYP_ERROR.newInstance("현재 서비스 유형에 유효하지 않은 나이입니다.");
+            }
             insertSvcJoin(rsdcInfReqVO, req, mbrsId);
         } catch (Exception e) {
-            throw DomainExceptionCode.RSDC_AUTH_ERROR.newInstance(e, "서비스 가입에 실패하였습니다. 다시 한번 시도해주십시오");
+            throw DomainExceptionCode.SVC_TYP_ERROR.newInstance(e, "서비스 가입에 실패하였습니다. 다시 한번 시도해주십시오");
         }
+    }
+
+    @Transactional
+    public SvcTypInfRspVO readSvcTypInf(SvcTypInfReqVO req) {
+        return svcJoinMapper.readSvcTypInf(req);
     }
 
     @Transactional

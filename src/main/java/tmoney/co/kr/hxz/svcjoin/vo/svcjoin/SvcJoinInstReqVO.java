@@ -10,6 +10,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SvcJoinInstReqVO {
+    /** 주민등록번호 */
+    private String krn;
     /** 회원 ID */
     private String mbrsId = "tmoney001";
 

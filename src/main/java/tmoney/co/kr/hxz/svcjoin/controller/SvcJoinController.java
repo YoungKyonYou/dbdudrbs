@@ -101,15 +101,15 @@ public class SvcJoinController {
      * @param model
      * @return
      */
-    @PostMapping(value = "/svcCncn")
-    public ResponseEntity<?> svcCncn(
+    @PostMapping(value = "/svcPrevCncn")
+    public ResponseEntity<?> svcPrevCncn(
             @RequestPart SvcCncnReqVO req,
             @RequestPart(value = "file", required = false) MultipartFile file,
             Model model
     ) {
         String mbrsId = "tmoney001";
 
-        svcJoinService.svcCncn(req, mbrsId);
+        svcJoinService.svcPrevCncn(req, mbrsId);
         model.addAttribute("mbrsId", mbrsId);
         return ResponseEntity.ok().body("");
     }
@@ -148,6 +148,7 @@ public class SvcJoinController {
     /**
      * 서비스 가입
      * tbhxzm102 HXZ_회원서비스정보
+     * tbhxzm104 HXZ_기관회원유형관리
      * tbhxzm115 HXZ_첨부파일정보
      *
      * [process]

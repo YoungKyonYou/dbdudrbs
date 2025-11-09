@@ -16,7 +16,7 @@ public interface SvcJoinService {
 
     CmnRspVO<RsdcAuthRspVO> rsdcAuth(RsdcAuthReqVO req, String mbrsId);
 
-    void svcCncn(SvcCncnReqVO req, String mbrsId);
+    void svcPrevCncn(SvcCncnReqVO req, String mbrsId);
 
     List<SvcJoinRspVO> readSvcJoin(SvcJoinReqVO req);
 
