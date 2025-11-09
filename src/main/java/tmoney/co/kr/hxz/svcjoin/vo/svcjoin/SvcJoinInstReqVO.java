@@ -36,18 +36,6 @@ public class SvcJoinInstReqVO {
     /** 예금주명 */
     private String ooaNm;
 
-    /** 주소 코드 */
-    private String addoCd;
-
-    /** 상세 주소 코드 */
-    private String stdoCd;
-
-    /** 전입 일자 (YYYYMMDD) */
-    private String mvinDt;
-
-    /** 전출 일자 (YYYYMMDD) */
-    private String mvotDt = null;
-
     /** 회원 서비스 상태 코드 (01: 정상, 02: 해지 등) */
     private String tpwMbrsSvcStaCd = "01";
 

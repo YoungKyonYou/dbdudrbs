@@ -8,7 +8,20 @@ import java.time.Period;
 @Component
 public class AgeUtil {
     public static boolean isValidAge(String rrn, String minAgeStr, String maxAgeStr) {
+        if (minAgeStr == null && maxAgeStr == null) {
+            return true;
+        }
         int age = getAge(rrn);
+        if (minAgeStr == null) {
+            int maxAge = Integer.parseInt(maxAgeStr);
+            return age <= maxAge;
+        }
+
+        if (maxAgeStr == null) {
+            int minAge = Integer.parseInt(minAgeStr);
+            return age >= minAge;
+        }
+
         int minAge = Integer.parseInt(minAgeStr);
         int maxAge = Integer.parseInt(maxAgeStr);
 

@@ -154,13 +154,13 @@
            and to_char(now(), 'yyyymmdd') &lt;= m202.tpw_svc_typ_end_dt
           left join ohxzown.tbhxzm103 m103
             on m202.tpw_mbrs_typ_cd = m103.tpw_mbrs_typ_cd
-           and to_char(now(), 'yyyymmdd') &gt;= m201.vld_stt_dt
-           and to_char(now(), 'yyyymmdd') &lt;= m201.vld_end_dt
+           and to_char(now(), 'yyyymmdd') &gt;= m103.vld_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m103.vld_end_dt
           left join ohxzown.tbhxzm104 m104
             on m201.org_cd = m104.org_cd
            and m202.tpw_mbrs_typ_cd = m104.tpw_mbrs_typ_cd
-           and to_char(now(), 'yyyymmdd') &gt;= m201.vld_stt_dt
-           and to_char(now(), 'yyyymmdd') &lt;= m201.vld_end_dt
+           and to_char(now(), 'yyyymmdd') &gt;= m104.vld_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m104.vld_end_dt
          where 1 = 1
          <if test="req.tpwSvcId != null and req.tpwSvcId != ''">
            and m201.tpw_svc_id = #{req.tpwSvcId}
@@ -213,8 +213,8 @@
                when m103.tpw_mbrs_ctg_cd = '01' then '일반'
                else '기타'
                end                     as mbrsClsNm
-             , m104.typ_adpt_min_val    as typAplyMinVal
-             , m104.typ_adpt_max_val    as typAplyMaxVal
+             , m104.typ_adpt_min_val    as typAdptMinVal
+             , m104.typ_adpt_max_val    as typAdptMaxVal
           from ohxzown.tbhxzm201 m201
          inner join ohxzown.tbhxzm202 m202
             on m201.tpw_svc_id = m202.tpw_svc_id
@@ -222,19 +222,19 @@
            and to_char(now(), 'yyyymmdd') &lt;= m202.tpw_svc_typ_end_dt
           left join ohxzown.tbhxzm103 m103
             on m202.tpw_mbrs_typ_cd = m103.tpw_mbrs_typ_cd
-           and to_char(now(), 'yyyymmdd') &gt;= m201.vld_stt_dt
-           and to_char(now(), 'yyyymmdd') &lt;= m201.vld_end_dt
+           and to_char(now(), 'yyyymmdd') &gt;= m103.vld_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m103.vld_end_dt
           left join ohxzown.tbhxzm104 m104
             on m201.org_cd = m104.org_cd
            and m202.tpw_mbrs_typ_cd = m104.tpw_mbrs_typ_cd
-           and to_char(now(), 'yyyymmdd') &gt;= m201.vld_stt_dt
-           and to_char(now(), 'yyyymmdd') &lt;= m201.vld_end_dt
+           and to_char(now(), 'yyyymmdd') &gt;= m104.vld_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m104.vld_end_dt
          where 1 = 1
          <if test="req.tpwSvcId != null and req.tpwSvcId != ''">
            and m201.tpw_svc_id = #{req.tpwSvcId}
          </if>
-         <if test="req.orgCd != null and req.orgCd != ''">
-           and m201.org_cd = #{req.orgCd}
+         <if test="req.tpwSvcTypId != null and req.tpwSvcTypId != ''">
+             and m202.tpw_svc_typ_id = #{req.tpwSvcTypId}
          </if>
            and to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
            and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
