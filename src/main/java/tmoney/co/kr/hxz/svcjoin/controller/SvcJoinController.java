@@ -71,6 +71,7 @@ public class SvcJoinController {
      * @return
      */
     @PostMapping(value = "/rsdcAuth")
+    @ResponseBody
     public CmnRspVO<RsdcAuthRspVO> rsdcAuth(
             @RequestBody RsdcAuthReqVO req,
             Model model
