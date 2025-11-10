@@ -49,12 +49,10 @@ public class SvcJoinServiceImpl implements SvcJoinService {
                     throw DomainExceptionCode.RSDC_AUTH_ERROR.newInstance("잘못된 주민번호 형식입니다.");
             }
             // 1. 거주지 인증 API
-            // processRsdcAuth(req);
-//            RsdcCfmVO(addoCd,orgCd, svcRst, declrDate);
-//            KrnCnfYnVO(addr, mvinDt, svcRst, rspNm);
+
             // 거주지 인증 rsp
             RsdcAuthRspVO rsdcAuthRspVO = new RsdcAuthRspVO(
-                    "1101011000",
+                    req.getAddoCd(),
                     "11021",
                     "20180912"
             );
@@ -64,7 +62,7 @@ public class SvcJoinServiceImpl implements SvcJoinService {
 
 
             // 3. 행정동코드관리를 통해 해당 주소지의 기관코드 불러오기 (리스트가 될 수도 있음)
-            String orgCd = readOrgCdByAddoCd(rsdcAuthRspVO.getAddoCd());
+            String orgCd = readOrgCdByAddoCd(req.getAddoCd());
             if (orgCd == null) {
                 throw DomainExceptionCode.RSDC_AUTH_ERROR.newInstance("현재 거주지는 해당 서비스를 가입하실 수 없습니다.");
             }

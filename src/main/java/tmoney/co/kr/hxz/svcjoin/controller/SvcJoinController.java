@@ -103,6 +103,7 @@ public class SvcJoinController {
      * @return
      */
     @PostMapping(value = "/svcPrevCncn")
+    @ResponseBody
     public ResponseEntity<?> svcPrevCncn(
             @RequestPart SvcCncnReqVO req,
             @RequestPart(value = "file", required = false) MultipartFile file,
@@ -161,6 +162,7 @@ public class SvcJoinController {
      * @return
      */
     @PostMapping(value = "/svcJoin")
+    @ResponseBody
     public ResponseEntity<?> insertSvcJoin(
             @ModelAttribute("rsdcInf") RsdcInfReqVO rsdcInfReqVO,
             @RequestPart SvcJoinInstReqVO req,
