@@ -19,6 +19,7 @@ import tmoney.co.kr.hxz.common.onboard.util.NonceUtil;
 import tmoney.co.kr.hxz.common.onboard.util.OnboardingWebUtil;
 import tmoney.co.kr.hxz.common.onboard.vo.SignupVO;
 import tmoney.co.kr.hxz.common.type.PrsnAuthType;
+import tmoney.co.kr.hxz.common.util.CryptoUtil;
 import tmoney.co.kr.hxz.error.exception.DomainExceptionCode;
 import tmoney.co.kr.hxz.etc.mbrsjoin.mapper.MbrsJoinMapper;
 import tmoney.co.kr.hxz.etc.mbrsjoin.service.MbrsJoinService;
@@ -46,6 +47,7 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
     private final Integer receiptStepTtlMinutes;
     private final MbrsJoinMapper mbrsJoinMapper;
     private final PasswordEncoder passwordEncoder;
+    private final CryptoUtil cryptoUtil;
 
     public MbrsJoinServiceImpl(NonceUtil nonceUtil,
                                ReceiptService receiptService,
@@ -54,7 +56,8 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
                                @Value("${app.onboarding.cookie.onb-max-age-seconds}") Integer onbMaxAgeSeconds,
                                @Value("${app.onboarding.receipt.step-ttl-minutes}") Integer receiptStepTtlMinutes,
                                MbrsJoinMapper mbrsJoinMapper,
-                               PasswordEncoder passwordEncoder
+                               PasswordEncoder passwordEncoder,
+                               CryptoUtil cryptoUtil
     ) {
         this.nonceUtil = nonceUtil;
         this.receiptService = receiptService;
@@ -64,6 +67,7 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
         this.receiptStepTtlMinutes = receiptStepTtlMinutes;
         this.mbrsJoinMapper = mbrsJoinMapper;
         this.passwordEncoder = passwordEncoder;
+        this.cryptoUtil = cryptoUtil;
     }
 
     @Override
@@ -208,16 +212,17 @@ public class MbrsJoinServiceImpl implements MbrsJoinService {
         }
 
         // 암호화
-        String encodePwd = passwordEncoder.encode(req.getPwd());
-
+        String encPwd = passwordEncoder.encode(req.getPwd());
+        String encMbrsNm = cryptoUtil.encrypt(authReq.getMbrsNm());
+        String encMbrsTelNo = cryptoUtil.encrypt(authReq.getMbrsMbphNo());
 
         MbrsJoinReqVO reqVO = new MbrsJoinReqVO(
                 req.getMbrsId(),
-                authReq.getMbrsNm(),
+                encMbrsNm,
                 req.getMailAddr(),
                 authReq.getMbrsMbphNo() == null ? req.getMbrsMbphNo() : authReq.getMbrsMbphNo() ,
-                req.getMbrsTelNo(),
-                encodePwd,
+                encMbrsTelNo,
+                encPwd,
                 "00",
                 0,
                 null,

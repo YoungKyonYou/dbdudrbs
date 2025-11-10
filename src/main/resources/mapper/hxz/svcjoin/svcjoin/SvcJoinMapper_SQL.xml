@@ -82,8 +82,8 @@
            and to_char(now(), 'yyyymmdd') &lt;= m202.tpw_svc_typ_end_dt
            and m202.use_yn = upper('y')
          where m201.tpw_svc_id = #{tpwSvcId}
-           and to_char(now(), 'yyyymmdd') &gt;= m202.tpw_svc_stt_dt
-           and to_char(now(), 'yyyymmdd') &lt;= m202.tpw_svc_end_dt
+           and to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
            and m201.use_yn = upper('y')
     </select>
 

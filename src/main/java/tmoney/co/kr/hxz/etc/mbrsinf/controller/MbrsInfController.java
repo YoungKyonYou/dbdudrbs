@@ -5,10 +5,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import tmoney.co.kr.hxz.error.exception.DomainExceptionCode;
 import tmoney.co.kr.hxz.etc.mbrsinf.service.MbrsInfService;
+import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsInfDtlRspVO;
 import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsInfRspVO;
 import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsUpdReqVO;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 @Controller
@@ -25,16 +28,21 @@ public class MbrsInfController {
      * 1. 회원ID(mbrsId)를 통해서 회원 정보 상세 조회
      * 2. 로그인을 한 상태이므로, 회원상태코드(휴면, 탈퇴)에 대한 예외처리하지 않음
      *
-     * @param mbrsId
+     * @param
      * @param model
      * @return
      */
-    @GetMapping("/{mbrsId}/mbrsInf.do")
-    public String readMbrsInf(
-            @PathVariable("mbrsId") String mbrsId,
+    @GetMapping("/mbrsInf.do")
+    public String mbrsInf(
+            HttpSession httpSession,
             Model model
     ) {
-        MbrsInfRspVO mbrsInf = mbrsInfService.readMbrsInf(mbrsId);
+        String mbrsId = (String) httpSession.getAttribute("mbrsId");
+        if (mbrsId == null) {
+            throw DomainExceptionCode.LOGIN_ID_NOT_FOUND.newInstance();
+        }
+
+        MbrsInfDtlRspVO mbrsInf = mbrsInfService.mbrsInf(mbrsId);
         model.addAttribute("mbrsInf", mbrsInf);
         return "/hxz/etc/mbrsinf/mbrsInf";
     }
@@ -55,9 +63,15 @@ public class MbrsInfController {
     @PostMapping("/")
     @ResponseBody
     public ResponseEntity<?> updateMbrsInf(
-            @RequestBody @Valid MbrsUpdReqVO req
+            @RequestBody @Valid MbrsUpdReqVO req,
+            HttpSession httpSession
     ) {
-        mbrsInfService.updateMbrsInf(req);
+        String mbrsId = (String) httpSession.getAttribute("mbrsId");
+        if (mbrsId == null) {
+            throw DomainExceptionCode.LOGIN_ID_NOT_FOUND.newInstance();
+        }
+
+        mbrsInfService.updateMbrsInf(req, mbrsId);
         return ResponseEntity.ok().build();
     }
 
@@ -66,12 +80,17 @@ public class MbrsInfController {
      *
      * @return
      */
-    @GetMapping("/{mbrsId}/pwdForm.do")
+    @GetMapping("/pwdForm.do")
     public String pwdForm(
-            @PathVariable("mbrsId") String mbrsId,
+            HttpSession httpSession,
             Model model
     ) {
-        MbrsInfRspVO mbrsInf = mbrsInfService.readMbrsInf(mbrsId);
+        String mbrsId = (String) httpSession.getAttribute("mbrsId");
+        if (mbrsId == null) {
+            throw DomainExceptionCode.LOGIN_ID_NOT_FOUND.newInstance();
+        }
+
+        MbrsInfDtlRspVO mbrsInf = mbrsInfService.mbrsInf(mbrsId);
 
         model.addAttribute("mbrsInf", mbrsInf);
         model.addAttribute("mbrsId", mbrsId);
@@ -81,13 +100,18 @@ public class MbrsInfController {
     /**
      * 비밀번호 변경 처리
      */
-    @PostMapping("/pwd/{mbrsId}")
+    @PostMapping("/pwd")
     @ResponseBody
     public ResponseEntity<?> updatePwd(
             @RequestParam String newPwd,
             @RequestParam String cfmPwd,
-            @PathVariable("mbrsId") String mbrsId
+            HttpSession httpSession
     ) {
+        String mbrsId = (String) httpSession.getAttribute("mbrsId");
+        if (mbrsId == null) {
+            throw DomainExceptionCode.LOGIN_ID_NOT_FOUND.newInstance();
+        }
+
         mbrsInfService.updatePwd(mbrsId, newPwd, cfmPwd);
         return ResponseEntity.ok().build();
     }
@@ -97,7 +121,7 @@ public class MbrsInfController {
      *
      * @return
      */
-    @GetMapping("/{mbrsId}/mbrsScsn.do")
+    @GetMapping("/mbrsScsn.do")
     public String mbrsScsn() {
         return "/hxz/etc/mbrsinf/mbrsScsn";
     }

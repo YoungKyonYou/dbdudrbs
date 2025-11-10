@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tmoney.co.kr.hxz.common.util.CryptoUtil;
 import tmoney.co.kr.hxz.error.exception.DomainExceptionCode;
 import tmoney.co.kr.hxz.etc.mbrsinf.mapper.MbrsInfMapper;
 import tmoney.co.kr.hxz.etc.mbrsinf.service.MbrsInfService;
+import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsInfDtlRspVO;
 import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsInfReqVO;
 import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsInfRspVO;
 import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsUpdReqVO;
@@ -16,8 +18,26 @@ import tmoney.co.kr.hxz.etc.mbrsinf.vo.MbrsUpdReqVO;
 public class MbrsInfServiceImpl implements MbrsInfService {
     private final MbrsInfMapper mbrsInfMapper;
     private final PasswordEncoder passwordEncoder;
+    private final CryptoUtil cryptoUtil;
 
     @Override
+    @Transactional(readOnly = true)
+    public MbrsInfDtlRspVO mbrsInf(String mbrsId) {
+        MbrsInfRspVO rspVO = readMbrsInf(mbrsId);
+
+        String decrMbrsNm = cryptoUtil.decrypt(rspVO.getMbrsNm());
+        String decrMbrsMbphNo = cryptoUtil.decrypt(rspVO.getMbrsMbphNo());
+
+        return new MbrsInfDtlRspVO(
+                rspVO.getMbrsId(),
+                decrMbrsNm,
+                rspVO.getMailAddr(),
+                decrMbrsMbphNo,
+                rspVO.getMbrsTelNo(),
+                rspVO.getMbrsBrdt()
+        );
+    }
+
     @Transactional(readOnly = true)
     public MbrsInfRspVO readMbrsInf(String mbrsId) {
         return mbrsInfMapper.readMbrsInf(mbrsId);
@@ -25,51 +45,64 @@ public class MbrsInfServiceImpl implements MbrsInfService {
 
     @Override
     @Transactional
-    public void updateMbrsInf(MbrsUpdReqVO req) {
-        MbrsUpdReqVO mbrsUpdReqVO = new MbrsUpdReqVO(
-                req.getMbrsId(),
-                req.getMbrsNm(),
-                req.getMailAddr(),
-                req.getMbrsMbphNo(),
-                req.getMbrsTelNo(),
-                req.getMbrsStaCd(),
-                req.getPrsnAuthCiEncVal(),
-                req.getGndrCd(),
-                req.getMbrsBrdt()
-        );
+    public void updateMbrsInf(MbrsUpdReqVO req, String mbrsId) {
+        try {
+            // 암호화
+            String encMbrsNm = cryptoUtil.encrypt(req.getMbrsNm());
+            String encMbrsMbphNo = cryptoUtil.encrypt(req.getMbrsMbphNo());
 
-        mbrsInfMapper.updateMbrsInf(mbrsUpdReqVO);
+            MbrsUpdReqVO mbrsUpdReqVO = new MbrsUpdReqVO(
+                    mbrsId,
+                    encMbrsNm,
+                    req.getMailAddr(),
+                    encMbrsMbphNo,
+                    req.getMbrsTelNo(),
+                    req.getMbrsStaCd(),
+                    req.getPrsnAuthCiEncVal(),
+                    req.getGndrCd(),
+                    req.getMbrsBrdt()
+            );
 
-        MbrsInfRspVO rspVO = readMbrsInf(req.getMbrsId());
-        MbrsInfReqVO reqVO = new MbrsInfReqVO(
-                req.getMbrsId(),
-                req.getMbrsNm(),
-                req.getMailAddr(),
-                req.getMbrsMbphNo(),
-                req.getMbrsTelNo(),
-                rspVO.getPwd(),
-                req.getMbrsStaCd(),
-                rspVO.getPwdErrNcnt(),
-                rspVO.getDsprRgtInhrNo(),
-                rspVO.getVtrnNo(),
-                rspVO.getTpwJoinTypCd(),
-                rspVO.getTpwJoinRctdVal(),
-                rspVO.getScsnDtm(),
-                req.getPrsnAuthCiEncVal(),
-                req.getGndrCd(),
-                req.getMbrsBrdt(),
-                rspVO.getMbrsScsnDvsCd(),
-                rspVO.getNtfcYn(),
-                rspVO.getMrkgUtlzAgrmYn(),
-                rspVO.getSmsRcvAgrmYn(),
-                rspVO.getMailRcvAgrmYn(),
-                rspVO.getBztlRcvAgrmYn(),
-                rspVO.getMbrsJoinDt()
-        );
-        insertMbrsInf(reqVO);
+            updateMbrsInf(mbrsUpdReqVO);
+
+            MbrsInfRspVO rspVO = readMbrsInf(mbrsId);
+            MbrsInfReqVO mbrsInfReqVO = new MbrsInfReqVO(
+                    mbrsId,
+                    encMbrsMbphNo,
+                    req.getMailAddr(),
+                    encMbrsMbphNo,
+                    req.getMbrsTelNo(),
+                    rspVO.getPwd(),
+                    req.getMbrsStaCd(),
+                    rspVO.getPwdErrNcnt(),
+                    rspVO.getDsprRgtInhrNo(),
+                    rspVO.getVtrnNo(),
+                    rspVO.getTpwJoinTypCd(),
+                    rspVO.getTpwJoinRctdVal(),
+                    rspVO.getScsnDtm(),
+                    req.getPrsnAuthCiEncVal(),
+                    req.getGndrCd(),
+                    req.getMbrsBrdt(),
+                    rspVO.getMbrsScsnDvsCd(),
+                    rspVO.getNtfcYn(),
+                    rspVO.getMrkgUtlzAgrmYn(),
+                    rspVO.getSmsRcvAgrmYn(),
+                    rspVO.getMailRcvAgrmYn(),
+                    rspVO.getBztlRcvAgrmYn(),
+                    rspVO.getMbrsJoinDt()
+            );
+
+            insertMbrsInf(mbrsInfReqVO);
+        } catch (Exception e) {
+            throw DomainExceptionCode.SIGNUP_EXCEPTION.newInstance(e, "회원정보 변경에 실패하였습니다. 다시 한번 시도해주십시오");
+        }
     }
 
-    @Override
+    @Transactional
+    public void updateMbrsInf(MbrsUpdReqVO req) {
+        mbrsInfMapper.updateMbrsInf(req);
+    }
+
     @Transactional
     public void insertMbrsInf(MbrsInfReqVO req) {
         mbrsInfMapper.insertMbrsInf(req);
@@ -94,19 +127,20 @@ public class MbrsInfServiceImpl implements MbrsInfService {
 
         MbrsInfRspVO rspVO = readMbrsInf(mbrsId);
 
+        String encNewPwd = passwordEncoder.encode(newPwd);
         // 이전 비밀번호 동일 여부 판별
-        if (passwordEncoder.matches(newPwd, rspVO.getPwd())) {
+        if (passwordEncoder.matches(encNewPwd, rspVO.getPwd())) {
             throw DomainExceptionCode.PASSWORD_DUPLICATION.newInstance();
         }
 
-        mbrsInfMapper.updatePwd(mbrsId, newPwd);
+        updatePwd(mbrsId, encNewPwd);
         MbrsInfReqVO reqVO = new MbrsInfReqVO(
                 rspVO.getMbrsId(),
                 rspVO.getMbrsNm(),
                 rspVO.getMailAddr(),
                 rspVO.getMbrsMbphNo(),
                 rspVO.getMbrsTelNo(),
-                passwordEncoder.encode(newPwd),
+                encNewPwd,
                 rspVO.getMbrsStaCd(),
                 rspVO.getPwdErrNcnt(),
                 rspVO.getDsprRgtInhrNo(),
@@ -126,5 +160,10 @@ public class MbrsInfServiceImpl implements MbrsInfService {
                 rspVO.getMbrsJoinDt()
         );
         insertMbrsInf(reqVO);
+    }
+
+    @Transactional
+    public void updatePwd(String mbrsId, String newPwd) {
+        mbrsInfMapper.updatePwd(mbrsId, newPwd);
     }
 }
