@@ -1,9 +1,7 @@
 package tmoney.co.kr.hxz.main.service;
 
-import tmoney.co.kr.hxz.main.vo.MainNtcRspVO;
-import tmoney.co.kr.hxz.main.vo.MainSvcRspVO;
-import tmoney.co.kr.hxz.main.vo.MySvcRspVO;
-import tmoney.co.kr.hxz.main.vo.OrgInfRspVO;
+import tmoney.co.kr.hxz.main.vo.*;
+import tmoney.co.kr.hxz.main.vo.lcgv.LcgvMainRspVO;
 
 import java.util.List;
 
@@ -15,4 +13,6 @@ public interface MainService {
     List<MainSvcRspVO> readMainSvcList(String mbrsId);
 
     List<OrgInfRspVO> readOrgInfList(String mbrsId);
+
+    LcgvMainRspVO readLcgvMain(String mbrsId);
 }

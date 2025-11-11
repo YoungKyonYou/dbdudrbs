@@ -1,18 +1,13 @@
 package tmoney.co.kr.hxz.main.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import tmoney.co.kr.hxz.main.service.MainService;
-import tmoney.co.kr.hxz.main.vo.MainNtcRspVO;
-import tmoney.co.kr.hxz.main.vo.MainSvcRspVO;
-import tmoney.co.kr.hxz.main.vo.MySvcRspVO;
-import tmoney.co.kr.hxz.main.vo.OrgInfRspVO;
+import tmoney.co.kr.hxz.main.vo.*;
+import tmoney.co.kr.hxz.main.vo.lcgv.LcgvMainReqVO;
+import tmoney.co.kr.hxz.main.vo.lcgv.LcgvMainRspVO;
 
 import java.util.List;
 
@@ -38,7 +33,7 @@ public class MainController {
      * @param model
      * @return
      */
-    @GetMapping("/")
+    @GetMapping("/main.do")
     public String index(Model model) {
         String mbrsId = "tmoney002";
 
@@ -54,6 +49,35 @@ public class MainController {
         model.addAttribute("orgInfList", orgInfList);
 
         model.addAttribute("mainNtcList", mainNtcList);
+        return "/hxz/main/index";
+    }
+
+    /**
+     * 지자체 메인 조회
+     * tbhxzm009 HXZ_기관연계정보
+     * tbhxzm102 HXZ_회원서비스정보
+     * tbhxzm201 HXZ_교통복지서비스관리
+     * tbhxzd214 HXZ_지원금지급내역
+     * tbhxzm113 HXZ_공지사항관리
+     *
+     * [process]
+     * 1. HXZ_공지사항관리 테이블 내 공지사항 내역 최근 5개 호출
+     * 2. 현재 가입한 서비스 내역 조회
+     *
+     * @param
+     * @param model
+     * @return
+     */
+    @GetMapping("/lcgvMain.do")
+    public String lcgvMain(
+            @ModelAttribute LcgvMainReqVO req,
+            Model model
+    ) {
+        String mbrsId = "tmoney002";
+
+        LcgvMainRspVO result = mainService.readLcgvMain(mbrsId);
+
+        model.addAttribute("result", result);
         return "/hxz/main/index";
     }
 }

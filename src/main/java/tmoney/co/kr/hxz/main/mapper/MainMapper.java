@@ -7,6 +7,7 @@ import tmoney.co.kr.hxz.main.vo.MainNtcRspVO;
 import tmoney.co.kr.hxz.main.vo.MainSvcRspVO;
 import tmoney.co.kr.hxz.main.vo.MySvcRspVO;
 import tmoney.co.kr.hxz.main.vo.OrgInfRspVO;
+import tmoney.co.kr.hxz.main.vo.lcgv.LcgvMainRspVO;
 
 import java.util.List;
 
@@ -20,4 +21,6 @@ public interface MainMapper {
     List<MainSvcRspVO> readMainSvcList(@Param("mbrsId") String mbrsId);
 
     List<OrgInfRspVO> readOrgInfList(@Param("mbrsId") String mbrsId);
+
+    LcgvMainRspVO readLcgvMain(@Param("mbrsId") String mbrsId);
 }
