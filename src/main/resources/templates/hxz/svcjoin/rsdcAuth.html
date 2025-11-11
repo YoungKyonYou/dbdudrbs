@@ -149,7 +149,7 @@
                 title: '인증 완료',
                 message: data.message || '거주지 인증이 완료되었습니다.',
                 buttons: 'ok-close',
-                onOk: () => location.href = '/svcjoin/svcJoin.do'
+                onOk: () => Common.MiniSPA.go('/svcjoin/svcJoin.do')
               });
             } else {
               Common.modalShow({

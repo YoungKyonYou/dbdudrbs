@@ -70,7 +70,7 @@
                         <ul class="dropdown_list" id="bankDropdownList"
                           style="display:none; position:absolute; top:100%; left:0; background:#fff; border:1px solid #ccc; width:100%; z-index:10; max-height:200px; overflow-y:auto;">
                           <th:block th:each="bank : ${bankList}">
-                            <li class="dropdown_option" th:data-value="${bank.cmnCd}" th:text="${bank.cmnCdNm}"
+                            <li class="dropdown_option" th:data-value="${bank.cmnCd}" th:text="${bank.cmnNm}"
                               style="padding:6px 10px; cursor:pointer;"></li>
                           </th:block>
                         </ul>
@@ -97,6 +97,7 @@
                             style="padding:6px 10px; cursor:pointer;"></li>
                         </th:block>
 
+
                       </ul>
                       <input type="hidden" name="tpwSvcTypId">
                       <input type="hidden" name="tpwSvcId" th:value="${result[0].tpwSvcId}">
@@ -105,42 +106,11 @@
                 </fieldset>
 
                 <!-- 증빙서류 -->
-                <fieldset id="evidenceFieldset" style="display:none">
+                <fieldset id="evidenceFieldset" style="display:none;">
                   <h3 class="form-title">증빙서류</h3>
-                  <div>
-                    <p class="guide-text">장애인, 국가유공자, 저소득층, 외국인, 임산부, 다자녀일 경우 증빙서류를 첨부해주시기 바랍니다.</p>
-                    <p class="guide-text">해당 유형의 확장자만 파일을 등록할 수 있습니다. (jpg, jpeg, pdf)</p>
-                    <p class="guide-text">파일 1개 당 크기는 10MB를 초과할 수 없으며, 최대 3개까지 등록할 수 있습니다.</p>
-                    <div class="file-box" id="evidenceUploader" data-accept=".jpg,.jpeg,.pdf" data-max-files="3"
-                      data-max-size="10485760">
-
-                      <div class="file-drop" role="group" aria-describedby="evidenceHelp">
-                        <input id="evidenceInput" class="file-input" type="file" hidden accept=".jpg,.jpeg,.pdf"
-                          multiple>
-                        <div class="file-drop-inner" tabindex="0" aria-label="첨부파일 드롭 영역">
-                          <p class="file-drop-msg">
-                            첨부파일을 여기에 끌어다 놓거나,<br>
-                            파일 선택 버튼을 직접 선택해주세요.
-                          </p>
-                          <button type="button" class="btn btn-darkgray size-md" data-action="browse">
-                            파일첨부
-                          </button>
-                        </div>
-                      </div>
-
-                      <ul class="file-list" aria-live="polite" aria-relevant="additions removals">
-                      </ul>
-
-                      <template id="fileItemTpl">
-                        <li class="file-item">
-                          <span class="file-name"></span>
-                          <button type="button" class="btn btn-red btn-icon-right" data-action="remove"
-                            aria-label="파일 삭제">
-                            <i class="icon icon-x" aria-hidden="true"></i>삭제
-                          </button>
-                        </li>
-                      </template>
-                    </div>
+                  <div class="file-box" id="evidenceUploader">
+                    <input id="evidenceInput" class="file-input" type="file" accept=".jpg,.jpeg,.pdf">
+                    <p class="guide-text color-gray">※ 기타 유형은 증빙서류 첨부가 필수입니다.</p>
                   </div>
                 </fieldset>
 
@@ -163,26 +133,24 @@
         const btnSubmit = document.getElementById('btn-submit');
         const supportTypeInput = form.querySelector("input[name='tpwSvcTypId']");
         const evidenceFieldset = document.getElementById('evidenceFieldset');
-        const fileInput = document.getElementById('evidenceInput');
-        const fileList = document.querySelector('.file-list');
-        const fileTpl = document.getElementById('fileItemTpl');
 
         let cardValid = false;
         let acctValid = false;
-        let selectedFiles = [];
+        let selectedMbrsCls = "";
 
-        // 드롭다운 열기/닫기
+        // ✅ 드롭다운 열기/닫기
         document.querySelectorAll('.dropdown_button').forEach(btn => {
           btn.addEventListener('click', function (e) {
             const dropdown = e.currentTarget.parentElement;
             const list = dropdown.querySelector('.dropdown_list');
             const isOpen = list.style.display === 'block';
+            // 모든 닫기
             document.querySelectorAll('.dropdown_list').forEach(l => l.style.display = 'none');
             list.style.display = isOpen ? 'none' : 'block';
           });
         });
 
-        // 드롭다운 옵션 선택
+        // ✅ 드롭다운 옵션 선택
         document.querySelectorAll('.dropdown_list').forEach(list => {
           list.addEventListener('click', function (e) {
             if (e.target.matches('.dropdown_option')) {
@@ -192,22 +160,25 @@
               dropdown.querySelector('.dropdown_value').textContent = e.target.textContent;
               list.style.display = 'none';
 
-              if (list.id === 'supportTypeDropdownList') {
-                const selectedMbrsCls = e.target.dataset.mbrscls;
-                evidenceFieldset.style.display = (selectedMbrsCls !== '일반') ? 'block' : 'none';
+              // 지원유형 선택 시 기타 여부 처리
+              if (dropdown.id === 'supportTypeDropdownList'.replace('List', '')) {
+                selectedMbrsCls = e.target.dataset.mbrscls;
+                // "일반"이면 숨기고, 나머지 다 보여주기
+                evidenceFieldset.style.display = (selectedMbrsCls === '일반') ? 'none' : '';
               }
+
             }
           });
         });
 
-        // 외부 클릭 시 드롭다운 닫기
+        // ✅ 외부 클릭 시 모든 드롭다운 닫기
         document.addEventListener('click', e => {
           if (!e.target.closest('.dropdown')) {
             document.querySelectorAll('.dropdown_list').forEach(l => l.style.display = 'none');
           }
         });
 
-        // 카드 유효성 체크
+        // ✅ 카드 유효성 체크
         btnCardCheck.addEventListener('click', () => {
           const nums = [1, 2, 3, 4].map(i => form.querySelector(`#card-${i}`).value);
           if (nums.every(v => v.length === 4)) {
@@ -220,7 +191,7 @@
           }
         });
 
-        // 계좌 인증
+        // ✅ 계좌 인증
         btnAcctVerify.addEventListener('click', () => {
           const bank = form.querySelector("input[name='bank']").value;
           const acctNo = form.querySelector("input[name='acctNo']").value.trim();
@@ -233,51 +204,13 @@
           btnAcctVerify.classList.replace('btn-darkgray', 'btn-primary');
         });
 
-        // 파일 첨부 처리
-        function renderFiles() {
-          fileList.innerHTML = '';
-          selectedFiles.forEach((file, idx) => {
-            const li = fileTpl.content.cloneNode(true);
-            li.querySelector('.file-name').textContent = file.name;
-            li.querySelector('[data-action="remove"]').addEventListener('click', () => {
-              selectedFiles.splice(idx, 1);
-              renderFiles();
-            });
-            fileList.appendChild(li);
-          });
-        }
-
-        fileInput.addEventListener('change', (e) => {
-          const maxFiles = parseInt(fileInput.closest('.file-box').dataset.maxFiles);
-          const maxSize = parseInt(fileInput.closest('.file-box').dataset.maxSize);
-          Array.from(e.target.files).forEach(file => {
-            if (selectedFiles.length >= maxFiles) {
-              Common.modalShow({ title: '오류', message: `파일은 최대 ${maxFiles}개까지 업로드 가능합니다.`, buttons: 'close' });
-              return;
-            }
-            if (file.size > maxSize) {
-              Common.modalShow({ title: '오류', message: `파일 용량은 ${maxSize / 1024 / 1024}MB 이하만 가능합니다.`, buttons: 'close' });
-              return;
-            }
-            selectedFiles.push(file);
-          });
-          renderFiles();
-          fileInput.value = ''; // 선택 초기화
-        });
-
-        // 파일 첨부 버튼
-        document.querySelector('[data-action="browse"]').addEventListener('click', () => {
-          fileInput.click();
-        });
-
-        // 제출
+        // ✅ 제출
         btnSubmit.addEventListener('click', async () => {
           const cardParts = [1, 2, 3, 4].map(i => form.querySelector(`#card-${i}`).value);
           if (!cardValid) return Common.modalShow({ title: '입력 오류', message: '카드 유효성 체크를 진행해주세요.', buttons: 'close' });
           if (!acctValid) return Common.modalShow({ title: '입력 오류', message: '계좌 인증을 진행해주세요.', buttons: 'close' });
           if (!supportTypeInput.value) return Common.modalShow({ title: '입력 오류', message: '지원유형을 선택해주세요.', buttons: 'close' });
-
-          if (evidenceFieldset.style.display !== 'none' && selectedFiles.length === 0) {
+          if (evidenceFieldset.style.display !== 'none' && document.getElementById('evidenceInput').files.length === 0) {
             return Common.modalShow({ title: '입력 오류', message: '증빙서류가 필요합니다.', buttons: 'close' });
           }
 
@@ -285,29 +218,28 @@
           const reqData = {
             tpwSvcId: form.querySelector("input[name='tpwSvcId']").value,
             tpwSvcTypId: supportTypeInput.value,
-            bnkCd: form.querySelector("input[name='bank']").value, // <- 수정
-            acntNo: form.querySelector("input[name='acctNo']").value, // 이름 확인
+            bankCd: form.querySelector("input[name='bank']").value,
+            acctNo: form.querySelector("input[name='acctNo']").value,
             cardNo: cardParts.join('-')
           };
+
           fd.append("req", new Blob([JSON.stringify(reqData)], { type: "application/json" }));
           fd.append("rsdcInf.rsdcCd", "1101011000");
           fd.append("rsdcInf.orgCd", "JONGNO01");
 
-          selectedFiles.forEach(file => {
-            fd.append("file", file);
-          });
+          const fileInput = document.getElementById('evidenceInput');
+          if (fileInput && fileInput.files.length > 0) {
+            fd.append("file", fileInput.files[0]);
+          }
 
           try {
             const res = await fetch("/svcjoin/svcJoin", { method: "POST", body: fd });
             if (!res.ok) throw new Error('서버 응답 오류');
             Common.modalShow({ title: '가입 완료', message: '서비스 가입이 완료되었습니다.', buttons: 'close' });
-
-            Common.MiniSPA.go('/svcjoin/svcJoinFn.do')
           } catch (e) {
             Common.modalShow({ title: '오류', message: e.message, buttons: 'close' });
           }
         });
-
       })();
     </script>
   </th:block>
