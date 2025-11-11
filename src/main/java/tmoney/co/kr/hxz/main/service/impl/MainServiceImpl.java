@@ -7,6 +7,8 @@ import tmoney.co.kr.hxz.main.mapper.MainMapper;
 import tmoney.co.kr.hxz.main.service.MainService;
 import tmoney.co.kr.hxz.main.vo.MainNtcRspVO;
 import tmoney.co.kr.hxz.main.vo.MainSvcRspVO;
+import tmoney.co.kr.hxz.main.vo.MySvcRspVO;
+import tmoney.co.kr.hxz.main.vo.OrgInfRspVO;
 
 import java.util.List;
 
@@ -23,15 +25,19 @@ public class MainServiceImpl implements MainService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<MySvcRspVO> readMySvcList(String mbrsId) {
+        return mainMapper.readMySvcList(mbrsId);
+    };
+
+    @Override
+    @Transactional(readOnly = true)
     public List<MainSvcRspVO> readMainSvcList(String mbrsId) {
         return mainMapper.readMainSvcList(mbrsId);
     };
 
     @Override
     @Transactional(readOnly = true)
-    public List<MainSvcRspVO> readMainSvcList() {
-        return mainMapper.readMainSvcList();
+    public List<OrgInfRspVO> readOrgInfList() {
+        return mainMapper.readOrgInfList();
     };
-
-    
 }
