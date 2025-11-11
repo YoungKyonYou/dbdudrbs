@@ -121,32 +121,47 @@
 
 
     <select id="readLcgvMain" resultType="tmoney.co.kr.hxz.main.vo.lcgv.LcgvMainRspVO" parameterType="tmoney.co.kr.hxz.main.vo.lcgv.LcgvMainReqVO">
-        /* sql_id : readOrgInfList */
+        /* sql_id : readLcgvMain */
         /*
         * 1. 파일 : MainMapper_SQL.xml
-        * 2. 기능 : 지자체별 서비스 내역 조회
+        * 2. 기능 : 지자체 메인 조회
         * 3. 작성자 : 최중혁
         * 4. 변경이력 :
         2025.11.11 - 최중혁 : 최초작성
         */
         select m009.org_cd             as orgCd
-        , m009.tpw_org_nm         as tpwOrgNm
-        , m201.tpw_svc_id         as tpwSvcId
-        , m201.tpw_svc_nm         as tpwSvcNm
-        , case
-        when m102.mbrs_id is not null
-        then true
-        else false end as joinYn
-        from ohxzown.tbhxzm201 m201
-        join ohxzown.tbhxzm009 m009
-        on m201.org_cd = m009.org_cd
-        and m009.use_yn = upper('y')
-        left join ohxzown.tbhxzm102 m102
-        on m102.tpw_svc_id = m201.tpw_svc_id
-        and m102.mbrs_id = #{mbrsId}
-        and m102.tpw_mbrs_svc_sta_cd = '04'
-        where to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
-        and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
-        and m201.use_yn = upper('y')
+             , m009.tpw_org_nm         as tpwOrgNm
+             , m201.tpw_svc_id         as tpwSvcId
+             , m201.tpw_svc_nm         as tpwSvcNm
+             , m115.atfl_path_nm       as atflPathNm
+             , d214.stlm_dt            as stlmDt
+             , d214.apl_amt            as aplAmt
+             , d214.pay_amt            as payAmt
+          from ohxzown.tbhxzm201 m201
+          join ohxzown.tbhxzm009 m009
+            on m201.org_cd = m009.org_cd
+           and m009.use_yn = upper('y')
+          join ohxzown.tbhxzm102 m102
+            on m102.tpw_svc_id = m201.tpw_svc_id
+           and m102.mbrs_id = #{mbrsId}
+           and m102.tpw_mbrs_svc_sta_cd = '04'
+          left join ohxzown.tbhxzm116 m116
+            on m116.tpw_svc_id = m116.tpw_svc_id
+           and m116.use_yn = upper('y')
+          left join ohxzown.tbhxzm115 m115
+            on m115.atfl_mng_no = m115.atfl_mng_no
+          left join lateral
+             (
+               select d2.stlm_dt, d2.tpw_svc_id, d2.apl_amt, d2.pay_amt
+                 from ohxzown.tbhxzd214 d2
+                where d2.tpw_svc_id = m102.tpw_svc_id
+                order by abs(to_date(d2.stlm_dt, 'yyyymmdd') - current_date)
+                limit 1
+             ) d214
+            on m102.tpw_svc_id = d214.tpw_svc_id
+           and d214.tpw_svc_id = #{req.tpwSvcId}
+         where to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
+           and m201.use_yn = upper('y')
     </select>
 </mapper>
