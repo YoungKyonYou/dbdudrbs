@@ -287,7 +287,7 @@
             tpwSvcTypId: supportTypeInput.value,
             bnkCd: form.querySelector("input[name='bank']").value, // <- 수정
             acntNo: form.querySelector("input[name='acctNo']").value, // 이름 확인
-            cardNo: cardParts.join('-')
+            cardNo: cardParts.join('')
           };
           fd.append("req", new Blob([JSON.stringify(reqData)], { type: "application/json" }));
           fd.append("rsdcInf.rsdcCd", "1101011000");
