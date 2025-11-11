@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{component/header :: layout(~{::content})}">
+  <th:block th:fragment="content">
+
+    <main id="contents">
+      <section class="section">
+        <div class="container fluid">
+          <div class="join-wrap">
+            <div class="join-header">
+              <h2 class="section-title">지원 사업 가입하기</h2>
+              <ol class="step-box" role="list" aria-label="지원사업 가입 단계">
+                <li aria-current="step" class="active">
+                  <div class="circle"><span>1</span><i class="icon home"></i></div>
+                  <p>거주지 인증 <span class="sr-only">(현재 단계)</span></p>
+                </li>
+                <li>
+                  <div class="circle"><span>2</span><i class="icon filter"></i></div>
+                  <p>유형 선택</p>
+                </li>
+                <li>
+                  <div class="circle"><span>3</span><i class="icon check"></i></div>
+                  <p>가입 완료</p>
+                </li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <div class="container size-xsm">
+          <div class="join-wrap">
+
+            <!-- 기관 정보 -->
+            <div class="causion-text" th:if="${result != null}">
+              <strong>
+                <span class="color-secondary" th:text="${result.tpwOrgNm}"></span>
+                <span> 지역 주민만 신청할 수 있습니다.</span>
+              </strong>
+            </div>
+
+            <div class="form-box">
+              <form id="rsdcAuthForm" method="post" novalidate>
+                <fieldset>
+
+
+
+                  <p class="field-title">주민등록번호</p>
+                  <div class="flex align-center gap8">
+                    <input id="rrn1" type="text" maxlength="6" placeholder="YYMMDD" class="text-field size-lg" required>
+                    <span class="flex-bar">-</span>
+                    <input id="rrn2" type="password" maxlength="7" placeholder="*******" class="text-field size-lg"
+                      required>
+                  </div>
+
+                  <input type="hidden" id="orgCd" th:value="${result.orgCd}">
+                  <input type="hidden" id="tpwSvcId" th:value="${result.tpwSvcId}">
+                </fieldset>
+
+                <button type="submit" class="btn btn-primary size-lg">거주지 인증</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+
+        const form = document.getElementById("rsdcAuthForm");
+        const rrn1 = document.getElementById("rrn1");
+        const rrn2 = document.getElementById("rrn2");
+        const nm = document.getElementById("nm");
+
+        // 숫자 입력 필터
+        const onlyNumber = (e) => {
+          if (!/[0-9]/.test(e.key) && !["Backspace", "Tab", "ArrowLeft", "ArrowRight", "Delete"].includes(e.key)) {
+            e.preventDefault();
+          }
+        };
+        rrn1.addEventListener("keydown", onlyNumber);
+        rrn2.addEventListener("keydown", onlyNumber);
+
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const rrn1Val = rrn1.value.trim();
+          const rrn2Val = rrn2.value.trim();
+          const nameVal = "강현정";
+          const orgCd = document.getElementById("orgCd").value;
+          const tpwSvcId = document.getElementById("tpwSvcId").value;
+
+          if (!/^\d{6}$/.test(rrn1Val) || !/^\d{7}$/.test(rrn2Val)) {
+            return Common.modalShow({ title: "입력 오류", message: "주민등록번호를 올바르게 입력해주세요.", buttons: "close" });
+          }
+          if (!nameVal) {
+            return Common.modalShow({ title: "입력 오류", message: "성명을 입력해주세요.", buttons: "close" });
+          }
+
+          const krn = rrn1Val + rrn2Val;
+
+          // ✅ NEW: 1) 거주지확정코드 자격여부 확인
+          try {
+            const res1 = await fetch("/resideInsttCnfmApi.do", {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              body: new URLSearchParams({ krn, nm: nameVal, orgCd })
+            });
+
+            if (!res1.ok) throw new Error("거주지확정코드 인증 실패");
+          } catch (e) {
+            return Common.modalShow({ title: "인증 오류", message: "거주지확정코드 인증에 실패했습니다.", buttons: "close" });
+          }
+
+          // ✅ NEW: 2) 주민등록정보 사실여부 API
+          // try {
+          //   const res2 = await fetch("/reductionResidentInfoApi.do", {
+          //     method: "POST",
+          //     headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          //     body: new URLSearchParams({ krn, nm: nameVal, orgCd })
+          //   });
+
+          //   if (!res2.ok) throw new Error("주민등록정보 사실여부 인증 실패");
+          // } catch (e) {
+          //   return Common.modalShow({ title:"인증 오류", message:"주민등록정보 사실여부 인증에 실패했습니다.", buttons:"close" });
+          // }
+
+          // ✅ NEW: 위 2개 모두 성공 → 기존 rsdcAuth 호출
+          try {
+            const res3 = await fetch("/svcjoin/rsdcAuth", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ krn, orgCd, tpwSvcId })
+            });
+
+            const data = await res3.json();
+
+            if (data.success) {
+              Common.modalShow({
+                title: "거주지 인증 완료",
+                message: data.message,
+                buttons: "ok-close",
+                onOk: () => location.href = "/svcjoin/svcJoin.do"
+              });
+            } else {
+              Common.modalShow({ title: "인증 실패", message: data.message, buttons: "close" });
+            }
+
+          } catch (err) {
+            Common.modalShow({
+              title: "오류",
+              message: "서버 통신 중 문제가 발생했습니다.",
+              buttons: "close"
+            });
+          }
+        });
+
+      })();
+    </script>
+
+  </th:block>
+</th:block>
+
+</html>

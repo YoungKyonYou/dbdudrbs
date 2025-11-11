@@ -12,8 +12,9 @@
               <p>교통비지원 통합포털에 오신 것을 환영합니다.</p>
               <p>로그인 후 다양한 교통비 지원 혜택을 받아보세요.</p>
             </div>
+
             <div class="form-box">
-              <form action="" method="post" novalidate>
+              <form id="loginForm" action="" method="post" novalidate>
                 <!-- 아이디 -->
                 <div>
                   <p class="field-title">아이디</p>
@@ -21,7 +22,6 @@
                   <input id="userId" name="userId" type="text" class="text-field size-lg" placeholder="아이디를 입력해주세요."
                     autocomplete="username" required aria-required="true" minlength="6" maxlength="15"
                     pattern="^[a-z][a-z0-9._]{5,14}$" aria-describedby="userIdHelp">
-                  <!-- aria-describedby가 가리키는 도움말 최소 제공 -->
                   <p id="userIdHelp" class="sr-only">영문 소문자 시작, 소문자/숫자/._ 조합 6~15자</p>
                 </div>
 
@@ -41,20 +41,21 @@
                   <a href="">비밀번호 찾기</a>
                 </div>
 
-                <div class="catpcha-box">
-                  <label for="captchaInput" class="sr-only">자동입력 방지문자</label>
-                  <div class="flex">
-                    <img src="/images/sub/img-catpcha.jpg" alt="">
-                    <button type="button" class="btn btn-icon-left" aria-label="캡차 새로고침">
+                <!-- ✅ CAPTCHA 영역 -->
+                <div class="captcha-box">
+                  <p class="field-title">자동입력 방지문자</p>
+                  <div class="flex gap8 items-center">
+                    <img id="captchaImage" th:src="@{/readCaptchaImage.do}" alt="보안문자 이미지"
+                      style="border: 1px solid #ccc; border-radius: 4px;">
+                    <button type="button" id="btnCaptchaRefresh" class="btn btn-icon-left" aria-label="캡차 새로고침">
                       <i class="icon icon-refresh"></i>새로고침
                     </button>
                   </div>
+                  <input id="captchaInput" name="captcha" type="text" class="text-field size-lg mt-2"
+                    placeholder="위 문자를 입력해주세요." required aria-required="true">
                 </div>
 
-                <input id="captchaInput" name="captcha" type="text" class="text-field size-lg"
-                  placeholder="자동입력 방지문자를 입력해주세요." required aria-required="true">
-
-                <button type="submit" class="btn btn-primary btn-icon-right size-lg">
+                <button type="submit" class="btn btn-primary btn-icon-right size-lg btn-login">
                   <i class="icon icon-enter"></i>로그인
                 </button>
 
@@ -67,31 +68,24 @@
           </div>
         </div>
       </section>
-
     </main>
+
     <script th:inline="javascript">
       (function () {
-        /** ─────────────────────────────────────────────
-         *  공통 셀렉터 함수 정의
-         *  ───────────────────────────────────────────── */
+        /** 공통 셀렉터 */
         const $ = (sel, el = document) => el.querySelector(sel);
 
-        /** ─────────────────────────────────────────────
-         *  서버 응답(response) 처리
-         *  ───────────────────────────────────────────── */
+        /** 서버 응답 처리 */
         const res = /*[[${response}]]*/ null;
-
         if (res) {
           if (res.code === 'LOGIN_TAKEOVER') {
-            // 중복 로그인(다른 세션이 접속 중)
             Common.modalShow({
               message: res.message,
               title: '알림',
               buttons: 'ok-close',
-              onOk: takeover // takeover 함수 실행
+              onOk: takeover
             });
           } else if (res.message) {
-            // 일반 알림 메시지
             Common.modalShow({
               message: res.message,
               title: '알림',
@@ -100,9 +94,7 @@
           }
         }
 
-        /** ─────────────────────────────────────────────
-         *  takeover: 기존 세션 접속 해제 및 새 로그인 시도
-         *  ───────────────────────────────────────────── */
+        /** 기존 세션 종료 후 재로그인 */
         async function takeover() {
           const res = await fetch("/auth/takeover", { method: 'POST' });
           if (res && res.ok) {
@@ -110,28 +102,25 @@
           }
         }
 
-        /** ─────────────────────────────────────────────
-         *  요소 캐싱
-         *  ───────────────────────────────────────────── */
-        const btnLogin = $('.btn.btn-login');
-        const inputs = document.querySelectorAll('.login-wrap .text-field');
-        const inputId = inputs?.[0];  // 아이디 입력창
-        const inputPw = inputs?.[1];  // 비밀번호 입력창
+        const btnLogin = $('.btn-login');
+        const inputId = $('#userId');
+        const inputPw = $('#password');
+        const captchaImg = $('#captchaImage');
+        const btnCaptchaRefresh = $('#btnCaptchaRefresh');
 
         if (!btnLogin || !inputId || !inputPw) return;
 
+        /** ✅ 캡차 새로고침 */
+        btnCaptchaRefresh.addEventListener('click', () => {
+          captchaImg.src = '/readCaptchaImage.do?' + new Date().getTime();
+        });
 
-
-        /** ─────────────────────────────────────────────
-         *  submitNativeLogin:
-         *  숨은 폼을 만들어 /login 으로 직접 제출
-         *  ───────────────────────────────────────────── */
-        const submitNativeLogin = (username, password) => {
+        /** 폼 제출 (기존 방식 유지) */
+        const submitNativeLogin = (username, password, captcha) => {
           const form = document.createElement('form');
           form.method = 'POST';
           form.action = '/login';
           form.style.display = 'none';
-
           const hid = (name, value) => {
             const i = document.createElement('input');
             i.type = 'hidden';
@@ -139,43 +128,32 @@
             i.value = value;
             return i;
           };
-
-          // 아이디 / 비밀번호 필드 추가
           form.appendChild(hid('username', username));
           form.appendChild(hid('password', password));
-
-          // (선택) 로그인 유지 체크박스가 있다면 추가
-          // form.appendChild(hid('remember-me', 'on'));
-
+          form.appendChild(hid('captcha', captcha)); // ✅ 캡차 추가
           document.body.appendChild(form);
-          form.submit(); // Spring Security 기본 처리 (성공 → redirect, 실패 → /login?error)
+          form.submit();
         };
 
-        /** ─────────────────────────────────────────────
-         *  doLogin: 로그인 시도 함수
-         *  ───────────────────────────────────────────── */
+        /** 로그인 처리 */
         const doLogin = () => {
           const username = (inputId.value || '').trim();
           const password = inputPw.value || '';
-          if (!username || !password) {
-            // 입력값 누락 시 알림
-            alert('아이디와 비밀번호를 입력해 주세요.');
+          const captcha = ($('#captchaInput')?.value || '').trim();
+
+          if (!username || !password || !captcha) {
+            alert('아이디, 비밀번호, 자동입력 방지문자를 모두 입력해주세요.');
             return;
           }
-          submitNativeLogin(username, password);
+
+          submitNativeLogin(username, password, captcha);
         };
 
-        /** ─────────────────────────────────────────────
-         *  버튼 클릭 이벤트
-         *  ───────────────────────────────────────────── */
         btnLogin.addEventListener('click', (e) => {
           e.preventDefault();
           doLogin();
         });
 
-        /** ─────────────────────────────────────────────
-         *  엔터 키로 로그인
-         *  ───────────────────────────────────────────── */
         [inputId, inputPw].forEach(el => el.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') {
             e.preventDefault();
@@ -184,7 +162,6 @@
         }));
       })()
     </script>
-
   </th:block>
 </th:block>
 

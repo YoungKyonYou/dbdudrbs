@@ -12,15 +12,15 @@
               <ol class="step-box" role="list" aria-label="지원사업 가입 단계">
                 <li aria-current="step" class="active">
                   <div class="circle"><span>1</span><i class="icon home"></i></div>
-                  <p>거주지인증 <span class="sr-only">(현재 단계)</span></p>
+                  <p>거주지 인증 <span class="sr-only">(현재 단계)</span></p>
                 </li>
                 <li>
                   <div class="circle"><span>2</span><i class="icon filter"></i></div>
-                  <p>인증 및 유형 선택</p>
+                  <p>유형 선택</p>
                 </li>
                 <li>
                   <div class="circle"><span>3</span><i class="icon check"></i></div>
-                  <p>가입완료</p>
+                  <p>가입 완료</p>
                 </li>
               </ol>
             </div>
@@ -29,46 +29,45 @@
 
         <div class="container size-xsm">
           <div class="join-wrap">
-
-            <!-- 기관 정보 표시 -->
+            <!-- 기관 정보 -->
             <div class="causion-text" th:if="${result != null}">
               <strong>
-                <span class="color-secondary" th:text="${result.tpwOrgNm != null ? result.tpwOrgNm : '기관명 미확인'}">
-                  기관명 미확인
-                </span>
+                <span class="color-secondary" th:text="${result.tpwOrgNm != null ? result.tpwOrgNm : '기관명 미확인'}"></span>
                 <span> 지역 주민만 신청할 수 있습니다.</span>
               </strong>
-              <p class="guide-text">
-                ※ 행정안전부 행정정보공동이용센터와 연계한 인증으로 이용자가 많을 경우 약 5분 정도 소요될 수 있습니다.
-              </p>
+              <p class="guide-text">※ 인증 과정은 최대 5분 정도 소요될 수 있습니다.</p>
+            </div>
+            <div class="causion-text" th:if="${result == null}">
+              <strong>
+                <span class="color-secondary">기관 정보 없음</span>
+                <span> URL 파라미터를 확인해주세요.</span>
+              </strong>
+              <p class="guide-text">※ orgCd, tpwSvcId 쿼리 파라미터가 필요합니다.</p>
             </div>
 
             <!-- 거주지 인증 form -->
             <div class="form-box">
               <form id="rsdcAuthForm" method="post" novalidate>
                 <fieldset>
-                  <legend class="sr-only">주민등록번호</legend>
+                  <legend class="sr-only">주민등록번호 입력</legend>
                   <p class="field-title">주민등록번호</p>
 
-                  <div class="sr-only" id="rrnHelp">
-                    앞 6자리(생년월일)와 뒤 7자리를 순서대로 입력하세요.
-                  </div>
+                  <div id="rrnHelp" class="sr-only">앞 6자리와 뒤 7자리를 순서대로 입력하세요.</div>
 
-                  <div class="flex align-center gap8" role="group" aria-describedby="rrnHelp rrnErr">
+                  <div class="flex align-center gap8" role="group" aria-describedby="rrnHelp">
                     <label for="rrn1" class="sr-only">앞 6자리</label>
                     <input id="rrn1" name="rrn1" type="text" class="text-field size-lg" placeholder="YYMMDD"
-                      inputmode="numeric" autocomplete="off" maxlength="6" required>
-
+                      inputmode="numeric" maxlength="6" required>
                     <span class="flex-bar" aria-hidden="true">-</span>
-
                     <label for="rrn2" class="sr-only">뒤 7자리</label>
                     <input id="rrn2" name="rrn2" type="password" class="text-field size-lg" placeholder="*******"
-                      inputmode="numeric" autocomplete="off" maxlength="7" required data-raonsecure="true">
+                      inputmode="numeric" maxlength="7" required data-raonsecure="true">
                   </div>
 
-                  <!-- hidden 전달 -->
-                  <input type="hidden" id="orgCd" name="orgCd" th:value="${result.orgCd}">
-                  <input type="hidden" id="tpwSvcId" name="tpwSvcId" th:value="${result.tpwSvcId}">
+                  <!-- hidden 값 처리 -->
+                  <input type="hidden" id="orgCd" name="orgCd" th:value="${result != null ? result.orgCd : ''}">
+                  <input type="hidden" id="tpwSvcId" name="tpwSvcId"
+                    th:value="${result != null ? result.tpwSvcId : ''}">
                 </fieldset>
 
                 <button type="submit" class="btn btn-primary btn-icon-right size-lg">
@@ -82,151 +81,97 @@
       </section>
     </main>
 
-    <!-- 라온시큐어 키보드 보안 모듈은 미적용 상태 -->
-    <!-- <script src="https://security.raonsecure.com/raonk/keyboard.js"></script> -->
-
-    <script>
+    <script th:inline="javascript">
       (function () {
         const rrn1 = document.getElementById("rrn1");
         const rrn2 = document.getElementById("rrn2");
 
-        // 숫자만 입력 가능 + 한글 차단
-        const blockNonNumber = (e) => {
-          if (
-            e.key &&
-            !/[0-9]/.test(e.key) &&
-            !["Backspace", "Tab", "ArrowLeft", "ArrowRight", "Delete"].includes(e.key)
-          ) {
+        const onlyNumber = e => {
+          if (!/[0-9]/.test(e.key) && !["Backspace", "Tab", "ArrowLeft", "ArrowRight", "Delete"].includes(e.key)) {
             e.preventDefault();
           }
         };
-        rrn1.addEventListener("keydown", blockNonNumber);
-        rrn2.addEventListener("keydown", blockNonNumber);
+        rrn1.addEventListener("keydown", onlyNumber);
+        rrn2.addEventListener("keydown", onlyNumber);
 
-        // 앞자리 입력 처리
-        rrn1.addEventListener("input", (e) => {
-          e.target.value = e.target.value.replace(/[^0-9]/g, "").slice(0, 6);
-        });
+        rrn1.addEventListener("input", e => e.target.value = e.target.value.replace(/[^0-9]/g, "").slice(0, 6));
+        rrn2.addEventListener("input", e => e.target.value = e.target.value.replace(/[^0-9]/g, "").slice(0, 7));
 
-        rrn2.addEventListener("input", (e) => {
-          // 실제 입력 숫자를 바로 읽지 말고, 이전값과 새 입력값을 합침
-          let raw = rrn2.dataset.realValue || "";
-          let pressedKeys = e.target.value.replace(/●/g, ""); // ●는 무시
-
-          // 추가 입력 처리
-          if (pressedKeys.length > 0) {
-            raw += pressedKeys.slice(0, 7 - raw.length);
-          }
-
-          // 삭제 처리
-          if (e.inputType === 'deleteContentBackward' || e.inputType === 'deleteContentForward') {
-            raw = raw.slice(0, raw.length - 1);
-          }
-
-          rrn2.dataset.realValue = raw;
-          e.target.value = "●".repeat(raw.length);
-        });
         const form = document.getElementById("rsdcAuthForm");
         form.addEventListener("submit", async (e) => {
           e.preventDefault();
 
-          const rrn1Val = rrn1.value.replace(/[^0-9]/g, "");
-          const rrn2Val = rrn2.dataset.realValue || "";
-          const orgCd = document.getElementById("orgCd")?.value?.trim() || "";
-          const tpwSvcId = document.getElementById("tpwSvcId")?.value?.trim() || "";
+          const rrn1Val = rrn1.value.trim();
+          const rrn2Val = rrn2.value.trim();
+          const orgCd = document.getElementById("orgCd").value;
+          const tpwSvcId = document.getElementById("tpwSvcId").value;
 
-          // 입력 검증
-          if (!/^\d{6}$/.test(rrn1Val) || !/^[1-8]\d{6}$/.test(rrn2Val)) {
+          if (!orgCd || !tpwSvcId) {
             Common.modalShow({
-              title: '입력 오류',
-              message: '주민등록번호 형식이 올바르지 않습니다.',
+              title: '오류',
+              message: '기관 정보가 없습니다.<br>URL을 확인해주세요.',
               buttons: 'close'
             });
             return;
           }
 
-          if (!orgCd || !tpwSvcId) {
-            Common.modalShow({
-              title: '정보 누락',
-              message: '기관코드 또는 서비스 ID가 누락되었습니다.<br>페이지를 새로고침 후 다시 시도해주세요.',
-              buttons: 'close'
-            });
+          if (!/^\d{6}$/.test(rrn1Val) || !/^\d{7}$/.test(rrn2Val)) {
+            Common.modalShow({ title: '입력 오류', message: '주민등록번호를 올바르게 입력해주세요.', buttons: 'close' });
             return;
           }
 
           const krn = rrn1Val + rrn2Val;
+          const reqData = { krn, orgCd, tpwSvcId, addoCd: "1101011000", svcRst: "", declrDate: "" };
+          //const reqData = { krn, orgCd, tpwSvcId };
 
           try {
             const res = await fetch("/svcjoin/rsdcAuth", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ krn, orgCd, tpwSvcId })
+              body: JSON.stringify(reqData)
             });
 
-            const text = await res.text();
-            let msg = '';
+            // const data = await Common.sendSafe("/svcjoin/rsdcAuth", {
+            //   method: "POST",
+            //   data: reqData,
+            //   headers: { "Content-Type": "application/json" },
+            //   clientErrorMsg: "거주지 인증에 실패했습니다",
+            //   otherErrirMSg: "서버 통신 중 문제가 발생했습니다"
+            // });
 
-            if (!res.ok) {
-              try {
-                const err = JSON.parse(text);
-                if (err.message?.includes("Index 0 out of bounds")) {
-                  msg = '해당 기관의 서비스 정보를 찾을 수 없습니다.<br>지원 가능한 지역인지 확인해주세요.';
-                } else {
-                  msg = err.message || '서버 오류가 발생했습니다.';
-                }
-              } catch {
-                msg = '서버 응답이 올바르지 않습니다.<br>관리자에게 문의해주세요.';
-              }
+            const data = await res.json().catch(() => ({})); // JSON 파싱 실패 방지용
 
+            console.log(data, '?data')
+
+            // 정상 응답 처리
+            if (data.success) {
               Common.modalShow({
-                title: '인증 실패',
-                message: msg,
-                buttons: 'close'
-              });
-              return;
-            }
-
-            if (!text || text === 'null' || text.trim() === '') {
-              Common.modalShow({
-                title: '조회 결과 없음',
-                message: '해당 주민등록번호로 인증 가능한 서비스가 없습니다.',
-                buttons: 'close'
-              });
-              return;
-            }
-
-            if (text.includes('성공') || text.includes('완료')) {
-              Common.modalShow({
-                title: '거주지 인증 완료',
-                message: '거주지 인증이 완료되었습니다.',
+                title: '인증 완료',
+                message: data.message || '거주지 인증이 완료되었습니다.',
                 buttons: 'ok-close',
                 onOk: () => location.href = '/svcjoin/svcJoin.do'
               });
             } else {
               Common.modalShow({
-                title: '알림',
-                message: text,
-                buttons: 'ok-close',
-                onOk: () => {
-                  if (text.includes('해지')) {
-                    location.href = '/svcjoin/svcCncn';
-                  }
-                }
+                title: '인증 실패',
+                message: data?.message || '거주지 인증에 실패했습니다.',
+                buttons: 'close'
               });
             }
 
           } catch (err) {
-            console.error('Network Error:', err);
+            console.error('인증 요청 오류:', err);
             Common.modalShow({
-              title: '네트워크 오류',
-              message: '서버와 연결할 수 없습니다. 잠시 후 다시 시도해주세요.',
+              title: '오류',
+              message: err?.message || '서버 통신 중 문제가 발생했습니다.<br>잠시 후 다시 시도해주세요.',
               buttons: 'close'
             });
           }
-        });
 
+        });
       })();
     </script>
+
 
   </th:block>
 </th:block>
