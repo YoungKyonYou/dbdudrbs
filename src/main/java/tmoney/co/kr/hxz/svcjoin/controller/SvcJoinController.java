@@ -76,7 +76,7 @@ public class SvcJoinController {
             @RequestBody RsdcAuthReqVO req,
             Model model
     ) {
-        String mbrsId = "tmoney001";
+        String mbrsId = "tmoney002";
         CmnRspVO<RsdcAuthRspVO> cmnRspVO = svcJoinService.rsdcAuth(req, mbrsId);
         model.addAttribute("mbrsId", mbrsId);
         return cmnRspVO;
@@ -109,7 +109,7 @@ public class SvcJoinController {
             @RequestPart(value = "file", required = false) MultipartFile file,
             Model model
     ) {
-        String mbrsId = "tmoney001";
+        String mbrsId = "tmoney002";
 
         svcJoinService.svcPrevCncn(req, mbrsId);
         model.addAttribute("mbrsId", mbrsId);
@@ -169,7 +169,7 @@ public class SvcJoinController {
             @RequestPart(value = "file", required = false) MultipartFile file,
             Model model
     ) {
-        String mbrsId = "tmoney001";
+        String mbrsId = "tmoney002";
         svcJoinService.svcJoin(rsdcInfReqVO, req, file, mbrsId);
         model.addAttribute("mbrsId", mbrsId);
         return ResponseEntity.ok().body("success");
