@@ -72,16 +72,24 @@
              , m009.tpw_org_nm         as tpwOrgNm
              , m201.tpw_svc_id         as tpwSvcId
              , m201.tpw_svc_nm         as tpwSvcNm
+             , case
+               when m102.mbrs_id is not null
+               then true
+               else false end as joinYn
           from ohxzown.tbhxzm201 m201
           join ohxzown.tbhxzm009 m009
             on m201.org_cd = m009.org_cd
            and m009.use_yn = upper('y')
+          left join ohxzown.tbhxzm102 m102
+            on m102.tpw_svc_id = m201.tpw_svc_id
+           and m102.mbrs_id = #{mbrsId}
+           and m102.tpw_mbrs_svc_sta_cd = '04'
          where to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
            and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
            and m201.use_yn = upper('y')
     </select>
 
-    <select id="readOrgInfList" resultType="tmoney.co.kr.hxz.main.vo.OrgInfRspVO">
+    <select id="readOrgInfList" resultType="tmoney.co.kr.hxz.main.vo.OrgInfRspVO" parameterType="String">
         /* sql_id : readOrgInfList */
         /*
         * 1. 파일 : MainMapper_SQL.xml
@@ -94,10 +102,18 @@
              , m009.tpw_org_nm         as tpwOrgNm
              , m201.tpw_svc_id         as tpwSvcId
              , m201.tpw_svc_nm         as tpwSvcNm
+             , case
+               when m102.mbrs_id is not null
+               then true
+               else false end as joinYn
           from ohxzown.tbhxzm201 m201
           join ohxzown.tbhxzm009 m009
             on m201.org_cd = m009.org_cd
            and m009.use_yn = upper('y')
+          left join ohxzown.tbhxzm102 m102
+            on m102.tpw_svc_id = m201.tpw_svc_id
+           and m102.mbrs_id = #{mbrsId}
+           and m102.tpw_mbrs_svc_sta_cd = '04'
          where to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
            and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
            and m201.use_yn = upper('y')

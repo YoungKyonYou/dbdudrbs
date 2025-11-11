@@ -14,4 +14,5 @@ public class OrgInfRspVO {
     private String tpwOrgNm;             // 기관명
     private String tpwSvcId;
     private String tpwSvcNm;
+    private boolean joinYn;
 }

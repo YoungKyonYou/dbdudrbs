@@ -44,7 +44,7 @@ public class MainController {
 
         List<MySvcRspVO> mySvcList = mainService.readMySvcList(mbrsId);
         List<MainSvcRspVO> mainSvcList = mainService.readMainSvcList(mbrsId);
-        List<OrgInfRspVO> orgInfList = mainService.readOrgInfList();
+        List<OrgInfRspVO> orgInfList = mainService.readOrgInfList(mbrsId);
 
         List<MainNtcRspVO> mainNtcList = mainService.readMainNtcList();
 

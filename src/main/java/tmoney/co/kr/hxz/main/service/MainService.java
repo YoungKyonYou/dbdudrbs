@@ -14,5 +14,5 @@ public interface MainService {
 
     List<MainSvcRspVO> readMainSvcList(String mbrsId);
 
-    List<OrgInfRspVO> readOrgInfList();
+    List<OrgInfRspVO> readOrgInfList(String mbrsId);
 }

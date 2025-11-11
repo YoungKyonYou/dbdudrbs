@@ -37,7 +37,7 @@ public class MainServiceImpl implements MainService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OrgInfRspVO> readOrgInfList() {
-        return mainMapper.readOrgInfList();
+    public List<OrgInfRspVO> readOrgInfList(String mbrsId) {
+        return mainMapper.readOrgInfList(mbrsId);
     };
 }

@@ -14,4 +14,5 @@ public class MainSvcRspVO {
     private String tpwOrgNm;             // 기관명
     private String tpwSvcId;          // 서비스ID
     private String tpwSvcNm;
+    private String joinYn;
 }
