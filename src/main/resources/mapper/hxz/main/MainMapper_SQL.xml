@@ -33,4 +33,74 @@
          limit 5;
     </select>
 
+    <select id="readMySvcList" resultType="tmoney.co.kr.hxz.main.vo.MySvcRspVO" parameterType="String">
+        /* sql_id : readMySvcList */
+        /*
+        * 1. 파일 : MainMapper_SQL.xml
+        * 2. 기능 : 현재 가입한 서비스 목록 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.11 - 최중혁 : 최초작성
+        */
+        select m009.org_cd             as orgCd
+             , m009.tpw_org_nm         as tpwOrgNm
+             , m201.tpw_svc_id         as tpwSvcId
+             , m201.tpw_svc_nm         as tpwSvcNm
+          from ohxzown.tbhxzm201 m201
+          join ohxzown.tbhxzm009 m009
+            on m201.org_cd = m009.org_cd
+           and m009.use_yn = upper('y')
+          join ohxzown.tbhxzm102 m102
+            on m201.tpw_svc_id = m102.tpw_svc_id
+           and m102.mbrs_id = #{mbrsId}
+           and m102.mbrs_svc_cncn_dt != null
+           and m102.tpw_mbrs_svc_sta_cd = '04'
+         where to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
+           and m201.use_yn = upper('y')
+    </select>
+
+    <select id="readMainSvcList" resultType="tmoney.co.kr.hxz.main.vo.MainSvcRspVO" parameterType="String">
+        /* sql_id : readMainSvcList */
+        /*
+        * 1. 파일 : MainMapper_SQL.xml
+        * 2. 기능 : 현재 가입하지 않은 서비스 목록 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.11 - 최중혁 : 최초작성
+        */
+        select m009.org_cd             as orgCd
+             , m009.tpw_org_nm         as tpwOrgNm
+             , m201.tpw_svc_id         as tpwSvcId
+             , m201.tpw_svc_nm         as tpwSvcNm
+          from ohxzown.tbhxzm201 m201
+          join ohxzown.tbhxzm009 m009
+            on m201.org_cd = m009.org_cd
+           and m009.use_yn = upper('y')
+         where to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
+           and m201.use_yn = upper('y')
+    </select>
+
+    <select id="readOrgInfList" resultType="tmoney.co.kr.hxz.main.vo.OrgInfRspVO">
+        /* sql_id : readOrgInfList */
+        /*
+        * 1. 파일 : MainMapper_SQL.xml
+        * 2. 기능 : 지자체별 서비스 내역 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.11 - 최중혁 : 최초작성
+        */
+        select m009.org_cd             as orgCd
+             , m009.tpw_org_nm         as tpwOrgNm
+             , m201.tpw_svc_id         as tpwSvcId
+             , m201.tpw_svc_nm         as tpwSvcNm
+          from ohxzown.tbhxzm201 m201
+          join ohxzown.tbhxzm009 m009
+            on m201.org_cd = m009.org_cd
+           and m009.use_yn = upper('y')
+         where to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
+           and m201.use_yn = upper('y')
+    </select>
 </mapper>

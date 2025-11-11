@@ -9,9 +9,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class MainSvcRspVO {
+public class OrgInfRspVO {
     private String orgCd;             // 기관코드
     private String tpwOrgNm;             // 기관명
-    private String tpwSvcId;          // 서비스ID
+    private String tpwSvcId;
     private String tpwSvcNm;
 }
