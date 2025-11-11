@@ -37,75 +37,71 @@ public class SvcJoinServiceImpl implements SvcJoinService {
     @Override
     @Transactional(readOnly = true)
     public CmnRspVO<RsdcAuthRspVO> rsdcAuth(RsdcAuthReqVO req, String mbrsId) {
-        try {
-            // 주민번호 뒷자리 검사
-            char genderCode = req.getKrn().charAt(7);
-            switch (genderCode) {
-                case '1': case '2': case '5': case '6':
-                    break;
-                case '3': case '4': case '7': case '8':
-                    break;
-                default:
-                    throw DomainExceptionCode.RSDC_AUTH_ERROR.newInstance("잘못된 주민번호 형식입니다.");
-            }
-            // 1. 거주지 인증 API
+        // 주민번호 뒷자리 검사
+        char genderCode = req.getKrn().charAt(7);
+        switch (genderCode) {
+            case '1': case '2': case '5': case '6':
+                break;
+            case '3': case '4': case '7': case '8':
+                break;
+            default:
+                throw DomainExceptionCode.RSDC_AUTH_ERROR.newInstance("잘못된 주민번호 형식입니다.");
+        }
+        // 1. 거주지 인증 API
 
-            // 거주지 인증 rsp
-            RsdcAuthRspVO rsdcAuthRspVO = new RsdcAuthRspVO(
-                    req.getAddoCd(),
-                    "11021",
-                    "20180912"
-            );
+        // 거주지 인증 rsp
+        RsdcAuthRspVO rsdcAuthRspVO = new RsdcAuthRspVO(
+                req.getAddoCd(),
+                "11021",
+                "20180912"
+        );
 
-            // 2. 거주지 인증이력 저장
+        // 2. 거주지 인증이력 저장
 //            svcJoinMapper.insertRsdcAuth(req);
 
 
-            // 3. 행정동코드관리를 통해 해당 주소지의 기관코드 불러오기 (리스트가 될 수도 있음)
-            String orgCd = readOrgCdByAddoCd(req.getAddoCd());
-            if (orgCd == null) {
-                throw DomainExceptionCode.RSDC_AUTH_ERROR.newInstance("현재 거주지는 해당 서비스를 가입하실 수 없습니다.");
-            }
-            // 동일기관 여부 확인
-            boolean sameArea = req.getOrgCd().equals(orgCd);
+        // 3. 행정동코드관리를 통해 해당 주소지의 기관코드 불러오기 (리스트가 될 수도 있음)
+        String orgCd = readOrgCdByAddoCd(req.getAddoCd());
+        if (orgCd == null) {
+            throw DomainExceptionCode.RSDC_AUTH_ERROR.newInstance("현재 거주지는 해당 서비스를 가입하실 수 없습니다.");
+        }
+        // 동일기관 여부 확인
+        boolean sameArea = req.getOrgCd().equals(orgCd);
 
-            if (!sameArea) {
-                throw DomainExceptionCode.RSDC_AUTH_ERROR.newInstance("현재 거주지는 해당 서비스를 가입하실 수 없습니다.");
-            }
+        if (!sameArea) {
+            throw DomainExceptionCode.RSDC_AUTH_ERROR.newInstance("현재 거주지는 해당 서비스를 가입하실 수 없습니다.");
+        }
 
-            // 4. 해당 서비스 정보 조회
-            List<PrevSvcRspVO> svcRspVO = readSvcInf(req.getTpwSvcId());
+        // 4. 해당 서비스 정보 조회
+        List<PrevSvcRspVO> svcRspVO = readSvcInf(req.getTpwSvcId());
 
-            // 5. 이전 서비스 내역 조회
-            List<PrevSvcRspVO> prevSvcList = readPrevSvcInf(mbrsId);
+        // 5. 이전 서비스 내역 조회
+        List<PrevSvcRspVO> prevSvcList = readPrevSvcInf(mbrsId);
 
-            // 5-1. 이전 내역이 없을 경우 서비스 유형 선택 화면 이동
-            if (prevSvcList.isEmpty()) {
-                return new CmnRspVO<>(true, "거주지 인증 완료", rsdcAuthRspVO, null);
-            }
+        // 5-1. 이전 내역이 없을 경우 서비스 유형 선택 화면 이동
+        if (prevSvcList.isEmpty()) {
+            return new CmnRspVO<>(true, "거주지 인증 완료", rsdcAuthRspVO, null);
+        }
 
-            // 6. 이전 내역의 기관코드와 다를 경우 해지하시겠습니까 모달 요청
-            if (req.getOrgCd().equals(prevSvcList.get(0).getOrgCd())) {
-                return new CmnRspVO<>(false, "이전 가입한 서비스가 존재합니다. 이전 서비스를 해지하시겠습니까?", rsdcAuthRspVO, prevSvcList.get(0).getTpwSvcId());
-            }
-            // 6-1. 해당 서비스 유형의 지원중복여부가 N일 경우
-            if ("N".equals(svcRspVO.get(0).getSprtDplcYn())) {
-                return new CmnRspVO<>(false, "이전 가입한 서비스가 존재합니다. 이전 서비스를 해지하시겠습니까?", rsdcAuthRspVO, prevSvcList.get(0).getTpwSvcId());
-            }
+        // 6. 이전 내역의 기관코드와 다를 경우 해지하시겠습니까 모달 요청
+        if (req.getOrgCd().equals(prevSvcList.get(0).getOrgCd())) {
+            return new CmnRspVO<>(false, "이전 가입한 서비스가 존재합니다. 이전 서비스를 해지하시겠습니까?", rsdcAuthRspVO, prevSvcList.get(0).getTpwSvcId());
+        }
+        // 6-1. 해당 서비스 유형의 지원중복여부가 N일 경우
+        if ("N".equals(svcRspVO.get(0).getSprtDplcYn())) {
+            return new CmnRspVO<>(false, "이전 가입한 서비스가 존재합니다. 이전 서비스를 해지하시겠습니까?", rsdcAuthRspVO, prevSvcList.get(0).getTpwSvcId());
+        }
 
-            // 6-2. 이전 내역의 기관코드가 같지만 지원중복여부가 N일 경우
-            boolean svcDupYn = true;
-            for (PrevSvcRspVO prevSvcRspVO : prevSvcList) {
-                if (prevSvcRspVO != null && "N".equals(prevSvcRspVO.getSprtDplcYn())) {
-                    // 같은 회원서비스 정보를 조회 할 시,
-                    svcDupYn = false;
-                }
+        // 6-2. 이전 내역의 기관코드가 같지만 지원중복여부가 N일 경우
+        boolean svcDupYn = true;
+        for (PrevSvcRspVO prevSvcRspVO : prevSvcList) {
+            if (prevSvcRspVO != null && "N".equals(prevSvcRspVO.getSprtDplcYn())) {
+                // 같은 회원서비스 정보를 조회 할 시,
+                svcDupYn = false;
             }
-            if (!svcDupYn) {
-                return new CmnRspVO<>(false, "이전 서비스와 중복 가입이 불가합니다. 이전 서비스를 해지하시겠습니까?", rsdcAuthRspVO, prevSvcList.get(0).getTpwSvcId());
-            }
-        } catch (Exception e) {
-            throw DomainExceptionCode.RSDC_AUTH_ERROR.newInstance(e, "거주지 인증에 실패하였습니다. 다시 한번 시도해주십시오");
+        }
+        if (!svcDupYn) {
+            return new CmnRspVO<>(false, "이전 서비스와 중복 가입이 불가합니다. 이전 서비스를 해지하시겠습니까?", rsdcAuthRspVO, prevSvcList.get(0).getTpwSvcId());
         }
 
         // 거주지 인증 rsp
