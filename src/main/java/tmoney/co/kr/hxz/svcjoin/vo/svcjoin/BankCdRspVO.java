@@ -11,5 +11,5 @@ import lombok.Setter;
 @Setter
 public class BankCdRspVO {
     private String cmnCd;
-    private String cmnNm;
+    private String cmnCdNm;
 }
