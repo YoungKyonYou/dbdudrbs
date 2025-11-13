@@ -8,6 +8,8 @@ import tmoney.co.kr.hxz.mypage.mypage.vo.MyLcgvRspVO;
 import tmoney.co.kr.hxz.mypage.mypage.vo.MyPageRspVO;
 import tmoney.co.kr.hxz.mypage.mypage.vo.apl.MyAplRspVO;
 
+import java.util.List;
+
 @HxzDb
 @Mapper
 public interface MyPageMapper {
@@ -15,5 +17,5 @@ public interface MyPageMapper {
 
     MyAplRspVO readMyApl(@Param("req") MyLcgvReqVO req, @Param("mbrsId") String mbrsId);
 
-    MyLcgvRspVO readMyLcgv(@Param("req") MyLcgvReqVO req, @Param("mbrsId") String mbrsId);
+    List<MyLcgvRspVO> readMyLcgv(@Param("req") MyLcgvReqVO req, @Param("mbrsId") String mbrsId);
 }

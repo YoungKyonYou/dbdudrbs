@@ -97,15 +97,12 @@
            and m009.use_yn = upper('y')
           join ohxzown.tbhxzm101 m101
             on m101.mbrs_id = #{mbrsId}
-          left join ohxzown.tbhxzm102 m102
+          join ohxzown.tbhxzm102 m102
             on m102.tpw_svc_id = m201.tpw_svc_id
            and m102.mbrs_id = #{mbrsId}
            and m102.tpw_mbrs_svc_sta_cd = '04'
          where to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
            and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
-           and m201.tpw_svc_id = #{req.tpwSvcId}
            and m201.use_yn = upper('y')
-         order by m102.mbrs_svc_join_dt desc
-         limit 1;
     </select>
 </mapper>

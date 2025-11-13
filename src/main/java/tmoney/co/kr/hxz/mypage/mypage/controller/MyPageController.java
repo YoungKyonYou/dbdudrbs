@@ -1,10 +1,11 @@
 package tmoney.co.kr.hxz.mypage.mypage.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
 import tmoney.co.kr.hxz.mypage.mypage.service.MyPageService;
 import tmoney.co.kr.hxz.mypage.mypage.vo.MyLcgvReqVO;
 import tmoney.co.kr.hxz.mypage.mypage.vo.MyLcgvRspVO;
@@ -12,6 +13,7 @@ import tmoney.co.kr.hxz.mypage.mypage.vo.MyPageRspVO;
 import tmoney.co.kr.hxz.mypage.mypage.vo.apl.MyAplRspVO;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
@@ -76,8 +78,9 @@ public class MyPageController {
     ) {
         String mbrsId = "tmoney002";
 
-        MyLcgvRspVO result = myPageService.readMyLcgv(req, mbrsId);
+        List<MyLcgvRspVO> result = myPageService.readMyLcgv(req, mbrsId);
         model.addAttribute("result", result);
+        model.addAttribute("tpwSvcId", req.getTpwSvcId());
         return "/hxz/mypage/mylcgv/myLcgv";
     }
 }

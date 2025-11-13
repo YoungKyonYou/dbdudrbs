@@ -10,6 +10,8 @@ import tmoney.co.kr.hxz.mypage.mypage.vo.MyLcgvRspVO;
 import tmoney.co.kr.hxz.mypage.mypage.vo.MyPageRspVO;
 import tmoney.co.kr.hxz.mypage.mypage.vo.apl.MyAplRspVO;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class MyPageServiceImpl implements MyPageService {
@@ -29,7 +31,7 @@ public class MyPageServiceImpl implements MyPageService {
 
     @Override
     @Transactional(readOnly = true)
-    public MyLcgvRspVO readMyLcgv(MyLcgvReqVO req, String mbrsId) {
+    public List<MyLcgvRspVO> readMyLcgv(MyLcgvReqVO req, String mbrsId) {
         return myPageMapper.readMyLcgv(req, mbrsId);
     }
 }
