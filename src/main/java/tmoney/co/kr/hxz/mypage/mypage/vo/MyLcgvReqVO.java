@@ -1,4 +1,4 @@
-package tmoney.co.kr.hxz.main.vo.lcgv;
+package tmoney.co.kr.hxz.mypage.mypage.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class LcgvMainReqVO {
-    private String orgCd;
+public class MyLcgvReqVO {
     private String tpwSvcId;
 }

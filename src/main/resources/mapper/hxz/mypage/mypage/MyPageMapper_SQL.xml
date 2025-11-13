@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tmoney.co.kr.hxz.mypage.mypage.mapper.MyPageMapper">
+
+    <select id="readMyPage" resultType="tmoney.co.kr.hxz.mypage.mypage.vo.MyPageRspVO">
+        /* sql_id : readMyPage */
+        /*
+        * 1. 파일 : MyPageMapper_SQL.xml
+        * 2. 기능 : 지자체 마이페이지 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.12 - 최중혁 : 최초작성
+        */
+        select m201.tpw_svc_id         as tpwSvcId
+             , m009.tpw_org_nm         as tpwOrgNm
+             , m101.mbrs_nm             as mbrsNm
+             , m102.card_no  as cardNo
+             , c002.cmn_dtl_cd_nm as bnkNm
+             , m102.acnt_no as acntNo
+             , m102.ooa_nm as ooaNm
+          from ohxzown.tbhxzm201 m201
+          join ohxzown.tbhxzm009 m009
+            on m201.org_cd = m009.org_cd
+           and m009.use_yn = upper('y')
+          join ohxzown.tbhxzm101 m101
+            on m101.mbrs_id = #{mbrsId}
+          left join ohxzown.tbhxzm102 m102
+            on m102.tpw_svc_id = m201.tpw_svc_id
+           and m102.mbrs_id = #{mbrsId}
+           and m102.tpw_mbrs_svc_sta_cd = '04'
+          join ohxzown.tbhxzc002 c002
+            on m102.bnk_cd = c002.cmn_dtl_cd
+           and c002.cmn_grp_cd_id = '0041'
+         where to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
+           and m201.tpw_svc_id = #{req.tpwSvcId}
+           and m201.use_yn = upper('y')
+         order by m102.mbrs_svc_join_dt desc
+         limit 1;
+    </select>
+
+    <select id="readMyApl" resultType="tmoney.co.kr.hxz.mypage.mypage.vo.apl.MyAplRspVO">
+        /* sql_id : readMyApl */
+        /*
+        * 1. 파일 : MyPageMapper_SQL.xml
+        * 2. 기능 : 지원금 신청 결과 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.13 - 최중혁 : 최초작성
+        */
+        select m201.tpw_svc_id         as tpwSvcId
+             , m101.mbrs_nm             as mbrsNm
+             , m203.apl_dt             as aplDt
+             , case
+               when m203.aprv_sta_cd = '03' then '신청 완료'
+               when m203.aprv_sta_cd = '02' then '반려 처리'
+               when m203.aprv_sta_cd = '01' then '승인 대기'
+                end as aprvStaCd
+          from ohxzown.tbhxzm201 m201
+          join ohxzown.tbhxzm101 m101
+            on m101.mbrs_id = #{mbrsId}
+          join ohxzown.tbhxzm203 m203
+            on m203.mbrs_id = #{mbrsId}
+           and m201.tpw_svc_id = m203.tpw_svc_id
+         where to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
+           and m201.tpw_svc_id = #{req.tpwSvcId}
+           and m201.use_yn = upper('y')
+         order by m203.apl_dt desc
+         limit 1;
+    </select>
+
+    <select id="readMyLcgv" resultType="tmoney.co.kr.hxz.mypage.mypage.vo.MyLcgvRspVO">
+        /* sql_id : readMyLcgv */
+        /*
+        * 1. 파일 : MyPageMapper_SQL.xml
+        * 2. 기능 : 마이페이지 나의 지자체 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.12 - 최중혁 : 최초작성
+        */
+        select m201.tpw_svc_id         as tpwSvcId
+             , m201.tpw_svc_nm         as tpwSvcNm
+             , m009.tpw_org_nm         as tpwOrgNm
+             , m101.mbrs_nm             as mbrsNm
+          from ohxzown.tbhxzm201 m201
+          join ohxzown.tbhxzm009 m009
+            on m201.org_cd = m009.org_cd
+           and m009.use_yn = upper('y')
+          join ohxzown.tbhxzm101 m101
+            on m101.mbrs_id = #{mbrsId}
+          left join ohxzown.tbhxzm102 m102
+            on m102.tpw_svc_id = m201.tpw_svc_id
+           and m102.mbrs_id = #{mbrsId}
+           and m102.tpw_mbrs_svc_sta_cd = '04'
+         where to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
+           and m201.tpw_svc_id = #{req.tpwSvcId}
+           and m201.use_yn = upper('y')
+         order by m102.mbrs_svc_join_dt desc
+         limit 1;
+    </select>
+</mapper>

@@ -1,4 +1,4 @@
-package tmoney.co.kr.hxz.main.vo.lcgv;
+package tmoney.co.kr.hxz.lcgvmain.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

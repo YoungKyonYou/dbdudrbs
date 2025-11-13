@@ -9,9 +9,6 @@ import tmoney.co.kr.hxz.main.vo.MainNtcRspVO;
 import tmoney.co.kr.hxz.main.vo.MainSvcRspVO;
 import tmoney.co.kr.hxz.main.vo.MySvcRspVO;
 import tmoney.co.kr.hxz.main.vo.OrgInfRspVO;
-import tmoney.co.kr.hxz.main.vo.lcgv.LcgvMainReqVO;
-import tmoney.co.kr.hxz.main.vo.lcgv.LcgvMainRspVO;
-import tmoney.co.kr.hxz.main.vo.lcgv.LcgvNtcRspVO;
 
 import java.util.List;
 
@@ -42,15 +39,5 @@ public class MainServiceImpl implements MainService {
     @Transactional(readOnly = true)
     public List<OrgInfRspVO> readOrgInfList(String mbrsId) {
         return mainMapper.readOrgInfList(mbrsId);
-    };
-
-    @Override
-    @Transactional(readOnly = true)
-    public LcgvMainRspVO readLcgvMain(LcgvMainReqVO req, String mbrsId) { return mainMapper.readLcgvMain(req, mbrsId); };
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<LcgvNtcRspVO> readLcgvNtcList(String tpwSvcId) {
-        return mainMapper.readLcgvNtcList(tpwSvcId);
     };
 }
