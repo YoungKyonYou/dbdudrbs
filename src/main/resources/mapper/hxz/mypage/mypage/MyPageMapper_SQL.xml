@@ -17,6 +17,7 @@
              , m009.tpw_org_nm         as tpwOrgNm
              , m101.mbrs_nm             as mbrsNm
              , m102.card_no  as cardNo
+             , h104.card_mod_dt as cardModDt
              , c002.cmn_dtl_cd_nm as bnkNm
              , m102.acnt_no as acntNo
              , m102.ooa_nm as ooaNm
@@ -30,6 +31,11 @@
             on m102.tpw_svc_id = m201.tpw_svc_id
            and m102.mbrs_id = #{mbrsId}
            and m102.tpw_mbrs_svc_sta_cd = '04'
+          join ohxzown.tbhxzh104 h104
+            on m102.card_no = h104.card_no
+           and m201.tpw_svc_id = h104.tpw_svc_id
+           and h104.card_end_dt &gt;= to_char(now(), 'yyyymmdd')
+           and h104.use_yn = 'Y'
           join ohxzown.tbhxzc002 c002
             on m102.bnk_cd = c002.cmn_dtl_cd
            and c002.cmn_grp_cd_id = '0041'

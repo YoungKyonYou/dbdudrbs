@@ -18,6 +18,8 @@ public class MyPageRspVO {
     private String mbrsNm;
     /** 카드번호 */
     private String cardNo;
+    /** 카드변경일자 */
+    private String cardModDt;
     /** 은행명 */
     private String bnkNm;
     /** 계좌번호 */
