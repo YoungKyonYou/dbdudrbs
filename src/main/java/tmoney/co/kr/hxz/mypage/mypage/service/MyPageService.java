@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface MyPageService {
     MyPageRspVO readMyPage(MyLcgvReqVO req, String mbrsId);
-    List<MyLcgvRspVO> readMyLcgv(MyLcgvReqVO req, String mbrsId);
     MyAplRspVO readMyApl(MyLcgvReqVO req, String mbrsId);
+    List<MyLcgvRspVO> readMyLcgv(MyLcgvReqVO req, String mbrsId);
+    String readMyOrgNm(MyLcgvReqVO req, String mbrsId);
+
 }

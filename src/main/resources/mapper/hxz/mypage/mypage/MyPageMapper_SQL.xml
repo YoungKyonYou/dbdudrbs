@@ -89,12 +89,8 @@
         */
         select m201.tpw_svc_id         as tpwSvcId
              , m201.tpw_svc_nm         as tpwSvcNm
-             , m009.tpw_org_nm         as tpwOrgNm
              , m101.mbrs_nm             as mbrsNm
           from ohxzown.tbhxzm201 m201
-          join ohxzown.tbhxzm009 m009
-            on m201.org_cd = m009.org_cd
-           and m009.use_yn = upper('y')
           join ohxzown.tbhxzm101 m101
             on m101.mbrs_id = #{mbrsId}
           join ohxzown.tbhxzm102 m102
@@ -103,6 +99,30 @@
            and m102.tpw_mbrs_svc_sta_cd = '04'
          where to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
            and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
+           and m201.use_yn = upper('y')
+    </select>
+
+    <select id="readMyOrgNm" resultType="String" parameterType="tmoney.co.kr.hxz.mypage.mypage.vo.MyLcgvReqVO">
+        /* sql_id : readMyOrgNm */
+        /*
+        * 1. 파일 : MyPageMapper_SQL.xml
+        * 2. 기능 : 나의 지자체 이름 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.12 - 최중혁 : 최초작성
+        */
+        select m009.tpw_org_nm         as tpwOrgNm
+          from ohxzown.tbhxzm201 m201
+          join ohxzown.tbhxzm009 m009
+            on m201.org_cd = m009.org_cd
+           and m009.use_yn = upper('y')
+          join ohxzown.tbhxzm102 m102
+            on m102.tpw_svc_id = m201.tpw_svc_id
+           and m102.mbrs_id = #{mbrsId}
+           and m102.tpw_mbrs_svc_sta_cd = '04'
+         where to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
+           and m201.tpw_svc_id = #{req.tpwSvcId}
            and m201.use_yn = upper('y')
     </select>
 </mapper>

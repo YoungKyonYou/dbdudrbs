@@ -34,4 +34,10 @@ public class MyPageServiceImpl implements MyPageService {
     public List<MyLcgvRspVO> readMyLcgv(MyLcgvReqVO req, String mbrsId) {
         return myPageMapper.readMyLcgv(req, mbrsId);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String readMyOrgNm(MyLcgvReqVO req, String mbrsId) {
+        return myPageMapper.readMyOrgNm(req, mbrsId);
+    }
 }

@@ -18,4 +18,6 @@ public interface MyPageMapper {
     MyAplRspVO readMyApl(@Param("req") MyLcgvReqVO req, @Param("mbrsId") String mbrsId);
 
     List<MyLcgvRspVO> readMyLcgv(@Param("req") MyLcgvReqVO req, @Param("mbrsId") String mbrsId);
+
+    String readMyOrgNm(@Param("req") MyLcgvReqVO req, @Param("mbrsId") String mbrsId);
 }

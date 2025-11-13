@@ -79,8 +79,9 @@ public class MyPageController {
         String mbrsId = "tmoney002";
 
         List<MyLcgvRspVO> result = myPageService.readMyLcgv(req, mbrsId);
+        String tpwOrgNm = myPageService.readMyOrgNm(req, mbrsId);
         model.addAttribute("result", result);
-        model.addAttribute("tpwSvcId", req.getTpwSvcId());
+        model.addAttribute("tpwOrgNm", tpwOrgNm);
         return "/hxz/mypage/mylcgv/myLcgv";
     }
 }

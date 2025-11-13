@@ -14,8 +14,6 @@ public class MyLcgvRspVO {
     private String tpwSvcId;
     /** 서비스 명 */
     private String tpwSvcNm;
-    /** 기관명(지자체명) */
-    private String tpwOrgNm;
     /** 이름 */
     private String mbrsNm;
 }
