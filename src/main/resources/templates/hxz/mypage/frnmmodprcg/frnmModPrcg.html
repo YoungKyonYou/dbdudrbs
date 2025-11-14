@@ -28,7 +28,7 @@
               <h2 class="section-title">개명처리</h2>
             </div>
             <div class="form-box">
-              <form action="" method="post" novalidate aria-describedby="formNotice">
+              <form th:action="@{/mypage/frnmModPrcg.do}" method="post" novalidate aria-describedby="formNotice">
                 <fieldset>
                   <legend class="sr-only">개명처리 신청 폼</legend>
 
@@ -38,7 +38,7 @@
                     <div class="flex gap8">
                       <label for="fullName" class="sr-only">현재 이름</label>
                       <input id="fullName" name="fullName" type="text" class="text-field size-lg" readonly
-                        autocomplete="name" value="티*니" aria-labelledby="lbl-fullName" />
+                        autocomplete="name" th:value="${mbrsNm}" aria-labelledby="lbl-fullName" />
                       <button type="button" class="btn btn-darkgray size-lg" id="btnRenameStart">
                         개명처리
                       </button>
@@ -79,13 +79,16 @@
                   지급계좌의 예금주명이 변경되었는지 금융기관 계좌검증 후 개명처리가 진행됩니다.
                 </p>
 
-                <div class="form-actions">
-                  <button type="submit" class="btn btn-primary size-lg">신청하기</button>
+                <div class="btn-wrap mt-10">
+                  <a onclick="Common.MiniSPA.go('/mypage/dashboard.do?tpwSvcId=SVC010')"
+                    class="btn btn-darken-line size-lg">목록</a>
+
                 </div>
 
                 <!-- 처리 상태 안내(라이브 영역) -->
                 <p id="liveStatus" class="sr-only" aria-live="polite"></p>
               </form>
+
             </div>
           </div>
         </div>

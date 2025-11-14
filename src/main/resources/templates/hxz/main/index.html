@@ -36,7 +36,7 @@
             </div>
           </div>
 
-          <div class="login-box" aria-labelledby="login-title">
+          <!-- <div class="login-box" aria-labelledby="login-title">
             <h3 id="login-title" class="sr-only">로그인 영역</h3>
             <div>
               <div class="img-box">
@@ -44,7 +44,6 @@
               </div>
               <p>반갑습니다!</p>
             </div>
-            <!-- 참고 해야 합니다 minispa -->
             <button onclick="Common.MiniSPA.go('/etc/lgn/login.do')" class="swap-link btn btn-primary btn-icon-right">
               <i class="icon icon-arrow-right" aria-hidden="true"></i>
               로그인
@@ -55,7 +54,59 @@
               <span class="bar" aria-hidden="true"></span>
               <a onclick="Common.MiniSPA.go('/etc/idsrch/idSrch.do')">아이디/비밀번호찾기</a>
             </div>
+          </div> -->
+
+          <div class="login-box" aria-labelledby="login-title">
+            <h3 id="login-title" class="sr-only">로그인 영역</h3>
+
+            <th:block>
+              <div>
+                <div class="img-box">
+                  <img src="/images/main/img-login-people.png" alt="로그인 환영 일러스트">
+                </div>
+                <p>
+                  <strong th:text="${mbrsId}"></strong> 님, 반갑습니다!
+                </p>
+              </div>
+
+              <!-- 나의 서비스 -->
+              <div class="my-service">
+                <h4>나의 서비스</h4>
+                <ul>
+                  <li th:each="svc : ${mySvcList}" th:text="${svc.tpwSvcNm}">
+
+                    <a th:text="${svc.tpwSvcNm}" th:href="@{/}" class="join-link">
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- 전체 서비스 -->
+              <div class="all-service">
+                <h4>전체 서비스</h4>
+                <ul>
+                  <li th:each="svc : ${mainSvcList}">
+                    <!-- joinYn == 't' : 텍스트만 -->
+                    <span th:if="${svc.joinYn == 't'}" th:text="${svc.tpwSvcNm}"></span>
+
+                    <!-- joinYn == 'f' : 클릭 시 이동 -->
+                    <a th:if="${svc.joinYn == 'f'}" th:text="${svc.tpwSvcNm}"
+                      th:href="@{/svcjoin/rsdcAuth.do(orgCd=${svc.orgCd},tpwSvcId=${svc.tpwSvcId})}" class="join-link">
+                    </a>
+
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="link-wrap" aria-label="회원 계정 관련 링크">
+                <a onclick="Common.MiniSPA.go('/etc/mbrsjoin/step1.do')">회원가입</a>
+                <span class="bar" aria-hidden="true"></span>
+                <a onclick="Common.MiniSPA.go('/etc/idsrch/idSrch.do')">아이디/비밀번호찾기</a>
+              </div>
+            </th:block>
           </div>
+
         </div>
       </section>
 
@@ -194,8 +245,7 @@
                 <button type="button">제주</button>
               </div>
             </div>
-            <div class="swiper">
-              <!-- 네비게이션 & 페이지네이션 -->
+            <!-- <div class="swiper">
               <div class="swiper-controls">
                 <div class="swiper-pagination section6-pagination"></div>
                 <div class="swiper-button-prev section6-prev"></div>
@@ -272,7 +322,42 @@
                   </ul>
                 </a>
               </div>
+            </div> -->
+            <div class="swiper">
+              <div class="swiper-controls">
+                <div class="swiper-pagination section6-pagination"></div>
+                <div class="swiper-button-prev section6-prev"></div>
+                <div class="swiper-button-next section6-next"></div>
+              </div>
+              <div class="swiper-wrapper">
+                <th:block th:each="svc, iterStat : ${mainSvcList}">
+
+                  <a th:if="${svc.joinYn == 't'}" href="#" class="swiper-slide">
+                    <div class="img-box">
+                      <img
+                        th:src="@{'/images/main/' + ${iterStat.index % 3 == 0 ? 'img-section6-gn.jpg' : (iterStat.index % 3 == 1 ? 'img-section6-jn.jpg' : 'img-section6-ys.jpg')}}"
+                        alt="">
+                    </div>
+                    <h3 th:text="${svc.tpwOrgNm}">종로구</h3>
+                    <h3 th:text="${svc.tpwSvcNm}">서비스명</h3>
+                  </a>
+
+                  <a th:if="${svc.joinYn == 'f'}"
+                    th:href="@{/svcjoin/rsdcAuth.do(orgCd=${svc.orgCd},tpwSvcId=${svc.tpwSvcId})}" class="swiper-slide">
+                    <div class="img-box">
+                      <img
+                        th:src="@{'/images/main/' + ${iterStat.index % 3 == 0 ? 'img-section6-gn.jpg' : (iterStat.index % 3 == 1 ? 'img-section6-jn.jpg' : 'img-section6-ys.jpg')}}"
+                        alt="">
+                    </div>
+                    <h3 th:text="${svc.tpwOrgNm}">종로구</h3>
+                    <h3 th:text="${svc.tpwSvcNm}">서비스명</h3>
+                  </a>
+
+                </th:block>
+              </div>
+
             </div>
+
           </div>
         </div>
       </section>

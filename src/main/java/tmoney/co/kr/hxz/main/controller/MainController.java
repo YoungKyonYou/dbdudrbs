@@ -62,7 +62,6 @@ public class MainController {
     public String svcList(Model model) {
         String mbrsId = "tmoney002";
         List<MainSvcRspVO> mainSvcList = mainService.readMainSvcList(mbrsId);
-
         model.addAttribute("mainSvcList", mainSvcList);
         return "/hxz/main/svcList";
     }

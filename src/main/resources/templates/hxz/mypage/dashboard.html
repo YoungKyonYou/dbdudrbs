@@ -9,60 +9,90 @@
             <div class="mypage-header">
               <h2 class="section-title">마이페이지</h2>
             </div>
+
             <div class="dsshboard-box" role="region" aria-label="마이페이지 대시보드">
+              <!-- 내 가입 지자체 -->
               <div class="col" aria-label="내 가입 지자체">
                 <div class="box primary">
                   <div class="flex">
-                    <h3><strong class="color-primary">티*니</strong> 님</h3>
-                    <a href="#" class="btn btn-primary size-sm">개명처리</a>
+                    <h3>
+                      <!-- <strong class="color-primary"
+                        th:text="${#authentication?.name != null ? #strings.substring(#authentication.name, 0, 2) + '*니' : '회원'}">티*니</strong> -->
+                      <strong class="color-primary" th:text="${myApl?.mbrsNm ?: '티머니'}"> 티*니</strong>
+                      님
+                    </h3>
+                    <a onclick="Common.MiniSPA.go('/mypage/frnmModPrcg.do')" class="btn btn-primary size-sm">개명처리</a>
                   </div>
                   <p>현재 가입 지자체는</p>
-                  <strong>시흥시 입니다.</strong>
+                  <strong th:text="${result?.tpwOrgNm ?: '시흥시'} + ' 입니다.'">시흥시 입니다.</strong>
                   <img src="/images/sub/img-rabbit.png" alt="티머니 마스코드 이미지">
-                  <a href="#" class="btn btn-primary size-lg">나의 지자체/가입한 사업 보기</a>
+                  <a onclick="Common.MiniSPA.go('/mypage/myLcgv.do?tpwSvcId=SVC010')" class="btn btn-primary size-lg">나의
+                    지자체/가입한 사업 보기</a>
                 </div>
               </div>
+
+              <!-- 지원금 신청결과 및 내역 -->
               <div class="col" aria-label="지원금 신청결과 및 내역">
                 <div class="box">
                   <h3 class="box-title">지원금 신청 결과</h3>
-                  <p><strong class="color-primary">티*니</strong>님 신청 완료 되었습니다.</p>
-                  <p>신청일자: 2025-07-04</p>
-                  <a href="#" class="btn btn-darken-line size-lg">상세 보기</a>
+                  <p>
+                    <strong class="color-primary" th:text="${myApl?.mbrsNm ?: '티*니'}">티*니</strong>
+                    님
+
+                    <strong class="color-primary" th:text="${myApl?.aprvStaCd ?: '티*니'}">티*니</strong>
+
+                    되었습니다.
+                  </p>
+                  <p>
+                    신청일자:
+                    <span
+                      th:text="${myApl?.aplDt != null ? #strings.substring(myApl.aplDt, 0, myApl.aplDt.length() > 10 ? 10 : myApl.aplDt.length()) : '-'}">2025-07-04</span>
+                  </p>
+                  <a onclick="Common.MiniSPA.go('/mypage/spfnAplRst.do')" class="btn btn-darken-line size-lg">상세 보기</a>
                 </div>
+
                 <div class="box secondary">
                   <h3 class="box-title">나의 내역 조회</h3>
-                  <a href="#" class="link">
+                  <a onclick="Common.MiniSPA.go('/mypage/spfnPtInqr.do')" class="link">
                     <i class="icon icon-card" aria-hidden="true"></i>
                     <p>지원금 내역조회</p>
                   </a>
-                  <a href="#" class="link">
+                  <a onclick="Common.MiniSPA.go('/mypage/utlzPtQr.do')" class="link">
                     <i class="icon icon-search" aria-hidden="true"></i>
                     <p>이용내역조회</p>
                   </a>
                 </div>
               </div>
+
+              <!-- 카드 및 계좌관리 -->
               <div class="col" aria-label="카드 및 계좌관리">
                 <div class="box">
                   <h3 class="box-title">카드 관리</h3>
                   <p class="flex">
-                    <span>00카드</span>
-                    <span class="color-darken">1000-16**-****-9999</span>
+                    <span>티머니 카드</span>
+                    <span class="color-darken"
+                      th:text="${result?.cardNo ?: '1000-16**-****-9999'}">1000-16**-****-9999</span>
                   </p>
-                  <p>2025-07-04</p>
-                  <a href="#" class="btn btn-darken-line size-lg">카드 변경 및 이력</a>
+                  <!-- <p th:text="${result?.issueDt ?: '2025-07-04'}">2025-07-04</p> -->
+                  <a onclick="Common.MiniSPA.go('/mypage/cardMng.do')" class="btn btn-darken-line size-lg">카드 변경 및
+                    이력</a>
                 </div>
+
                 <div class="box">
                   <h3 class="box-title">계좌 관리</h3>
                   <p class="flex">
-                    <span>00은행</span>
-                    <span class="color-darken">티*니</span>
+                    <span th:text="${result?.bnkNm ?: '00은행'}">00은행</span>
+                    <span class="color-darken" th:text="${result?.ooaNm ?: '티*니'}">티*니</span>
                   </p>
-                  <p>11***********</p>
-                  <a href="#" class="btn btn-darken-line size-lg">계좌 변경 및 이력</a>
+                  <p th:text="${result?.acntNo ?: '11***********'}">11***********</p>
+                  <a onclick="Common.MiniSPA.go('/mypage/acntMng.do')" class="btn btn-darken-line size-lg">계좌 변경 및
+                    이력</a>
                 </div>
               </div>
+
+              <!-- 버튼 영역 -->
               <div class="btn-wrap">
-                <a href="#" class="btn btn-darken-line size-lg">메인으로</a>
+                <a onclick="Common.MiniSPA.go('/main.do')" class="btn btn-darken-line size-lg">메인으로</a>
                 <button type="button" class="btn btn-primary size-lg">저장</button>
                 <button type="button" class="btn btn-red-line size-lg">지자체 사업 탈퇴</button>
               </div>
@@ -71,11 +101,6 @@
         </div>
       </section>
     </main>
-
-
-    <script>
-
-    </script>
   </th:block>
 </th:block>
 
