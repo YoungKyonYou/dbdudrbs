@@ -63,6 +63,7 @@
                when m203.aprv_sta_cd = '03' then '신청 완료'
                when m203.aprv_sta_cd = '02' then '반려 처리'
                when m203.aprv_sta_cd = '01' then '승인 대기'
+
                 end as aprvStaCd
           from ohxzown.tbhxzm201 m201
           join ohxzown.tbhxzm101 m101

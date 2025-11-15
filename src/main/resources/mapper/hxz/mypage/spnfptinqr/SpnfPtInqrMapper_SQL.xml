@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tmoney.co.kr.hxz.mypage.spnfptinqr.mapper.SpnfPtInqrMapper">
+
+    <select id="readSpnfPtInqr" resultType="tmoney.co.kr.hxz.mypage.spnfptinqr.vo.SpnfPtInqrRspVO">
+        /* sql_id : readSpnfPtInqr */
+        /*
+        * 1. 파일 : SpnfPtInqrMapper_SQL.xml
+        * 2. 기능 : 지원금 지급 내역 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.15 - 최중혁 : 최초작성
+        */
+        select m201.tpw_svc_id         as tpwSvcId
+             , d214.pay_dt as payDt
+             , c002.cmn_dtl_cd_nm as bnkNm
+             , m102.acnt_no as acntNo
+             , d214.pay_amt as payAmt
+          from ohxzown.tbhxzm201 m201
+          join ohxzown.tbhxzd214 d214
+            on d214.tpw_svc_id = m201.tpw_svc_id
+           and d214.mbrs_id = #{mbrsId}
+          left join ohxzown.tbhxzm102 m102
+            on m102.tpw_svc_id = m201.tpw_svc_id
+           and m102.mbrs_id = #{mbrsId}
+          join ohxzown.tbhxzc002 c002
+            on m102.bnk_cd = c002.cmn_dtl_cd
+           and c002.cmn_grp_cd_id = '0041'
+         where d214.pay_dt &gt;= m201.tpw_svc_stt_dt
+           and d214.pay_dt &lt;= m201.tpw_svc_end_dt
+           and m201.tpw_svc_id = #{req.tpwSvcId}
+           and m201.use_yn = upper('y')
+         order by ${req.sort} ${req.dir}
+    </select>
+
+    <select id="readSpnfPtInqrCnt" resultType="long">
+        /* sql_id : readSpnfPtInqrCnt */
+        /*
+        * 1. 파일 : MyPageMapper_SQL.xml
+        * 2. 기능 : 지원금 지급 내역 결과 카운트 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.15 - 최중혁 : 최초작성
+        */
+        select count(1)
+          from ohxzown.tbhxzm201 m201
+          join ohxzown.tbhxzd214 d214
+            on d214.tpw_svc_id = m201.tpw_svc_id
+           and d214.mbrs_id = #{mbrsId}
+          left join ohxzown.tbhxzm102 m102
+            on m102.tpw_svc_id = m201.tpw_svc_id
+           and m102.mbrs_id = #{mbrsId}
+          join ohxzown.tbhxzc002 c002
+            on m102.bnk_cd = c002.cmn_dtl_cd
+           and c002.cmn_grp_cd_id = '0041'
+         where d214.pay_dt &gt;= #{req.paySttDt}
+           and d214.pay_dt &lt;= #{req.payEndDt}
+           and m201.tpw_svc_id = #{req.tpwSvcId}
+           and m201.use_yn = upper('y')
+    </select>
+
+</mapper>
