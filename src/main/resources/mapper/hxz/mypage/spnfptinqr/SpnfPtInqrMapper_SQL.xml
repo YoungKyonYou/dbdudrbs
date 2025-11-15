@@ -2,12 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="tmoney.co.kr.hxz.mypage.spnfptinqr.mapper.SpnfPtInqrMapper">
+<mapper namespace="tmoney.co.kr.hxz.mypage.spfnptinqr.mapper.SpfnPtInqrMapper">
 
-    <select id="readSpnfPtInqr" resultType="tmoney.co.kr.hxz.mypage.spnfptinqr.vo.SpnfPtInqrRspVO">
-        /* sql_id : readSpnfPtInqr */
+    <select id="readSpfnPtInqr" resultType="tmoney.co.kr.hxz.mypage.spfnptinqr.vo.SpfnPtInqrRspVO">
+        /* sql_id : readSpfnPtInqr */
         /*
-        * 1. 파일 : SpnfPtInqrMapper_SQL.xml
+        * 1. 파일 : SpfnPtInqrMapper_SQL.xml
         * 2. 기능 : 지원금 지급 내역 조회
         * 3. 작성자 : 최중혁
         * 4. 변경이력 :
@@ -35,8 +35,8 @@
          order by ${req.sort} ${req.dir}
     </select>
 
-    <select id="readSpnfPtInqrCnt" resultType="long">
-        /* sql_id : readSpnfPtInqrCnt */
+    <select id="readSpfnPtInqrCnt" resultType="long">
+        /* sql_id : readSpfnPtInqrCnt */
         /*
         * 1. 파일 : MyPageMapper_SQL.xml
         * 2. 기능 : 지원금 지급 내역 결과 카운트 조회

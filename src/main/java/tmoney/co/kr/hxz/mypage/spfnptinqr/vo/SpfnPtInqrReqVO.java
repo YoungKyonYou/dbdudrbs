@@ -1,4 +1,4 @@
-package tmoney.co.kr.hxz.mypage.spnfptinqr.vo;
+package tmoney.co.kr.hxz.mypage.spfnptinqr.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,13 +13,13 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @Getter
 @Setter
-public class SpnfPtInqrReqVO {
+public class SpfnPtInqrReqVO {
     @Size(max = 7, message = "서비스ID는 7 이하여야 합니다.")
     private String tpwSvcId;
     @Size(max = 8, message = "지급일월의 길이는 8 이하여야 합니다.")
-    private String paySttDt;
+    private String paySttDt = "20250101";
     @Size(max = 8, message = "지급일월의 길이는 8 이하여야 합니다.")
-    private String payEndDt;
+    private String payEndDt = "99991231";
     @PositiveOrZero(message = "페이지 값은 음수가 될 수 없습니다.")
     private int page = 0;
     @Positive(message = "페이지 값은 0보다 커야 합니다.")

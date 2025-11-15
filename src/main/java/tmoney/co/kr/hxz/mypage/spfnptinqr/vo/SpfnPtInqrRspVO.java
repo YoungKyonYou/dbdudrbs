@@ -1,4 +1,4 @@
-package tmoney.co.kr.hxz.mypage.spnfptinqr.vo;
+package tmoney.co.kr.hxz.mypage.spfnptinqr.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class SpnfPtInqrRspVO {
+public class SpfnPtInqrRspVO {
     /** 서비스ID */
     private String tpwSvcId;
     /** 지급년월 */

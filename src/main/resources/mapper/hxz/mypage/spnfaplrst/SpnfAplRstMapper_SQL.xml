@@ -2,12 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="tmoney.co.kr.hxz.mypage.spnfaplrst.mapper.SpnfAplRstMapper">
+<mapper namespace="tmoney.co.kr.hxz.mypage.spfnaplrst.mapper.SpfnAplRstMapper">
 
-    <select id="readSpnfAplRst" resultType="tmoney.co.kr.hxz.mypage.spnfaplrst.vo.SpnfAplRstRspVO">
-        /* sql_id : readSpnfAplRst */
+    <select id="readSpfnAplRst" resultType="tmoney.co.kr.hxz.mypage.spfnaplrst.vo.SpfnAplRstRspVO">
+        /* sql_id : readSpfnAplRst */
         /*
-        * 1. 파일 : SpnfAplRstMapper_SQL.xml
+        * 1. 파일 : SpfnAplRstMapper_SQL.xml
         * 2. 기능 : 지원금 신청 결과 조회
         * 3. 작성자 : 최중혁
         * 4. 변경이력 :

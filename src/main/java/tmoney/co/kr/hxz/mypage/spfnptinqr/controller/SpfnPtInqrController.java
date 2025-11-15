@@ -1,4 +1,4 @@
-package tmoney.co.kr.hxz.mypage.spnfptinqr.controller;
+package tmoney.co.kr.hxz.mypage.spfnptinqr.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -7,28 +7,28 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import tmoney.co.kr.hxz.common.PageData;
-import tmoney.co.kr.hxz.mypage.spnfptinqr.service.SpnfPtInqrService;
-import tmoney.co.kr.hxz.mypage.spnfptinqr.vo.SpnfPtInqrReqVO;
-import tmoney.co.kr.hxz.mypage.spnfptinqr.vo.SpnfPtInqrRspVO;
+import tmoney.co.kr.hxz.mypage.spfnptinqr.service.SpfnPtInqrService;
+import tmoney.co.kr.hxz.mypage.spfnptinqr.vo.SpfnPtInqrReqVO;
+import tmoney.co.kr.hxz.mypage.spfnptinqr.vo.SpfnPtInqrRspVO;
 
 import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/mypage")
-public class SpnfPtInqrController {
-    private final SpnfPtInqrService spnfPtInqrService;
+public class SpfnPtInqrController {
+    private final SpfnPtInqrService spfnPtInqrService;
 
-    @GetMapping("/spnfPtInqr.do")
-    public String readSpnfPtInqrPaging(
-            @ModelAttribute @Valid SpnfPtInqrReqVO req,
+    @GetMapping("/spfnPtInqr.do")
+    public String readSpfnPtInqrPaging(
+            @ModelAttribute @Valid SpfnPtInqrReqVO req,
             Model model
     ) {
         String mbrsId = "tmoney002";
-        PageData<SpnfPtInqrRspVO> contents = spnfPtInqrService.readSpnfPtInqrPaging(req, mbrsId);
+        PageData<SpfnPtInqrRspVO> contents = spfnPtInqrService.readSpfnPtInqrPaging(req, mbrsId);
 
         model.addAttribute("pageData", contents);
         model.addAttribute("req", req);
-        return "/hxz/mypage/spnfPtInqr";
+        return "/hxz/mypage/spfnptinqr/spfnPtInqr";
     }
 }

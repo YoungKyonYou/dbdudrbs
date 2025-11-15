@@ -1,4 +1,4 @@
-package tmoney.co.kr.hxz.mypage.spnfaplrst.vo;
+package tmoney.co.kr.hxz.mypage.spfnaplrst.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @Getter
 @Setter
-public class SpnfAplRstReqVO {
+public class SpfnAplRstReqVO {
     @Size(max = 7, message = "서비스ID는 7 이하여야 합니다.")
     private String tpwSvcId;
 }
