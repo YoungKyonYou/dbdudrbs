@@ -46,6 +46,6 @@ public class LcgvMainController {
 
         model.addAttribute("lcgvNtcList", lcgvNtcList);
         model.addAttribute("result", result);
-        return "/hxz/main/index";
+        return "/hxz/main/lcgvMain";
     }
 }

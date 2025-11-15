@@ -28,6 +28,7 @@
           join ohxzown.tbhxzm102 m102
             on m102.tpw_svc_id = m201.tpw_svc_id
            and m102.mbrs_id = #{mbrsId}
+           and m102.tpw_svc_id = #{req.tpwSvcId}
            and m102.tpw_mbrs_svc_sta_cd = '04'
           left join ohxzown.tbhxzm116 m116
             on m116.tpw_svc_id = m116.tpw_svc_id
@@ -43,7 +44,6 @@
                 limit 1
              ) d214
             on m102.tpw_svc_id = d214.tpw_svc_id
-           and d214.tpw_svc_id = #{req.tpwSvcId}
          where to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
            and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
            and m201.use_yn = upper('y')
