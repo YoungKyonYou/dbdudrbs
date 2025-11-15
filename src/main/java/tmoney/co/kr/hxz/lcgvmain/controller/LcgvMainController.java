@@ -46,6 +46,21 @@ public class LcgvMainController {
 
         model.addAttribute("lcgvNtcList", lcgvNtcList);
         model.addAttribute("result", result);
+        return "/hxz/lcgvmain/lcgvMain";
+    }
+
+    @GetMapping("/lcgvMain1.do")
+    public String lcgvMain1(
+            @ModelAttribute LcgvMainReqVO req,
+            Model model
+    ) {
+        String mbrsId = "tmoney002";
+
+        LcgvMainRspVO result = lcgvMainService.readLcgvMain(req, mbrsId);
+        List<LcgvNtcRspVO> lcgvNtcList = lcgvMainService.readLcgvNtcList(req.getTpwSvcId());
+
+        model.addAttribute("lcgvNtcList", lcgvNtcList);
+        model.addAttribute("result", result);
         return "/hxz/main/lcgvMain";
     }
 }
