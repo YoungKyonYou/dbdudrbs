@@ -55,8 +55,13 @@
           join ohxzown.tbhxzc002 c002
             on m102.bnk_cd = c002.cmn_dtl_cd
            and c002.cmn_grp_cd_id = '0041'
-         where d214.pay_dt &gt;= #{req.paySttDt}
+         where 1 = 1
+        <if test="req.paySttDt != null and req.paySttDt != ''">
+           and d214.pay_dt &gt;= #{req.paySttDt}
+        </if>
+        <if test="req.payEndDt != null and req.payEndDt != ''">
            and d214.pay_dt &lt;= #{req.payEndDt}
+        </if>
            and m201.tpw_svc_id = #{req.tpwSvcId}
            and m201.use_yn = upper('y')
     </select>

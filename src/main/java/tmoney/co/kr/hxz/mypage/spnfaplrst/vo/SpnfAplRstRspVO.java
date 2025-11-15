@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class SpnfAplRspVO {
+public class SpnfAplRstRspVO {
     /** 서비스 ID */
     private String tpwSvcId;
     /** 이름 */

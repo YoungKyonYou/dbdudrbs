@@ -28,6 +28,7 @@ public class SpnfPtInqrController {
         PageData<SpnfPtInqrRspVO> contents = spnfPtInqrService.readSpnfPtInqrPaging(req, mbrsId);
 
         model.addAttribute("pageData", contents);
+        model.addAttribute("req", req);
         return "/hxz/mypage/spnfPtInqr";
     }
 }

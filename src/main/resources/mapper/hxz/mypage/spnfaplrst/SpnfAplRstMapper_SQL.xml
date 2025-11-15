@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tmoney.co.kr.hxz.mypage.spnfaplrst.mapper.SpnfPtInqrMapper">
+
+    <select id="readSpnfAplRst" resultType="tmoney.co.kr.hxz.mypage.spnfaplrst.vo.SpnfAplRstRspVO">
+        /* sql_id : readSpnfAplRst */
+        /*
+        * 1. 파일 : SpnfAplRstMapper_SQL.xml
+        * 2. 기능 : 지원금 신청 결과 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.15 - 최중혁 : 최초작성
+        */
+        select m201.tpw_svc_id         as tpwSvcId
+             , m101.mbrs_nm             as mbrsNm
+             , m203.apl_dt             as aplDt
+             , case
+               when m203.aprv_sta_cd = '03' then '신청 완료'
+               when m203.aprv_sta_cd = '02' then '반려 처리'
+               when m203.aprv_sta_cd = '01' then '승인 대기'
+                end as aprvStaCd
+          from ohxzown.tbhxzm201 m201
+          join ohxzown.tbhxzm101 m101
+            on m101.mbrs_id = #{mbrsId}
+          join ohxzown.tbhxzm203 m203
+            on m203.mbrs_id = #{mbrsId}
+           and m201.tpw_svc_id = m203.tpw_svc_id
+         where to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
+           and m201.tpw_svc_id = #{req.tpwSvcId}
+           and m201.use_yn = upper('y')
+         order by m203.apl_dt desc;
+    </select>
+</mapper>

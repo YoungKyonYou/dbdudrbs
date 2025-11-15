@@ -15,8 +15,10 @@ import javax.validation.constraints.Size;
 @Setter
 public class NtcMttrSrchReqVO {
     /** 기관코드 */
+    @Size(max = 7, message = "기관코드는 길이가 7 이하여야 합니다.")
     private String orgCd;
     /** 공지사항제목명 */
+    @Size(max = 7, message = "공지사항 제목명은 길이가 100 이하여야 합니다.")
     private String ntcMttrTtlNm;
     /** 공지사항내용 */
     private String ntcMttrCtt;
