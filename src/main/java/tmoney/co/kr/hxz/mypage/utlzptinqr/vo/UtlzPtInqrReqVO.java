@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
@@ -14,6 +15,7 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 public class UtlzPtInqrReqVO {
+    @NotNull(message = "서비스정보가 없습니다.")
     @Size(max = 7, message = "서비스ID는 7 이하여야 합니다.")
     private String tpwSvcId;
     @Size(max = 8, message = "지급일월의 길이는 8 이하여야 합니다.")

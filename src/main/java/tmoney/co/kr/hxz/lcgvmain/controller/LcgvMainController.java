@@ -10,6 +10,7 @@ import tmoney.co.kr.hxz.lcgvmain.vo.LcgvMainReqVO;
 import tmoney.co.kr.hxz.lcgvmain.vo.LcgvMainRspVO;
 import tmoney.co.kr.hxz.lcgvmain.vo.LcgvNtcRspVO;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class LcgvMainController {
      */
     @GetMapping("/lcgvMain.do")
     public String lcgvMain(
-            @ModelAttribute LcgvMainReqVO req,
+            @ModelAttribute @Valid LcgvMainReqVO req,
             Model model
     ) {
         String mbrsId = "tmoney002";
