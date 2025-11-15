@@ -33,6 +33,8 @@
            and m201.tpw_svc_id = #{req.tpwSvcId}
            and m201.use_yn = upper('y')
          order by ${req.sort} ${req.dir}
+         limit #{req.size}
+        offset #{req.page}
     </select>
 
     <select id="readSpfnPtInqrCnt" resultType="long">
