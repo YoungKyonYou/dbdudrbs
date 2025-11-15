@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
 <th:block th:replace="~{component/header :: layout(~{::content})}">
   <th:block th:fragment="content">
     <main id="contents">
@@ -11,23 +12,32 @@
             </div>
 
             <div class="dsshboard-box" role="region" aria-label="마이페이지 대시보드">
+
               <!-- 내 가입 지자체 -->
               <div class="col" aria-label="내 가입 지자체">
                 <div class="box primary">
                   <div class="flex">
                     <h3>
-                      <!-- <strong class="color-primary"
-                        th:text="${#authentication?.name != null ? #strings.substring(#authentication.name, 0, 2) + '*니' : '회원'}">티*니</strong> -->
-                      <strong class="color-primary" th:text="${myApl?.mbrsNm ?: '티머니'}"> 티*니</strong>
+                      <strong class="color-primary" data-mask-name="${myApl?.mbrsNm}"
+                        th:attr="data-mask-name=${myApl?.mbrsNm}">
+                        <span th:text="${myApl?.mbrsNm ?: ''}">티*니</span>
+                      </strong>
                       님
                     </h3>
                     <a onclick="Common.MiniSPA.go('/mypage/frnmModPrcg.do')" class="btn btn-primary size-sm">개명처리</a>
                   </div>
+
                   <p>현재 가입 지자체는</p>
-                  <strong th:text="${result?.tpwOrgNm ?: '시흥시'} + ' 입니다.'">시흥시 입니다.</strong>
+                  <strong th:if="${result?.tpwOrgNm}" th:text="${result?.tpwOrgNm + ' 입니다.'}">
+                    시흥시 입니다.
+                  </strong>
+                  <strong th:if="${result?.tpwOrgNm == null}">
+                    가입한 지자체가 없습니다.
+                  </strong>
                   <img src="/images/sub/img-rabbit.png" alt="티머니 마스코드 이미지">
-                  <a onclick="Common.MiniSPA.go('/mypage/myLcgv.do?tpwSvcId=SVC010')" class="btn btn-primary size-lg">나의
-                    지자체/가입한 사업 보기</a>
+                  <a onclick="Common.MiniSPA.go('/mypage/myLcgv.do?tpwSvcId=SVC010')" class="btn btn-primary size-lg">
+                    나의 지자체/가입한 사업 보기
+                  </a>
                 </div>
               </div>
 
@@ -35,19 +45,25 @@
               <div class="col" aria-label="지원금 신청결과 및 내역">
                 <div class="box">
                   <h3 class="box-title">지원금 신청 결과</h3>
-                  <p>
-                    <strong class="color-primary" th:text="${myApl?.mbrsNm ?: '티*니'}">티*니</strong>
-                    님
 
-                    <strong class="color-primary" th:text="${myApl?.aprvStaCd ?: '티*니'}">티*니</strong>
-
+                  <p th:if="${myApl?.aprvStaCd}">
+                    <strong class="color-primary" data-mask-name="${myApl?.mbrsNm}"
+                      th:attr="data-mask-name=${myApl?.mbrsNm}">
+                      <span th:text="${myApl?.mbrsNm}">이름</span>
+                    </strong> 님
+                    <strong class="color-primary" th:text="${myApl?.aprvStaCd}">상태</strong>
                     되었습니다.
                   </p>
-                  <p>
-                    신청일자:
-                    <span
-                      th:text="${myApl?.aplDt != null ? #strings.substring(myApl.aplDt, 0, myApl.aplDt.length() > 10 ? 10 : myApl.aplDt.length()) : '-'}">2025-07-04</span>
+
+                  <p th:if="${myApl?.aprvStaCd == null}">
+                    신청된 사항이 없습니다.
                   </p>
+
+                  신청일자:
+                  <span class="date-format" data-date="${myApl?.aplDt}" th:attr="data-date=${myApl?.aplDt}">
+                    2023-01-22
+                  </span>
+
                   <a onclick="Common.MiniSPA.go('/mypage/spfnAplRst.do')" class="btn btn-darken-line size-lg">상세 보기</a>
                 </div>
 
@@ -66,25 +82,48 @@
 
               <!-- 카드 및 계좌관리 -->
               <div class="col" aria-label="카드 및 계좌관리">
+
+                <!-- 카드 관리 -->
                 <div class="box">
                   <h3 class="box-title">카드 관리</h3>
-                  <p class="flex">
+
+                  <p class="flex" th:if="${result?.cardNo}">
                     <span>티머니 카드</span>
-                    <span class="color-darken"
-                      th:text="${result?.cardNo ?: '1000-16**-****-9999'}">1000-16**-****-9999</span>
+                    <span class="color-darken" data-mask-card="${result?.cardNo}"
+                      th:attr="data-mask-card=${result?.cardNo}">
+                      <span th:text="${result?.cardNo}">100016******9999</span>
+                    </span>
                   </p>
-                  <!-- <p th:text="${result?.issueDt ?: '2025-07-04'}">2025-07-04</p> -->
+
+                  <p th:if="${result?.cardNo == null}">
+                    등록된 카드가 없습니다.
+                  </p>
+
                   <a onclick="Common.MiniSPA.go('/mypage/cardMng.do')" class="btn btn-darken-line size-lg">카드 변경 및
                     이력</a>
                 </div>
 
+                <!-- 계좌 관리 -->
                 <div class="box">
                   <h3 class="box-title">계좌 관리</h3>
-                  <p class="flex">
-                    <span th:text="${result?.bnkNm ?: '00은행'}">00은행</span>
-                    <span class="color-darken" th:text="${result?.ooaNm ?: '티*니'}">티*니</span>
+
+                  <p class="flex" th:if="${result?.acntNo}">
+                    <span th:text="${result?.bnkNm ?: ''}">00은행</span>
+                    <span class="color-darken" data-mask-name="${result?.ooaNm}"
+                      th:attr="data-mask-name=${result?.ooaNm}">
+                      <span th:text="${result?.ooaNm ?: ''}">티*니</span>
+                    </span>
                   </p>
-                  <p th:text="${result?.acntNo ?: '11***********'}">11***********</p>
+
+                  <p data-mask-account="${result?.acntNo}" th:attr="data-mask-account=${result?.acntNo}"
+                    th:if="${result?.acntNo}">
+                    <span th:text="${result?.acntNo}">11***********</span>
+                  </p>
+
+                  <p th:if="${result?.acntNo == null}">
+                    등록된 계좌가 없습니다.
+                  </p>
+
                   <a onclick="Common.MiniSPA.go('/mypage/acntMng.do')" class="btn btn-darken-line size-lg">계좌 변경 및
                     이력</a>
                 </div>
@@ -96,6 +135,7 @@
                 <button type="button" class="btn btn-primary size-lg">저장</button>
                 <button type="button" class="btn btn-red-line size-lg">지자체 사업 탈퇴</button>
               </div>
+
             </div>
           </div>
         </div>
@@ -103,5 +143,91 @@
     </main>
   </th:block>
 </th:block>
+
+<!-- 마스킹 및 날짜 포맷 JS -->
+<script>
+  (function () {
+    // 아이디 끝 3자리 마스킹
+    function maskId(id) {
+      if (!id || id.length <= 3) return id;
+      return id.slice(0, id.length - 3) + "***";
+    }
+
+    // 카드번호 중간 6자리 마스킹
+    function maskCard(num) {
+      if (!num) return num;
+      const n = num.replace(/-/g, "");
+      if (n.length < 12) return num;
+      return n.substring(0, 6) + "******" + n.slice(-4);
+    }
+
+    // 계좌번호 중간 6자리 마스킹
+    function maskAccount(num) {
+      if (!num) return num;
+      const n = num.replace(/-/g, "");
+      if (n.length < 9) return num;
+      return n.substring(0, 3) + "******" + n.slice(-3);
+    }
+
+    // 이름 가운데 마스킹
+    function maskName(name) {
+      if (!name || name.length < 2) return name;
+      if (name.length === 2) return name[0] + "*";
+      return name[0] + "*".repeat(name.length - 2) + name[name.length - 1];
+    }
+
+    // 숫자 그룹별 하이픈 포맷
+    function formatWithDash(num, group = 4) {
+      if (!num) return num;
+      const cleaned = num.replace(/-/g, "");
+      return cleaned.replace(new RegExp(`(.{${group}})`, "g"), "$1-").replace(/-$/, "");
+    }
+
+    // 날짜 포맷 YYYY-MM-DD (안정적 변환)
+    function formatDate(dateStr) {
+      if (!dateStr) return "-";
+
+      // YYYY-MM-DD 이미 형식
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+
+      // YYYYMMDD 형식 처리
+      if (/^\d{8}$/.test(dateStr)) {
+        return dateStr.slice(0, 4) + '-' + dateStr.slice(4, 6) + '-' + dateStr.slice(6, 8);
+      }
+
+      // 일반 Date 객체 변환
+      const d = new Date(dateStr);
+      if (isNaN(d)) return dateStr;
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    // DOM 적용
+    document.querySelectorAll("[data-mask-name]").forEach(el => {
+      el.textContent = maskName(el.dataset.maskName);
+    });
+
+    document.querySelectorAll("[data-mask-card]").forEach(el => {
+      const masked = maskCard(el.dataset.maskCard);
+      el.textContent = formatWithDash(masked);
+    });
+
+    document.querySelectorAll("[data-mask-account]").forEach(el => {
+      const masked = maskAccount(el.dataset.maskAccount);
+      el.textContent = formatWithDash(masked, 3);
+    });
+
+    document.querySelectorAll("[data-mask-id]").forEach(el => {
+      el.textContent = maskId(el.dataset.maskId);
+    });
+
+    document.querySelectorAll(".date-format").forEach(el => {
+      el.textContent = formatDate(el.dataset.date);
+    });
+
+  })()
+</script>
 
 </html>
