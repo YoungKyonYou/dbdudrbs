@@ -54,7 +54,7 @@
                         </div>
                     </div>
 
-                    <div class="accordion" id="faqAccordion" data-behavior="single">
+                    <div class="board-body" id="grid-tbody" role="list" data-behavior="single">
                         <div class="acc-item" th:each="faq, iterStat : ${pageData.content}"
                             th:classappend="${iterStat.index == 0} ? 'is-open'">
                             <h3 class="acc-header">
@@ -88,7 +88,6 @@
                 </div>
             </section>
         </main>
-
         <script th:inline="javascript">
             (function () {
                 const searchForm = document.getElementById('searchbar');
@@ -97,61 +96,29 @@
                 const baseUrl = '/news/faq/faq.do';
                 const inputSort = document.getElementById('sort');
                 const inputDir = document.getElementById('dir');
-                const selectSize = 10;
-                const accordion = document.getElementById('faqAccordion');
                 const selectSizeInput = document.getElementById('selectSize');
 
-                searchForm.addEventListener('submit', function (e) {
-                    e.preventDefault();
+                // 아코디언 바인딩
+                function bindAccordion() {
+                    const container = document.getElementById('grid-tbody');
+                    if (!container) return;
 
-
-                    titleField.value = input.value.trim();
-
-                    const applied = Common.collectFromForm(searchForm);
-                    Common.reloadList({
-                        page: 0,
-                        defaultSortColumn: 'faq_no',
-                        swapTargets: ['.accordion', '#grid-pager'],
-                        baseUrl,
-                        selectSize: selectSizeInput,      // 숫자가 아니라 DOM input 전달
-                        inputSort: document.getElementById('sort'),
-                        inputDir: document.getElementById('dir'),
-                        applied
-                    });
-                });
-
-                if (typeof bindPagination === 'function') {
-                    bindPagination(baseUrl, {
-                        page: 0,
-                        size: selectSize,
-                        dir: inputDir?.value || 'asc',
-                        sort: inputSort?.value || 'rgtDtm'
-                    });
-                } else {
-                    console.warn('⚠️ bindPagination 함수가 정의되어 있지 않습니다.');
-                }
-
-                if (accordion) {
-                    accordion.querySelectorAll('.acc-trigger').forEach(trigger => {
+                    container.querySelectorAll('.acc-trigger').forEach(trigger => {
                         const item = trigger.closest('.acc-item');
                         const panel = item.querySelector('.acc-panel');
+
+                        // 초기 상태
                         panel.removeAttribute('hidden');
+                        panel.style.maxHeight = item.classList.contains('is-open') ? panel.scrollHeight + 'px' : '0';
 
-                        if (item.classList.contains('is-open')) {
-                            panel.style.maxHeight = panel.scrollHeight + 'px';
-                        } else {
-                            panel.style.maxHeight = '0';
-                        }
-
-                        trigger.addEventListener('click', function () {
+                        trigger.addEventListener('click', () => {
                             const isOpen = item.classList.contains('is-open');
 
-                            if (accordion.dataset.behavior === 'single') {
-                                accordion.querySelectorAll('.acc-item.is-open').forEach(i => {
+                            if (container.dataset.behavior === 'single') {
+                                container.querySelectorAll('.acc-item.is-open').forEach(i => {
                                     if (i !== item) {
                                         i.classList.remove('is-open');
-                                        const p = i.querySelector('.acc-panel');
-                                        p.style.maxHeight = '0';
+                                        i.querySelector('.acc-panel').style.maxHeight = '0';
                                     }
                                 });
                             }
@@ -166,8 +133,50 @@
                         });
                     });
                 }
+
+                // 초기 바인딩
+                bindAccordion();
+
+                // 검색폼 제출
+                searchForm.addEventListener('submit', e => {
+                    e.preventDefault();
+                    titleField.value = input.value.trim();
+                    const applied = Common.collectFromForm(searchForm);
+
+                    Common.reloadList({
+                        page: 0,
+                        defaultSortColumn: 'faq_no',
+                        swapTargets: ['#grid-tbody', '#grid-pager'],
+                        baseUrl,
+                        selectSize: selectSizeInput,
+                        inputSort,
+                        inputDir,
+                        applied
+                    }).then(() => {
+                        document.dispatchEvent(new CustomEvent('gridUpdated'));
+                    });
+                });
+
+                // 페이지네이션 후 아코디언 재바인딩
+                document.addEventListener('gridUpdated', bindAccordion);
+
+                // 페이지네이션 초기 바인딩
+                bindPagination(baseUrl, {
+                    page: 0,
+                    size: parseInt(selectSizeInput?.value || '10', 10),
+                    dir: inputDir?.value || 'asc',
+                    sort: inputSort?.value || 'rgt_dt'
+                });
+
+                // 페이지네이션 클릭 시 gridUpdated 호출
+                document.querySelector('#grid-pager')?.addEventListener('click', e => {
+                    if (e.target.closest('.pagination a[data-page]')) {
+                        setTimeout(() => document.dispatchEvent(new CustomEvent('gridUpdated')), 300);
+                    }
+                });
             })();
         </script>
+
 
 
     </th:block>

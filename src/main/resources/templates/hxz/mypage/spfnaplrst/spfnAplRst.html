@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{component/header :: layout(~{::content})}">
+  <th:block th:fragment="content">
+
+    <div class="mypage-nav">
+      <div class="container fluid">
+        <nav>
+          <ul>
+            <li><a href="#">개명처리</a></li>
+            <li><a href="#">나의지자체</a></li>
+            <li class="active"><a href="#" aria-current="page">지원금 신청결과</a></li>
+            <li><a href="#">지원금 내역 조회</a></li>
+            <li><a href="#">이용내역 조회</a></li>
+            <li><a href="#">카드관리</a></li>
+            <li><a href="#">계좌관리</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <main id="contents">
+      <section class="section">
+        <div class="container size-sm">
+          <div class="mypage-wrap">
+            <div class="mypage-header">
+              <h2 class="section-title">지원금 신청결과</h2>
+            </div>
+            <div class="join-wrap">
+
+              <!-- 반복문: 신청 목록 -->
+              <div th:each="vo : ${result}" class="fin-box">
+                <div class="gray-outer">
+                  <div class="step4-box" role="status" aria-live="polite">
+                    <p class="complete-msg">
+                      <strong class="color-darken" th:text="${vo.mbrsNm}">티머니</strong>
+                      <span>님</span>
+
+                      <!-- 상태 표시 -->
+                      <strong th:text="${vo.aprvStaCd}" th:class="${vo.aprvStaCd == '신청 완료' ? 'color-blue' 
+                             : vo.aprvStaCd == '승인 대기' ? 'color-point' 
+                             : vo.aprvStaCd == '반려 처리' ? 'color-red' 
+                             : 'color-point'}">
+                        상태
+                      </strong>
+
+                      <span>되었습니다.</span>
+                    </p>
+                    <p>
+                      <span th:text="'신청일자: ' + ${vo.aplDt}">신청일자: 2025-07-04</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <!-- 반복문 끝 -->
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+  </th:block>
+</th:block>
+
+</html>

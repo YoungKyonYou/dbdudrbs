@@ -1,5 +1,0 @@
-spfn 지원금
-pt 내역
-inqr 조회
-
-spfnPtInqr

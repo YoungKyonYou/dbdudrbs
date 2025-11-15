@@ -37,6 +37,7 @@ public class FaqController {
     ) {
         PageDataVO<FaqRspVO> contents = faqService.readFaqPaging(req);
 
+
         model.addAttribute("pageData", contents);
         model.addAttribute("req" , req);
         return "/hxz/news/faq/faq";
