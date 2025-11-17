@@ -14,7 +14,7 @@ public class LcgvMainRspVO {
     private String tpwOrgNm;             // 기관명
     private String tpwSvcId;          // 서비스ID
     private String tpwSvcNm;
-    private String atflPathNm;
+    private String tpwAplPrgsStaCd;
     private String stlmDt;
     private String aplAmt;
     private String payAmt;

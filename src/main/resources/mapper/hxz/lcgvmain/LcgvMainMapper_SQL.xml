@@ -17,7 +17,11 @@
              , m009.tpw_org_nm         as tpwOrgNm
              , m201.tpw_svc_id         as tpwSvcId
              , m201.tpw_svc_nm         as tpwSvcNm
-             , m115.atfl_path_nm       as atflPathNm
+             , case
+               when m203.tpw_apl_prgs_sta_cd = '03' then '지급 완료'
+               when m203.tpw_apl_prgs_sta_cd = '02' then '정산 진행중'
+               when m203.tpw_apl_prgs_sta_cd = '01' then '신청 진행중'
+                end as tpwAplPrgsStaCd
              , d214.stlm_dt            as stlmDt
              , d214.apl_amt            as aplAmt
              , d214.pay_amt            as payAmt
@@ -28,13 +32,16 @@
           join ohxzown.tbhxzm102 m102
             on m102.tpw_svc_id = m201.tpw_svc_id
            and m102.mbrs_id = #{mbrsId}
-           and m102.tpw_svc_id = #{req.tpwSvcId}
            and m102.tpw_mbrs_svc_sta_cd = '04'
+          left join ohxzown.tbhxzm203 m203
+            on m201.tpw_svc_id = m203.tpw_svc_id
+           and m203.mbrs_id = #{mbrsId}
+           and m203.aprv_sta_cd = '03'
           left join ohxzown.tbhxzm116 m116
-            on m116.tpw_svc_id = m116.tpw_svc_id
+            on m201.tpw_svc_id = m116.tpw_svc_id
            and m116.use_yn = upper('y')
           left join ohxzown.tbhxzm115 m115
-            on m115.atfl_mng_no = m115.atfl_mng_no
+            on m116.atfl_mng_no = m115.atfl_mng_no
           left join lateral
              (
                select d2.stlm_dt, d2.tpw_svc_id, d2.apl_amt, d2.pay_amt
@@ -46,7 +53,10 @@
             on m102.tpw_svc_id = d214.tpw_svc_id
          where to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
            and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
+           and m201.tpw_svc_id = #{req.tpwSvcId}
            and m201.use_yn = upper('y')
+         order by m203.apl_dt desc
+         limit 1;
     </select>
 
 
@@ -72,7 +82,7 @@
              , rgt_dtm as rgtDtm
           from ohxzown.tbhxzm113
          where use_yn = upper('y')
-         order by rgt_dtm desc
+         order by tpw_bltn_rgt_dtm desc
          limit 5;
     </select>
 </mapper>
