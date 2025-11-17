@@ -13,10 +13,10 @@ public class UtlzPtInqrRspVO {
     /** 서비스ID */
     private String tpwSvcId;
     /** 지급년월 */
-    private String payMon;
+    private String stlmDt;
     /** 이용일자 */
-    private String payDt;
+    private String trdDt;
     /** 정산금액 */
-    private String payAmt;
+    private String trdAmt;
 
 }

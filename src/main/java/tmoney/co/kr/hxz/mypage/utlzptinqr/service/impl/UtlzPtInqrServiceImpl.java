@@ -23,7 +23,7 @@ public class UtlzPtInqrServiceImpl implements UtlzPtInqrService {
 
         long total = readUtlzPtInqrCnt(req, mbrsId);
 
-        UtlzPtInqrReqVO reqVO = new UtlzPtInqrReqVO(req.getTpwSvcId(), req.getPayMon() , offset, req.getSize(), req.getSort(), req.getDir());
+        UtlzPtInqrReqVO reqVO = new UtlzPtInqrReqVO(req.getTpwSvcId(), req.getStlmDt(), offset, req.getSize(), req.getSort(), req.getDir());
         List<UtlzPtInqrRspVO> content = readUtlzPtInqr(reqVO, mbrsId);
 
         return new PageData<>(content, req.getPage(), req.getSize(), total);

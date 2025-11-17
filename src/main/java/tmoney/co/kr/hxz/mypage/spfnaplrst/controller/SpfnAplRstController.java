@@ -19,6 +19,21 @@ import java.util.List;
 public class SpfnAplRstController {
     private final SpfnAplRstService spfnAplRstService;
 
+    /**
+     * 지원금 신청 결과 조회
+     * tbhxzm009 HXZ_기관연계정보
+     * tbhxzm101 HXZ_회원정보
+     * tbhxzm102 HXZ_회원서비스정보
+     * tbhxzm201 HXZ_교통복지서비스관리
+     * tbhxzm203 HXZ_지원금신청
+     *
+     * [process]
+     * 1. 현재 가입한 서비스에서 신청한 지원금 신청 결과 조회
+     *
+     * @param
+     * @param model
+     * @return
+     */
     @GetMapping("/spfnAplRst.do")
     public String readSpfnAplRst(
             @ModelAttribute @Valid SpfnAplRstReqVO req,

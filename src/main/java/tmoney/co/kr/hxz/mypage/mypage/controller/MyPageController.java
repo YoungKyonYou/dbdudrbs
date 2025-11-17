@@ -1,16 +1,17 @@
 package tmoney.co.kr.hxz.mypage.mypage.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tmoney.co.kr.hxz.mypage.mypage.service.MyPageService;
 import tmoney.co.kr.hxz.mypage.mypage.vo.MyLcgvReqVO;
 import tmoney.co.kr.hxz.mypage.mypage.vo.MyLcgvRspVO;
 import tmoney.co.kr.hxz.mypage.mypage.vo.MyPageRspVO;
 import tmoney.co.kr.hxz.mypage.mypage.vo.apl.MyAplRspVO;
+import tmoney.co.kr.hxz.svcjoin.vo.svccncn.SvcCncnReqVO;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -56,7 +57,6 @@ public class MyPageController {
     }
 
 
-
     /**
      * 내 지자체 정보 조회
      * tbhxzm009 HXZ_기관연계정보
@@ -85,3 +85,4 @@ public class MyPageController {
         return "/hxz/mypage/mylcgv/myLcgv";
     }
 }
+ 
