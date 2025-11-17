@@ -47,7 +47,7 @@ public class LcgvMainController {
 
         model.addAttribute("lcgvNtcList", lcgvNtcList);
         model.addAttribute("result", result);
-        return "/hxz/lcgvmain/lcgvMain";
+        return result.getUrl();
     }
 
     @GetMapping("/lcgvMain1.do")

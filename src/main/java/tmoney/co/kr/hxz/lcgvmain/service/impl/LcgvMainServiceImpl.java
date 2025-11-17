@@ -20,7 +20,7 @@ public class LcgvMainServiceImpl implements LcgvMainService {
     @Transactional(readOnly = true)
     public LcgvMainRspVO readLcgvMain(LcgvMainReqVO req, String mbrsId) {
         LcgvMainRspVO rsp = lcgvMainMapper.readLcgvMain(req, mbrsId);
-        rsp.setUrl("jongro");
+        rsp.setUrl("/skin/jongro/page/index");
         return rsp;
     };
 
