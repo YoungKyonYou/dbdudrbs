@@ -1,104 +1,174 @@
-<!doctype html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" data-theme="light" th:fragment="layout(content)">
+<aside id="header" role="banner" th:fragment="siteHeader">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Tmoney 교통복지플랫폼" />
-  <meta name="keywords" content="Tmoney 교통복지플랫폼" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Tmoney 교통복지플랫폼" />
-  <meta property="og:description" content="Tmoney 교통복지플랫폼" />
+    <div class="container fluid">
+        <div class="accessibility-box" aria-label="접근성 및 보기 설정">
+            <!-- 화면 크기 -->
+            <div class="text-size" role="group" aria-label="화면 크기 조절">
+                <span id="txtSizeLabel">화면 크기</span>
+                <button type="button" class="btn-text-plus" aria-labelledby="txtSizeLabel" aria-controls="pageRoot"
+                    aria-describedby="txtSizeStatus">
+                    <i class="icon icon-plus" aria-hidden="true"></i><span class="blind">화면 크게</span>
+                </button>
+                <button type="button" class="btn-text-minus" aria-labelledby="txtSizeLabel" aria-controls="pageRoot"
+                    aria-describedby="txtSizeStatus">
+                    <i class="icon icon-minus" aria-hidden="true"></i><span class="blind">화면 작게</span>
+                </button>
+                <span id="txtSizeStatus" class="blind" aria-live="polite"></span>
+            </div>
 
-  <title th:text="${pageTitle} ?: 'Tmoney 교통복지플랫폼'">Tmoney 교통복지플랫폼</title>
+            <!-- 테마 전환 -->
+            <div class="theme-box" role="group" aria-label="테마 전환">
+                <span id="themeLabel">고대비</span>
+                <button type="button" class="btn-contrast" aria-labelledby="themeLabel" aria-pressed="false"
+                    aria-describedby="themeStatus">
+                    OFF
+                    <span class="blind">고대비 모드 토글</span>
+                </button>
+                <span id="themeStatus" class="blind" aria-live="polite"></span>
+            </div>
+        </div>
+    </div>
 
-  <link rel="stylesheet" th:href="@{/css/vendor/aos.css}" />
-  <link rel="stylesheet" th:href="@{/css/vendor/swiper-bundle.min.css}" />
-  <link rel="stylesheet" th:href="@{/css/index.css}" />
-  <link rel="stylesheet" th:href="@{/css/page/page.css}" />
-
-  <link rel="stylesheet" th:href="@{/css/page/intro.css}" />
-  <link rel="stylesheet" th:href="@{/css/page/main.css}" />
-
-  <!-- JS -->
-  <script defer th:src="@{/js/vendor/aos.js}"></script>
-  <script defer th:src="@{/js/vendor/gsap.min.js}"></script>
-  <script defer th:src="@{/js/vendor/ScrollTrigger.min.js}"></script>
-  <script defer th:src="@{/js/vendor/swiper-bundle.min.js}"></script>
-  <script defer th:src="@{/js/common.js}"></script>
-  <script defer th:src="@{/js/main.js}"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      if (window.AOS && !window.__aosInited) {
-        AOS.init(); /* 옵션 필요 시 { duration: 600, once: true } */
-        window.__aosInited = true;
-      }
-    });
-  </script>
-</head>
-
-<body>
-  <!-- 고정 헤더 -->
-  <th:block th:replace="~{component/headeroriginal :: siteHeader}"></th:block>
-
-  <!-- MiniSPA 컨텐츠 영역 -->
-  <div id="contents">
     <div class="container">
-      <th:block th:replace="${content}"></th:block>
+        <div class="header-inner">
+            <h1>
+                <a th:href="@{/}" aria-label="홈으로 이동" class="swap-link"></a>
+            </h1>
+
+            <!-- GNB -->
+            <nav id="gnb1" aria-label="주요 메뉴">
+                <ul class="gnb-list" role="menubar">
+                    <li role="none" class="has-sub">
+                        <button type="button" role="menuitem" aria-haspopup="true" aria-expanded="false"
+                            aria-controls="sub-plat">플랫폼소개</button>
+                        <div id="sub-plat" class="depth-box" role="group">
+                            <div class="depth-inner">
+                                <a role="menuitem" th:href="@{/pltfintd/pltfIntd.do}" class="swap-link">플랫폼소개</a>
+                                <a role="menuitem" th:href="@{/pltfintd/mdlBy.do}" class="swap-link">모델별별</a>
+                                <a role="menuitem" th:href="@{/pltfintd/bzAflt.do}" class="swap-link">사업제휴문의</a>
+                            </div>
+                        </div>
+                    </li>
+                    <li role="none" class="has-sub">
+                        <button type="button" role="menuitem" aria-haspopup="true" aria-expanded="false"
+                            aria-controls="sub-svc">서비스안내</button>
+                        <div id="sub-svc" class="depth-box" role="group">
+                            <div class="depth-inner">
+                                <a role="menuitem" th:href="@{/svcgd/lcgvSvcGd.do}" class="swap-link">지자체별 서비스 안내</a>
+                            </div>
+                        </div>
+                    </li>
+                    <li role="none" class="has-sub">
+                        <button type="button" role="menuitem" aria-haspopup="true" aria-expanded="false"
+                            aria-controls="sub-guide">이용안내</button>
+                        <div id="sub-guide" class="depth-box" role="group">
+                            <div class="depth-inner">
+                                <a role="menuitem" th:href="@{/utlzgd/mbrsJoinGd.do}" class="swap-link">회원가입안내</a>
+                                <a role="menuitem" th:href="@{/utlzgd/spfnAplPayGd.do}" class="swap-link">지원금 신청 및
+                                    지급안내</a>
+                            </div>
+                        </div>
+                    </li>
+                    <li role="none" class="has-sub">
+                        <button type="button" role="menuitem" aria-haspopup="true" aria-expanded="false"
+                            aria-controls="sub-news">소식</button>
+                        <div id="sub-news" class="depth-box" role="group">
+                            <div class="depth-inner">
+                                <a role="menuitem" th:href="@{/news/ntcmttr/ntcMttr.do}" class="swap-link">공지사항</a>
+                                <a role="menuitem" th:href="@{/news/faq/faq.do}" class="swap-link">자주묻는질문</a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- 유틸 메뉴 -->
+            <div class="gnb">
+                <div class="util-box" aria-label="사용자 메뉴">
+                    <a th:href="@{/etc/lgn/login.do}" class="swap-link">로그인</a>
+                    <span aria-hidden="true"></span>
+                    <a th:href="@{/etc/mbrsjoin/step1.do}" class="swap-link">회원가입</a>
+                </div>
+                <button type="button" class="btn-menu" aria-controls="sitemap" aria-expanded="false"
+                    aria-label="사이트맵 열기">
+                    <div aria-hidden="true"></div>
+                    <div aria-hidden="true"></div>
+                    <div aria-hidden="true"></div>
+                </button>
+
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- 공통 모달 -->
-  <div class="modal" id="modal-common" role="alertdialog" aria-modal="true" aria-labelledby="modal-title-basic"
-    aria-describedby="modal-desc-basic" aria-hidden="true">
-    <div class="modal-overlay" data-dismiss></div>
-    <div class="modal-container" role="document" tabindex="-1">
-      <header class="modal-header">
-        <h2 id="modal-title-basic" class="modal-title">알림</h2>
-        <button type="button" class="modal-close" aria-label="닫기" data-dismiss></button>
-      </header>
-      <section class="modal-body" id="modal-desc-basic">
-        <p id="modal-message-basic">내용이 표시됩니다.</p>
-      </section>
-      <footer class="modal-footer">
-        <button type="button" class="btn btn-blue size-lg" id="modal-ok-btn">확인</button>
-        <button type="button" class="btn btn-dark-line size-lg" id="modal-close-btn" data-dismiss>닫기</button>
-      </footer>
+    <!-- sitemap -->
+    <div class="sitemap-dimmed" aria-hidden="true"></div>
+    <div id="sitemap" class="sitemap" role="navigation" aria-label="사이트맵">
+        <div class="container">
+            <div class="info-box">
+                <div class="top">
+                    <h2>마이</h2>
+                    <button type="button" class="btn btn-close btn-icon-only">
+                        <i class="icon icon-close"></i>
+                    </button>
+                </div>
+                <div class="flex align-center">
+                    <div class="img-box">
+                        <img src="/images/img-people.png" alt="티머니 로그인 이미지">
+                    </div>
+                    <div>
+                        <p>반가워요!!</p>
+                        <ul>
+                            <li><a href="">로그인</a></li>
+                            <li><a href="">회원가입</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <ul class="collapse">
+                <li class="collapse-item">
+                    <button type="button" class="collapse-trigger" aria-expanded="false" aria-controls="sm-menu1">
+                        <i class="icon icon1" aria-hidden="true"></i>
+                        <span>플랫폼소개</span>
+                        <i class="icon icon-arrow-down" aria-hidden="true"></i>
+                    </button>
+                    <ul id="sm-menu1" class="depth2" role="list" hidden>
+                        <li><a href="">플랫폼 소개</a></li>
+                        <li><a href="">교통복지 플랫폼 모델별</a></li>
+                        <li><a href="">사업제휴문의</a></li>
+                    </ul>
+                </li>
+                <li class="collapse-item">
+                    <button type="button" class="collapse-trigger" aria-expanded="false" aria-controls="sm-menu2">
+                        <i class="icon icon2" aria-hidden="true"></i>
+                        <span>서비스안내</span>
+                        <i class="icon icon-arrow-down" aria-hidden="true"></i>
+                    </button>
+                    <ul id="sm-menu2" class="depth2" role="list" hidden>
+                        <li><a href="">지자체별 서비스 안내</a></li>
+                    </ul>
+                </li>
+                <li class="collapse-item">
+                    <button type="button" class="collapse-trigger" aria-expanded="false" aria-controls="sm-menu3">
+                        <i class="icon icon3" aria-hidden="true"></i>
+                        <span>이용안내</span>
+                        <i class="icon icon-arrow-down" aria-hidden="true"></i>
+                    </button>
+                    <ul id="sm-menu3" class="depth2" role="list" hidden>
+                        <li><a href="">회원가입 안내</a></li>
+                        <li><a href="">지원금 신청 및 지급 안내</a></li>
+                    </ul>
+                </li>
+                <li class="collapse-item">
+                    <button type="button" class="collapse-trigger" aria-expanded="false" aria-controls="sm-menu4">
+                        <i class="icon icon4" aria-hidden="true"></i>
+                        <span>소식</span>
+                        <i class="icon icon-arrow-down" aria-hidden="true"></i>
+                    </button>
+                    <ul id="sm-menu4" class="depth2" role="list" hidden>
+                        <li><a href="">공지사항</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </div>
-  </div>
-
-  <!-- Footer / Top Button -->
-  <th:block th:replace="~{component/footer :: siteFooter}"></th:block>
-  <th:block th:replace="~{component/topBtn :: siteTop}"></th:block>
-
-
-
-  <script>
-    // MiniSPA 초기화 + 헤더 swap-link 클릭 SPA 적용
-    (function initMiniSpa() {
-      if (window.__miniSpaInited) return;
-
-      if (window.Common && Common.MiniSPA) {
-        // MiniSPA 초기화
-        Common.MiniSPA.init({
-          containerSelector: '#contents .container'
-        });
-
-        window.__miniSpaInited = true;
-        return;
-      }
-
-      setTimeout(initMiniSpa, 50);
-    })();
-
-    // AOS 초기화
-    document.addEventListener('DOMContentLoaded', function () {
-      if (window.AOS && !window.__aosInited) {
-        AOS.init({ duration: 600, once: true });
-        window.__aosInited = true;
-      }
-    });
-  </script>
-</body>
-
-</html>
+</aside>
