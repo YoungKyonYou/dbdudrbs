@@ -18,7 +18,11 @@ public class LcgvMainServiceImpl implements LcgvMainService {
 
     @Override
     @Transactional(readOnly = true)
-    public LcgvMainRspVO readLcgvMain(LcgvMainReqVO req, String mbrsId) { return lcgvMainMapper.readLcgvMain(req, mbrsId); };
+    public LcgvMainRspVO readLcgvMain(LcgvMainReqVO req, String mbrsId) {
+        LcgvMainRspVO rsp = lcgvMainMapper.readLcgvMain(req, mbrsId);
+        rsp.setUrl("jongro");
+        return rsp;
+    };
 
     @Override
     @Transactional(readOnly = true)

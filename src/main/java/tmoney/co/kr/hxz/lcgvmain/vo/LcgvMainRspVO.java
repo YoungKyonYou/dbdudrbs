@@ -18,4 +18,5 @@ public class LcgvMainRspVO {
     private String stlmDt;
     private String aplAmt;
     private String payAmt;
+    private String url;
 }
