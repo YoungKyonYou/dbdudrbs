@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{component/layout :: layout(~{::content})}">
+  <th:block th:fragment="content">
+
+    <div class="mypage-nav">
+      <div class="container fluid">
+        <nav>
+          <ul>
+            <li><a href="#">개명처리</a></li>
+            <li><a href="#">나의지자체</a></li>
+            <li><a href="#">지원금 신청결과</a></li>
+            <li><a href="#">지원금 내역 조회</a></li>
+            <li class="active"><a href="#" aria-current="page">이용내역 조회</a></li>
+            <li><a href="#">카드관리</a></li>
+            <li><a href="#">계좌관리</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <main id="contents">
+      <section class="section">
+        <div class="container">
+          <div class="mypage-wrap">
+
+            <div class="mypage-header">
+              <h2 class="section-title">이용내역 조회</h2>
+            </div>
+
+            <div class="mng-wrap">
+
+              <!-- 조회 필터 -->
+              <div class="date-filter">
+                <div class="flex align-center gap24">
+                  <h3>조회기간</h3>
+                  <div class="flex align-center gap8">
+
+                    <!-- 년도 -->
+                    <div class="dropdown size-lg" role="group">
+                      <button type="button" id="yearDropdownBtn" class="dropdown_button" aria-haspopup="listbox"
+                        aria-expanded="false">
+                        <span class="dropdown_value" data-placeholder="년도 선택"
+                          th:text="${req.stlmDt != null} ? ${req.stlmDt.substring(0,4)} : '년도 선택'">년도 선택</span>
+                      </button>
+                      <ul class="dropdown_list" id="yearDropdownList" role="listbox" tabindex="-1"
+                        aria-labelledby="yearDropdownBtn" style="display:none;">
+                        <li role="option" class="dropdown_option" data-value="2025" aria-selected="true">2025</li>
+                        <li role="option" class="dropdown_option" data-value="2024" aria-selected="false">2024</li>
+                        <li role="option" class="dropdown_option" data-value="2023" aria-selected="false">2023</li>
+                      </ul>
+                      <input type="hidden" name="year"
+                        th:value="${req.stlmDt != null} ? ${req.stlmDt.substring(0,4)} : ''">
+                    </div>
+
+                    <span class="flex-bar"></span>
+
+                    <!-- 월 -->
+                    <div class="dropdown size-lg" role="group">
+                      <button type="button" id="monthDropdownBtn" class="dropdown_button" aria-haspopup="listbox"
+                        aria-expanded="false">
+                        <span class="dropdown_value" data-placeholder="월 선택"
+                          th:text="${req.stlmDt != null} ? ${req.stlmDt.substring(4,6)} + '월' : '월 선택'">월 선택</span>
+                      </button>
+                      <ul class="dropdown_list" id="monthDropdownList" role="listbox" tabindex="-1"
+                        aria-labelledby="monthDropdownBtn" style="display:none;">
+                        <li role="option" class="dropdown_option" data-value="01" aria-selected="false">1월</li>
+                        <li role="option" class="dropdown_option" data-value="02" aria-selected="false">2월</li>
+                        <li role="option" class="dropdown_option" data-value="03" aria-selected="false">3월</li>
+                        <li role="option" class="dropdown_option" data-value="04" aria-selected="false">4월</li>
+                        <li role="option" class="dropdown_option" data-value="05" aria-selected="false">5월</li>
+                        <li role="option" class="dropdown_option" data-value="06" aria-selected="false">6월</li>
+                        <li role="option" class="dropdown_option" data-value="07" aria-selected="false">7월</li>
+                        <li role="option" class="dropdown_option" data-value="08" aria-selected="false">8월</li>
+                        <li role="option" class="dropdown_option" data-value="09" aria-selected="false">9월</li>
+                        <li role="option" class="dropdown_option" data-value="10" aria-selected="false">10월</li>
+                        <li role="option" class="dropdown_option" data-value="11" aria-selected="false">11월</li>
+                        <li role="option" class="dropdown_option" data-value="12" aria-selected="false">12월</li>
+                      </ul>
+                      <input type="hidden" name="month"
+                        th:value="${req.stlmDt != null} ? ${req.stlmDt.substring(4,6)} : ''">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary size-lg btn-icon-right">
+                      <i class="icon icon-search"></i> 조회
+                    </button>
+
+                  </div>
+                </div>
+              </div>
+
+              <!-- 테이블 -->
+              <div class="table-wrap type-col scroll-x">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>순번</th>
+                      <th>지급년월</th>
+                      <th>이용일자</th>
+                      <th>정산금액</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr th:each="row, stat : ${pageData.content}">
+                      <td th:text="${pageData.total - (pageData.page * pageData.size) - stat.index}">1</td>
+                      <td th:text="${row.stlmDt}"></td>
+                      <td th:text="${row.trdDt}"></td>
+                      <td th:text="${row.trdAmt}"></td>
+                    </tr>
+
+                    <tr th:if="${pageData == null or #lists.isEmpty(pageData.content)}">
+                      <td colspan="4" class="text-center">조회 결과가 없습니다.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- 페이징 -->
+              <div id="grid-pager" th:if="${pageData != null and pageData.total > 0}">
+                <th:block th:replace="~{component/pagination :: pager(${pageData})}"></th:block>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 조회 스크립트 -->
+    <script>
+      (function () {
+        const toggleDropdown = (btn, list) => {
+          btn.addEventListener('click', () => {
+            const expanded = btn.getAttribute('aria-expanded') === 'true';
+            btn.setAttribute('aria-expanded', !expanded);
+            list.style.display = expanded ? 'none' : 'block';
+          });
+        };
+
+        const selectOption = (list, input, btn) => {
+          list.querySelectorAll(".dropdown_option").forEach(opt => {
+            opt.addEventListener("click", () => {
+              input.value = opt.dataset.value;
+              btn.querySelector(".dropdown_value").textContent = opt.textContent;
+              list.style.display = 'none';
+              btn.setAttribute('aria-expanded', 'false');
+              // aria-selected 업데이트
+              list.querySelectorAll(".dropdown_option").forEach(o => o.setAttribute('aria-selected', 'false'));
+              opt.setAttribute('aria-selected', 'true');
+            });
+          });
+        };
+
+        const yearBtn = document.getElementById("yearDropdownBtn");
+        const yearList = document.getElementById("yearDropdownList");
+        const yearInput = document.querySelector("input[name='year']");
+        toggleDropdown(yearBtn, yearList);
+        selectOption(yearList, yearInput, yearBtn);
+
+        const monthBtn = document.getElementById("monthDropdownBtn");
+        const monthList = document.getElementById("monthDropdownList");
+        const monthInput = document.querySelector("input[name='month']");
+        toggleDropdown(monthBtn, monthList);
+        selectOption(monthList, monthInput, monthBtn);
+
+        // 검색 버튼
+        document.querySelector(".btn-primary").addEventListener("click", function (e) {
+          e.preventDefault();
+          const year = yearInput.value;
+          const month = monthInput.value;
+          if (!year || !month) {
+            alert("년도와 월을 선택해주세요.");
+            return;
+          }
+          const stlmDt = `${year}${month}`;
+          const form = document.createElement("form");
+          form.method = "get";
+          form.action = "/mypage/utlzPtInqr.do";
+          const input = document.createElement("input");
+          input.type = "hidden";
+          input.name = "stlmDt";
+          input.value = stlmDt;
+          form.appendChild(input);
+          document.body.appendChild(form);
+          form.submit();
+        });
+
+        // 바깥 클릭 시 드롭다운 닫기
+        document.addEventListener('click', (e) => {
+          if (!yearBtn.contains(e.target) && !yearList.contains(e.target)) {
+            yearList.style.display = 'none';
+            yearBtn.setAttribute('aria-expanded', 'false');
+          }
+          if (!monthBtn.contains(e.target) && !monthList.contains(e.target)) {
+            monthList.style.display = 'none';
+            monthBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+      })();
+    </script>
+
+  </th:block>
+</th:block>
+
+</html>

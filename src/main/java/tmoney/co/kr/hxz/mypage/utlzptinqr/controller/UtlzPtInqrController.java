@@ -44,6 +44,6 @@ public class UtlzPtInqrController {
 
         model.addAttribute("pageData", contents);
         model.addAttribute("req", req);
-        return "/hxz/mypage/utlzptinqr/utlzPtQr";
+        return "/hxz/mypage/utlzptinqr/utlzPtInqr";
     }
 }

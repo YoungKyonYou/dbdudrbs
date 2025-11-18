@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<th:block th:replace="~{component/header :: layout(~{::content})}">
+<th:block th:replace="~{component/layout :: layout(~{::content})}">
   <th:block th:fragment="content">
     <main id="contents">
       <section class="section section1">
@@ -12,12 +12,14 @@
               <!-- ★ 슬라이드에 고유 id 부여 (불릿 aria-controls와 일치해야 함) -->
               <div class="swiper-slide" id="section1-slide-1" role="group" aria-label="1 / 2"
                 aria-labelledby="slide1-text1">
-                <img src="/images/main/img-visual1.jpg" alt="" />
+                <img src="/images/main/img-visual1_text.jpg" alt="" class="visual-pc">
+                <img src="/images/main/img-visual1_text_mo.jpg" alt="" class="visual-mobile">
                 <p id="slide1-text1" class="blind">전국 어디서나, 지자체 맞춤 교통비 지원을, '교통비지원 통합포털'에서</p>
               </div>
               <div class="swiper-slide" id="section1-slide-2" role="group" aria-label="2 / 2"
                 aria-labelledby="slide1-text2">
-                <img src="/images/main/img-visual1.jpg" alt="" />
+                <img src="/images/main/img-visual1_text.jpg" alt="" class="visual-pc">
+                <img src="/images/main/img-visual1_text_mo.jpg" alt="" class="visual-mobile">
                 <p id="slide1-text2" class="blind">전국 어디서나, 지자체 맞춤 교통비 지원을, '교통비지원 통합포털'에서</p>
               </div>
             </div>
@@ -36,77 +38,83 @@
             </div>
           </div>
 
-          <!-- <div class="login-box" aria-labelledby="login-title">
+          <!-- case1. 로그인 전(display: none/flex로 관리)-->
+          <div class="login-box check-out" style="display: none;" aria-labelledby="login-title">
             <h3 id="login-title" class="sr-only">로그인 영역</h3>
-            <div>
+            <div class="top">
               <div class="img-box">
                 <img src="/images/main/img-login-people.png" alt="로그인 환영 일러스트">
               </div>
               <p>반갑습니다!</p>
             </div>
-            <button onclick="Common.MiniSPA.go('/etc/lgn/login.do')" class="swap-link btn btn-primary btn-icon-right">
-              <i class="icon icon-arrow-right" aria-hidden="true"></i>
-              로그인
-            </button>
-
-            <div class="link-wrap" aria-label="회원 계정 관련 링크">
-              <a onclick="Common.MiniSPA.go('/etc/mbrsjoin/step1.do')">회원가입</a>
-              <span class="bar" aria-hidden="true"></span>
-              <a onclick="Common.MiniSPA.go('/etc/idsrch/idSrch.do')">아이디/비밀번호찾기</a>
-            </div>
-          </div> -->
-
-          <div class="login-box" aria-labelledby="login-title">
-            <h3 id="login-title" class="sr-only">로그인 영역</h3>
-
-            <th:block>
-              <div>
-                <div class="img-box">
-                  <img src="/images/main/img-login-people.png" alt="로그인 환영 일러스트">
-                </div>
-                <p>
-                  <strong th:text="${mbrsId}"></strong> 님, 반갑습니다!
-                </p>
-              </div>
-
-              <!-- 나의 서비스 -->
-              <div class="my-service">
-                <h4>나의 서비스</h4>
-                <ul>
-                  <li th:each="svc : ${mySvcList}" th:text="${svc.tpwSvcNm}">
-
-                    <a th:text="${svc.tpwSvcNm}" th:href="@{/}" class="join-link">
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <!-- 전체 서비스 -->
-              <div class="all-service">
-                <h4>전체 서비스</h4>
-                <ul>
-                  <li th:each="svc : ${mainSvcList}">
-                    <!-- joinYn == 't' : 텍스트만 -->
-                    <span th:if="${svc.joinYn == 't'}" th:text="${svc.tpwSvcNm}"></span>
-
-                    <!-- joinYn == 'f' : 클릭 시 이동 -->
-                    <a th:if="${svc.joinYn == 'f'}" th:text="${svc.tpwSvcNm}"
-                      th:href="@{/svcjoin/rsdcAuth.do(orgCd=${svc.orgCd},tpwSvcId=${svc.tpwSvcId})}" class="join-link">
-                    </a>
-
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
+            <div class="bot">
+              <a href="#" class="btn btn-primary btn-icon-right">
+                <i class="icon icon-arrow-right" aria-hidden="true"></i>
+                로그인
+              </a>
               <div class="link-wrap" aria-label="회원 계정 관련 링크">
-                <a onclick="Common.MiniSPA.go('/etc/mbrsjoin/step1.do')">회원가입</a>
+                <a href="#">회원가입</a>
                 <span class="bar" aria-hidden="true"></span>
-                <a onclick="Common.MiniSPA.go('/etc/idsrch/idSrch.do')">아이디/비밀번호찾기</a>
+                <a href="#">아이디/비밀번호찾기</a>
               </div>
-            </th:block>
+            </div>
           </div>
-
+          <!-- case2. 로그인 후(display: none/flex로 관리) -->
+          <!-- case2-1. 가입한 사업이 없을 때 -->
+          <div class="login-box check-in" style="display: flex;" aria-labelledby="login-title">
+            <h3 id="login-title" class="sr-only">로그인 영역</h3>
+            <div class="top-box">
+              <div class="img-box">
+                <img src="/images/main/img-login-people.png" alt="로그인 환영 일러스트">
+              </div>
+              <div>
+                <h4>반가워요!! <span class="color-primary">티머니</span>님</h4>
+              </div>
+            </div>
+            <div class="join-list">
+              <div class="flex align-center dir-col">
+                <img src="/images/main/img-caution.png" alt="경고 이미지">
+                <p>가입한 지원 사업이 없습니다.</p>
+              </div>
+            </div>
+            <div class="btn-wrap">
+              <a href="" class="btn btn-secondary size-sm">+ 지원사업 추가하기</a>
+              <button class="btn btn-darken-line btn-icon-right size-sm">
+                <i class="icon icon-leave" aria-hidden="true"></i>
+                로그아웃
+              </button>
+            </div>
+          </div>
+          <!-- case2. 로그인 후(display: none/flex로 관리) -->
+          <!-- case2-2. 가입한 사업이 있을 때 -->
+          <div class="login-box check-in" style="display: none;" aria-labelledby="login-title">
+            <h3 id="login-title" class="sr-only">로그인 영역</h3>
+            <div class="top-box">
+              <div class="img-box">
+                <img src="/images/main/img-login-people.png" alt="로그인 환영 일러스트">
+              </div>
+              <div>
+                <h4>반가워요!! <span class="color-primary">티머니</span>님</h4>
+                <h4>내가 가입한 지원사업 <span class="color-secondary">2</span></h4>
+              </div>
+            </div>
+            <div class="join-list">
+              <div class="list-itembox">
+                <a href="">종로구 어린이 청소년 교통비지원 사업</a>
+                <a href="">종로구 임산부 교통비지원 사업</a>
+                <a href="">종로구 임산부 교통비지원 사업</a>
+                <a href="">종로구 임산부 교통비지원 사업</a>
+                <a href="">종로구 임산부 교통비지원 사업</a>
+              </div>
+            </div>
+            <div class="btn-wrap">
+              <a href="" class="btn btn-secondary size-sm">+ 지원사업 추가하기</a>
+              <button class="btn btn-darken-line btn-icon-right size-sm">
+                <i class="icon icon-leave" aria-hidden="true"></i>
+                로그아웃
+              </button>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -132,6 +140,7 @@
         </div>
       </section>
 
+
       <section class="section section3">
         <div class="container">
           <div class="box">
@@ -153,9 +162,7 @@
                 다양한 대상자가 지원금을 신청할 수 있어요!
               </h3>
               <p class="">* 지원금 신청과 입금 절차는 각 지자체별 정책에 따라 다를 수 있습니다.</p>
-              <a onclick="Common.MiniSPA.go('/utlzgd/spfnAplPayGd.do')" class="btn-link">자세히 보기 <i
-                  class="icon right"></i></a>
-
+              <a href="#" class="btn-link">자세히 보기 <i class="icon right"></i></a>
             </div>
             <div class="img-box">
               <div class="box" data-aos="fade-up" data-aos-offset="100" data-aos-easing="ease-out-cubic"

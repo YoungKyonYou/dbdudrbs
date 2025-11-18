@@ -1,8 +1,7 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<th:block th:replace="~{component/header :: layout(~{::content})}">
+<th:block th:replace="~{component/layout :: layout(~{::content})}">
   <th:block th:fragment="content">
-
     <div class="mypage-nav">
       <div class="container fluid">
         <nav>
@@ -18,7 +17,6 @@
         </nav>
       </div>
     </div>
-
     <main id="contents">
       <section class="section">
         <div class="container">
@@ -26,55 +24,36 @@
             <div class="mypage-header">
               <h2 class="section-title">지원금 내역 조회</h2>
             </div>
-
-            <div class="mng-wrap">
-
-              <!-- 검색 폼 -->
-              <form id="searchForm" th:object="${req}" th:action="@{/mypage/spfnPtInqr.do}" method="get">
-                <input id="sort" th:field="*{sort}" type="hidden">
-                <input id="dir" th:field="*{dir}" type="hidden">
-                <input id="page" th:field="*{page}" type="hidden" value="0">
-                <input id="size" th:field="*{size}" type="hidden" value="10">
-
+            <div class="mng-wrap"> <!-- 검색 폼 -->
+              <form id="searchForm" th:object="${req}" th:action="@{/mypage/spfnPtInqr.do}" method="get"> <input
+                  id="sort" th:field="*{sort}" type="hidden"> <input id="dir" th:field="*{dir}" type="hidden"> <input
+                  id="page" th:field="*{page}" type="hidden" value="0"> <input id="size" th:field="*{size}"
+                  type="hidden" value="10">
                 <div class="date-filter">
                   <div class="flex align-center gap24">
                     <h3>조회기간</h3>
                     <div class="flex">
                       <div class="date-range flex align-center gap8" data-dp="range" data-dp-group="booking">
-
                         <!-- 시작일 -->
-                        <div class="text-field datepicker size-lg">
-                          <label for="startDate" class="sr-only">시작일</label>
+                        <div class="text-field datepicker size-lg"> <label for="startDate" class="sr-only">시작일</label>
                           <input id="startDate" th:field="*{paySttDt}" name="paySttDt" type="text" class="dp-input"
-                            placeholder="YYYY-MM-DD" autocomplete="off">
-                          <button type="button" class="dp-btn" data-dp-toggle></button>
-                        </div>
-
-                        <span class="flex-bar">–</span>
-
-                        <!-- 종료일 -->
-                        <div class="text-field datepicker size-lg">
-                          <label for="endDate" class="sr-only">종료일</label>
+                            placeholder="YYYY-MM-DD" autocomplete="off"> <button type="button" class="dp-btn"
+                            data-dp-toggle></button>
+                        </div> <span class="flex-bar">–</span> <!-- 종료일 -->
+                        <div class="text-field datepicker size-lg"> <label for="endDate" class="sr-only">종료일</label>
                           <input id="endDate" name="payEndDt" type="text" class="dp-input" placeholder="YYYY-MM-DD"
-                            autocomplete="off" th:field="*{payEndDt}">
-                          <button type="button" class="dp-btn" data-dp-toggle></button>
+                            autocomplete="off" th:field="*{payEndDt}"> <button type="button" class="dp-btn"
+                            data-dp-toggle></button>
                         </div>
-
-                      </div>
-
-                      <button type="submit" id="searchBtn" class="btn btn-primary size-lg btn-icon-right">
-                        <i class="icon icon-search"></i> 조회
-                      </button>
+                      </div> <button type="submit" id="searchBtn" class="btn btn-primary size-lg btn-icon-right"> <i
+                          class="icon icon-search"></i> 조회 </button>
                     </div>
                   </div>
                 </div>
-              </form>
-
-              <!-- 테이블 -->
+              </form> <!-- 테이블 -->
               <div class="table-wrap type-col scroll-x board-list">
                 <table>
                   <caption class="sr-only">지원금 내역 테이블</caption>
-
                   <colgroup>
                     <col style="width:120px">
                     <col style="width:160px">
@@ -82,7 +61,6 @@
                     <col>
                     <col style="width:160px">
                   </colgroup>
-
                   <thead>
                     <tr>
                       <th scope="col">순번</th>
@@ -92,9 +70,7 @@
                       <th scope="col">지급금액</th>
                     </tr>
                   </thead>
-
-                  <tbody id="grid-tbody" class="board-body" role="list">
-                    <!-- 데이터 있는 경우 -->
+                  <tbody id="grid-tbody" class="board-body" role="list"> <!-- 데이터 있는 경우 -->
                     <tr th:each="row, stat : ${pageData.content}">
                       <td th:text="${pageData.total - (pageData.page * pageData.size) - stat.index}">1</td>
                       <td th:text="${row.payDt}">2025.10</td>
@@ -107,13 +83,10 @@
                     </tr>
                   </tbody>
                 </table>
-              </div>
-
-              <!-- 페이지네이션 -->
+              </div> <!-- 페이지네이션 -->
               <div id="grid-pager" th:if="${pageData != null and pageData.total > 0}">
                 <th:block th:replace="~{component/pagination :: pager(${pageData})}"></th:block>
               </div>
-
             </div>
           </div>
         </div>
@@ -121,53 +94,8 @@
     </main>
 
     <script th:inline="javascript">
-      (function () {
-        const searchForm = document.getElementById('searchForm');
-        //const baseUrl = '/mypage/spfnPtInqr.do';
-        //테스트용
-        const baseUrl = '/mypage/spfnPtInqr.do?tpwSvcId=SVC010';
-        const inputSort = document.getElementById('sort');
-        const inputDir = document.getElementById('dir');
-        const inputPage = document.getElementById('page');
-        const inputSize = document.getElementById('size');
-        const startDate = document.getElementById('startDate');
-        const endDate = document.getElementById('endDate');
-
-        searchForm.addEventListener('submit', function (e) {
-          e.preventDefault();
-
-          // 페이지 초기화
-          inputPage.value = 0;
-
-          // form 데이터 수집
-          const applied = Common.collectFromForm(searchForm);
-          applied.paySttDt = startDate.value || '';
-          applied.payEndDt = endDate.value || '';
-          //applied.tpwSvcId = 'SVC010'
-          Common.reloadList({
-            page: parseInt(inputPage.value, 10),
-            defaultSortColumn: 'pay_dt',
-            swapTargets: ['.board-list', '#grid-pager'],
-            baseUrl: baseUrl,
-            selectSize: parseInt(inputSize.value, 10) || 10,
-            inputSort,
-            inputDir,
-            applied
-          });
-        });
-
-        // 페이지네이션 바인딩
-        bindPagination(baseUrl, {
-          page: parseInt(inputPage.value || '0'),
-          size: parseInt(inputSize.value || '10'),
-          sort: inputSort?.value || 'pay_dt',
-          dir: inputDir?.value || 'asc'
-        });
-
-      })();
+      (function () { const searchForm = document.getElementById('searchForm'); const baseUrl = '/mypage/spfnPtInqr.do?tpwSvcId=SVC010'; const inputSort = document.getElementById('sort'); const inputDir = document.getElementById('dir'); const inputPage = document.getElementById('page'); const inputSize = document.getElementById('size'); const startDate = document.getElementById('startDate'); const endDate = document.getElementById('endDate'); searchForm.addEventListener('submit', function (e) { e.preventDefault(); inputPage.value = 0; const applied = Common.collectFromForm(searchForm); applied.paySttDt = startDate.value || ''; applied.payEndDt = endDate.value || ''; Common.reloadList({ page: 0, defaultSortColumn: 'pay_dt', swapTargets: ['.board-list', '#grid-pager'], selectSize: inputSize, baseUrl: baseUrl, inputSort: inputSort, inputDir: inputDir, applied: applied }); }); bindPagination(baseUrl, { page: 0, size: parseInt(inputSize.value || '10', 10), sort: inputSort.value || 'pay_dt', dir: inputDir.value || 'asc' }); })();
     </script>
-
-
   </th:block>
 </th:block>
 

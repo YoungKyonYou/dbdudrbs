@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
-<th:block th:replace="~{component/header :: layout(~{::content})}">
+<th:block th:replace="~{component/layout :: layout(~{::content})}">
   <th:block th:fragment="content">
     <main id="contents">
       <section class="section">
@@ -69,11 +69,11 @@
 
                 <div class="box secondary">
                   <h3 class="box-title">나의 내역 조회</h3>
-                  <a onclick="Common.MiniSPA.go('/mypage/spfnPtInqr.do')" class="link">
+                  <a onclick="Common.MiniSPA.go('/mypage/spfnPtInqr.do?tpwSvcId=SVC010')" class="link">
                     <i class="icon icon-card" aria-hidden="true"></i>
                     <p>지원금 내역조회</p>
                   </a>
-                  <a onclick="Common.MiniSPA.go('/mypage/utlzPtQr.do')" class="link">
+                  <a onclick="Common.MiniSPA.go('/mypage/utlzPtInqr.do?tpwSvcId=SVC010')" class="link">
                     <i class="icon icon-search" aria-hidden="true"></i>
                     <p>이용내역조회</p>
                   </a>

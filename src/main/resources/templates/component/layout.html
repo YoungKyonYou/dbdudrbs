@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" data-theme="light" th:fragment="layout(content)">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Tmoney 교통복지플랫폼" />
+  <meta name="keywords" content="Tmoney 교통복지플랫폼" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Tmoney 교통복지플랫폼" />
+  <meta property="og:description" content="Tmoney 교통복지플랫폼" />
+
+  <title th:text="${pageTitle} ?: 'Tmoney 교통복지플랫폼'">Tmoney 교통복지플랫폼</title>
+
+  <link rel="stylesheet" th:href="@{/css/vendor/aos.css}" />
+  <link rel="stylesheet" th:href="@{/css/vendor/swiper-bundle.min.css}" />
+  <link rel="stylesheet" th:href="@{/css/index.css}" />
+  <link rel="stylesheet" th:href="@{/css/page/page.css}" />
+
+  <link rel="stylesheet" th:href="@{/css/page/intro.css}" />
+  <link rel="stylesheet" th:href="@{/css/page/main.css}" />
+
+  <!-- JS -->
+  <script defer th:src="@{/js/vendor/aos.js}"></script>
+  <script defer th:src="@{/js/vendor/gsap.min.js}"></script>
+  <script defer th:src="@{/js/vendor/ScrollTrigger.min.js}"></script>
+  <script defer th:src="@{/js/vendor/swiper-bundle.min.js}"></script>
+  <script defer th:src="@{/js/common.js}"></script>
+  <script defer th:src="@{/js/main.js}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.AOS && !window.__aosInited) {
+        AOS.init(); /* 옵션 필요 시 { duration: 600, once: true } */
+        window.__aosInited = true;
+      }
+    });
+  </script>
+</head>
+
+<body>
+  <!-- 고정 헤더 -->
+  <th:block th:replace="~{component/header :: siteHeader}"></th:block>
+
+  <!-- MiniSPA 컨텐츠 영역 -->
+  <div id="contents">
+    <div class="container">
+      <th:block th:replace="${content}"></th:block>
+    </div>
+  </div>
+
+  <!-- 공통 모달 -->
+  <div class="modal" id="modal-common" role="alertdialog" aria-modal="true" aria-labelledby="modal-title-basic"
+    aria-describedby="modal-desc-basic" aria-hidden="true">
+    <div class="modal-overlay" data-dismiss></div>
+    <div class="modal-container" role="document" tabindex="-1">
+      <header class="modal-header">
+        <h2 id="modal-title-basic" class="modal-title">알림</h2>
+        <button type="button" class="modal-close" aria-label="닫기" data-dismiss></button>
+      </header>
+      <section class="modal-body" id="modal-desc-basic">
+        <p id="modal-message-basic">내용이 표시됩니다.</p>
+      </section>
+      <footer class="modal-footer">
+        <button type="button" class="btn btn-blue size-lg" id="modal-ok-btn">확인</button>
+        <button type="button" class="btn btn-dark-line size-lg" id="modal-close-btn" data-dismiss>닫기</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Footer / Top Button -->
+  <th:block th:replace="~{component/footer :: siteFooter}"></th:block>
+  <th:block th:replace="~{component/topBtn :: siteTop}"></th:block>
+
+
+
+  <script>
+    // MiniSPA 초기화 + 헤더 swap-link 클릭 SPA 적용
+    (function initMiniSpa() {
+      if (window.__miniSpaInited) return;
+
+      if (window.Common && Common.MiniSPA) {
+        // MiniSPA 초기화
+        Common.MiniSPA.init({
+          containerSelector: '#contents .container'
+        });
+
+        window.__miniSpaInited = true;
+        return;
+      }
+
+      setTimeout(initMiniSpa, 50);
+    })();
+
+    // AOS 초기화
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.AOS && !window.__aosInited) {
+        AOS.init({ duration: 600, once: true });
+        window.__aosInited = true;
+      }
+    });
+  </script>
+</body>
+
+</html>
