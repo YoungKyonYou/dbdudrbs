@@ -3,6 +3,7 @@ package tmoney.co.kr.hxz.lcgvmain.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tmoney.co.kr.hxz.common.type.LcgvType;
 import tmoney.co.kr.hxz.lcgvmain.mapper.LcgvMainMapper;
 import tmoney.co.kr.hxz.lcgvmain.service.LcgvMainService;
 import tmoney.co.kr.hxz.lcgvmain.vo.LcgvMainReqVO;
@@ -18,10 +19,21 @@ public class LcgvMainServiceImpl implements LcgvMainService {
 
     @Override
     @Transactional(readOnly = true)
+    public LcgvMainRspVO lcgvMain(LcgvMainReqVO req, String mbrsId) {
+        LcgvMainRspVO rsp = readLcgvMain(req, mbrsId);
+
+        String lcgvUrl = LcgvType.JONGRO.name();
+
+        return new LcgvMainRspVO(
+                rsp.getOrgCd(), rsp.getTpwOrgNm(), rsp.getTpwSvcId(),
+                rsp.getTpwSvcNm(), rsp.getTpwAplPrgsStaCd(), rsp.getStlmDt(),
+                rsp.getAplAmt(), rsp.getPayAmt(), lcgvUrl
+        );
+    };
+
+    @Transactional(readOnly = true)
     public LcgvMainRspVO readLcgvMain(LcgvMainReqVO req, String mbrsId) {
-        LcgvMainRspVO rsp = lcgvMainMapper.readLcgvMain(req, mbrsId);
-        rsp.setUrl("/skin/jongro/page/main/index");
-        return rsp;
+        return lcgvMainMapper.readLcgvMain(req, mbrsId);
     };
 
     @Override

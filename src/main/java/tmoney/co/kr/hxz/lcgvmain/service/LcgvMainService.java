@@ -7,7 +7,7 @@ import tmoney.co.kr.hxz.lcgvmain.vo.LcgvNtcRspVO;
 import java.util.List;
 
 public interface LcgvMainService {
-    LcgvMainRspVO readLcgvMain(LcgvMainReqVO req, String mbrsId);
+    LcgvMainRspVO lcgvMain(LcgvMainReqVO req, String mbrsId);
 
     List<LcgvNtcRspVO> readLcgvNtcList(String tpwSvcId);
 }
