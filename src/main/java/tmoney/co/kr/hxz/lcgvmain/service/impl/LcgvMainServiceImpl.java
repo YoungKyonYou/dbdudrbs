@@ -22,7 +22,7 @@ public class LcgvMainServiceImpl implements LcgvMainService {
     public LcgvMainRspVO lcgvMain(LcgvMainReqVO req, String mbrsId) {
         LcgvMainRspVO rsp = readLcgvMain(req, mbrsId);
 
-        String lcgvUrl = LcgvType.JONGRO.name();
+        String lcgvUrl = LcgvType.JONGRO.getName();
 
         return new LcgvMainRspVO(
                 rsp.getOrgCd(), rsp.getTpwOrgNm(), rsp.getTpwSvcId(),
