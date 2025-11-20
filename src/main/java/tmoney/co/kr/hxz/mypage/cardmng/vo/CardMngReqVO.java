@@ -24,5 +24,5 @@ public class CardMngReqVO {
     private int size = 10;
     @Size(max = 14, message = "정렬값의 문자열 길이는 14 이하여야 합니다.")
     private String sort = "card_mod_dt";
-    private String dir = "asc";
+    private String dir = "desc";
 }
