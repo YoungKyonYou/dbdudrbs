@@ -11,6 +11,8 @@ import lombok.Setter;
 @Setter
 public class AcntMngRspVO {
     private String acntRgtDt;
-    private String bnkCd;
+    private String bnkNm;
     private String acntNo;
+    private String prevBnkNm;
+    private String prevAcntNo;
 }

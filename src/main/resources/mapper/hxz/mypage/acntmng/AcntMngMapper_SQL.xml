@@ -15,20 +15,27 @@
         */
         select m201.tpw_svc_id         as tpwSvcId
              , h105.acnt_rgt_dt as acntRgtDt
-             , h105.bnk_cd as bnkCd
+             , h105.bnk_cd as bnkNm
              , h105.acnt_no as acntNo
-        from ohxzown.tbhxzm201 m201
-        left join ohxzown.tbhxzm102 m102
-        on m102.tpw_svc_id = m201.tpw_svc_id
-        and m102.mbrs_id = #{mbrsId}
-        join ohxzown.tbhxzh105 h105
-        on h105.tpw_svc_id = m201.tpw_svc_id
-        and h105.mbrs_id = #{mbrsId}
-        where 1 = 1
-        and m201.tpw_svc_id = #{req.tpwSvcId}
-        and m201.use_yn = upper('y')
-        order by ${req.sort} ${req.dir}
-        limit #{req.size}
+             , prev.bnk_cd as prevBnkNm
+             , prev.acnt_no as prevAcntNo
+          from ohxzown.tbhxzm201 m201
+          left join ohxzown.tbhxzm102 m102
+            on m102.tpw_svc_id = m201.tpw_svc_id
+           and m102.mbrs_id = #{mbrsId}
+          join ohxzown.tbhxzh105 h105
+            on h105.tpw_svc_id = m201.tpw_svc_id
+           and h105.mbrs_id = #{mbrsId}
+          left join ohxzown.tbhxzh105 prev
+            on prev.tpw_svc_id     = h105.tpw_svc_id
+           and prev.tpw_svc_typ_id = h105.tpw_svc_typ_id
+           and prev.mbrs_id        = h105.mbrs_id
+           and prev.acnt_sno       = h105.acnt_sno - 1
+         where 1 = 1
+           and m201.tpw_svc_id = #{req.tpwSvcId}
+           and m201.use_yn = upper('y')
+         order by h105.${req.sort} ${req.dir}
+         limit #{req.size}
         offset #{req.page}
     </select>
 
