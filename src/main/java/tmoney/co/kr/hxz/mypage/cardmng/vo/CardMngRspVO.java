@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CardMngRspVO {
-    private String acntRgtDt;
-    private String bnkCd;
-    private String acntNo;
+    private String cardModDt;
+    private String cardNo;
+    private String prevCardNo;
 }

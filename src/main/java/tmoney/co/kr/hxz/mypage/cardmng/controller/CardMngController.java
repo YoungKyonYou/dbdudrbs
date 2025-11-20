@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import tmoney.co.kr.hxz.common.PageData;
-import tmoney.co.kr.hxz.mypage.acntmng.vo.AcntMngInstReqVO;
-import tmoney.co.kr.hxz.mypage.acntmng.vo.AcntMngReqVO;
 import tmoney.co.kr.hxz.mypage.acntmng.vo.AcntMngRspVO;
 import tmoney.co.kr.hxz.mypage.cardmng.service.CardMngService;
 import tmoney.co.kr.hxz.mypage.cardmng.vo.CardMngInstReqVO;
@@ -42,8 +40,10 @@ public class CardMngController {
     ) {
         String mbrsId = "tmoney002";
         PageData<CardMngRspVO> contents = cardMngService.readCardMngPaging(req, mbrsId);
+        CardMngRspVO result = cardMngService.readPrsCardMng(req, mbrsId);
 
         model.addAttribute("pageData", contents);
+        model.addAttribute("result", result);
         return "/hxz/mypage/cardmng/cardMng";
     }
 

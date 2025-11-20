@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tmoney.co.kr.hxz.common.PageData;
 import tmoney.co.kr.hxz.mypage.acntmng.service.AcntMngService;
+import tmoney.co.kr.hxz.mypage.acntmng.vo.AcntMngReqVO;
+import tmoney.co.kr.hxz.mypage.acntmng.vo.AcntMngRspVO;
 import tmoney.co.kr.hxz.mypage.acntmng.vo.TpwMbrsSvcVO;
 import tmoney.co.kr.hxz.mypage.cardmng.mapper.CardMngMapper;
 import tmoney.co.kr.hxz.mypage.cardmng.service.CardMngService;
@@ -34,6 +36,11 @@ public class CardMngServiceImpl implements CardMngService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public CardMngRspVO readPrsCardMng(CardMngReqVO req, String mbrsId) {
+        return readCardMng(new CardMngReqVO(req.getTpwSvcId(), 0, 10, req.getSort(), req.getDir()), mbrsId).get(0);
+    }
+
     @Transactional(readOnly = true)
     public List<CardMngRspVO> readCardMng(CardMngReqVO req, String mbrsId) {
         return cardMngMapper.readCardMng(req, mbrsId);

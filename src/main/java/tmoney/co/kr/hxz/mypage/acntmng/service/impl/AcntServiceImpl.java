@@ -31,15 +31,15 @@ public class AcntServiceImpl implements AcntMngService {
         return new PageData<>(content, req.getPage(), req.getSize(), total);
     }
 
-    @Transactional(readOnly = true)
-    public List<AcntMngRspVO> readAcntMng(AcntMngReqVO req, String mbrsId) {
-        return acntMngMapper.readAcntMng(req, mbrsId);
-    }
-
     @Override
     @Transactional(readOnly = true)
     public AcntMngRspVO readPrsAcntMng(AcntMngReqVO req, String mbrsId) {
         return readAcntMng(new AcntMngReqVO(req.getTpwSvcId(), 0, 10, req.getSort(), req.getDir()), mbrsId).get(0);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AcntMngRspVO> readAcntMng(AcntMngReqVO req, String mbrsId) {
+        return acntMngMapper.readAcntMng(req, mbrsId);
     }
 
     @Transactional(readOnly = true)
