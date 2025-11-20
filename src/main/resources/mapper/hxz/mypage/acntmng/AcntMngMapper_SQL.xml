@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tmoney.co.kr.hxz.mypage.acntmng.mapper.AcntMngMapper">
+
+    <select id="readAcntMng" resultType="tmoney.co.kr.hxz.mypage.acntmng.vo.AcntMngRspVO">
+        /* sql_id : readAcntMng */
+        /*
+        * 1. 파일 : AcntMngMapper_SQL.xml
+        * 2. 기능 : 계좌 변경 이력 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.20 - 최중혁 : 최초작성
+        */
+        select m201.tpw_svc_id         as tpwSvcId
+             , h105.acnt_rgt_dt as acntRgtDt
+             , h105.bnk_cd as bnkCd
+             , h105.acnt_no as acntNo
+        from ohxzown.tbhxzm201 m201
+        left join ohxzown.tbhxzm102 m102
+        on m102.tpw_svc_id = m201.tpw_svc_id
+        and m102.mbrs_id = #{mbrsId}
+        join ohxzown.tbhxzh105 h105
+        on h105.tpw_svc_id = m201.tpw_svc_id
+        and h105.mbrs_id = #{mbrsId}
+        where 1 = 1
+        and m201.tpw_svc_id = #{req.tpwSvcId}
+        and m201.use_yn = upper('y')
+        order by ${req.sort} ${req.dir}
+        limit #{req.size}
+        offset #{req.page}
+    </select>
+
+    <select id="readAcntMngCnt" resultType="long">
+        /* sql_id : readAcntMngCnt */
+        /*
+        * 1. 파일 : AcntMngMapper_SQL.xml
+        * 2. 기능 : 계좌 관리 내역 카운트 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.20 - 최중혁 : 최초작성
+        */
+        select count(1)
+        from ohxzown.tbhxzm201 m201
+        left join ohxzown.tbhxzm102 m102
+        on m102.tpw_svc_id = m201.tpw_svc_id
+        and m102.mbrs_id = #{mbrsId}
+        join ohxzown.tbhxzh105 h105
+        on h105.tpw_svc_id = m201.tpw_svc_id
+        and h105.mbrs_id = #{mbrsId}
+        where 1 = 1
+        and m201.tpw_svc_id = #{req.tpwSvcId}
+        and m201.use_yn = upper('y')
+    </select>
+
+    <select id="readMbrsSvcList" parameterType="tmoney.co.kr.hxz.mypage.acntmng.vo.TpwMbrsSvcVO" resultType="tmoney.co.kr.hxz.mypage.acntmng.vo.TpwMbrsSvcVO">
+        /* sql_id : readMbrsSvcList
+        * 1. 소스파일명 : TpwSvcMapper_SQL.xml
+        * 2. 기능 : 회원 서비스 목록 조회
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        *   2025.11.20 - 최중혁 : 최초작성
+        */
+        select m102.mbrs_id               as mbrsId
+        , m102.mbrs_svc_join_dt    as mbrsSvcJoinDt
+        , m102.tpw_svc_typ_id      as tpwSvcTypId
+        , m102.tpw_svc_id          as tpwSvcId
+        , m102.card_no             as cardNo
+        , m102.bnk_cd              as bnkCd
+        , m102.acnt_no             as acntNo
+        , m102.ooa_nm              as ooaNm
+        , m102.addo_cd             as addoCd
+        , m102.stdo_cd             as stdoCd
+        , m102.mvin_dt             as mvinDt
+        , m102.mvot_dt             as mvotDt
+        , m102.tpw_mbrs_svc_sta_cd as tpwMbrsSvcStaCd
+        , m102.atfl_mng_no         as atflMngNo
+        , m102.mbrs_svc_cncn_dt    as mbrsSvcCncnDt
+        from ohxzown.tbhxzm201 m201
+        left join ohxzown.tbhxzm102 m102
+        on m102.tpw_svc_id = m201.tpw_svc_id
+        and m102.mbrs_id = #{mbrsId}
+        and m102.tpw_mbrs_svc_sta_cd #{tpwMbrsSvcStaCd}
+        where to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
+        and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
+        and m201.use_yn = upper('y')
+    </select>
+
+    <update id="updateMbrsSvc" parameterType="tmoney.co.kr.hxz.mypage.acntmng.vo.TpwMbrsSvcVO">
+        update tbhxzm102 m102
+        <set>
+            <if test="req.cardNo != null"> card_no = #{req.cardNo}, </if>
+            <if test="req.bnkCd != null"> bnk_cd = #{req.bnkCd}, </if>
+            <if test="req.acntNo != null"> acnt_no = #{req.acntNo}, </if>
+            <if test="req.ooaNm != null"> ooa_nm = #{req.ooaNm}, </if>
+            <if test="req.addoCd != null"> addo_cd = #{req.addoCd}, </if>
+            <if test="req.stdoCd != null"> stdo_cd = #{req.stdoCd}, </if>
+            <if test="req.mvinDt != null"> mvin_dt = #{req.mvinDt}, </if>
+            <if test="req.mvotDt != null"> mvot_dt = #{req.mvotDt}, </if>
+            <if test="req.tpwMbrsSvcStaCd != null"> tpw_mbrs_svc_sta_cd = #{req.tpwMbrsSvcStaCd}, </if>
+            <if test="req.atflMngNo != null"> atfl_mng_no = #{req.atflMngNo}, </if>
+            <if test="req.mbrsSvcCncnDt != null"> mbrs_svc_cncn_dt = #{req.mbrsSvcCncnDt}, </if>
+
+            <!-- 공통 영역 -->
+            <if test="req.updrId != null"> updr_id = #{req.updrId}, </if>
+            <if test="req.updDtm != null"> upd_dtm = #{req.updDtm}, </if>
+        </set>
+        where m102.mbrs_id = #{req.mbrsId}
+        and m102.mbrs_svc_join_dt = #{req.mbrsSvcJoinDt}
+        and m102.tpw_svc_typ_id = #{req.tpwSvcTypId}
+        and m102.tpw_svc_id = #{req.tpwSvcId}
+    </update>
+
+    <insert id="insertMbrsSvcHist" parameterType="tmoney.co.kr.hxz.mypage.acntmng.vo.TpwMbrsSvcVO">
+        /* sql_id : insertMbrsSvcHist */
+        /*
+        * 1. 파일 : TpwSvcMapper_SQL.xml
+        * 2. 기능 : 회원서비스 변경 이력 등록
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력
+        *   2025.11.19 - 최중혁 : 최초작성
+        */
+        insert into tbhxzh102 h102
+        ( mbrs_id
+        , mbrs_svc_mod_dt
+        , mbrs_svc_mod_sno
+        , mbrs_svc_join_dt
+        , tpw_svc_id
+        , tpw_svc_typ_id
+        , tpw_mbrs_svc_sta_cd
+        , atfl_mng_no
+        , mbrs_svc_cncn_dt
+        , rgsr_id
+        , rgt_dtm
+        , updr_id
+        , upd_dtm
+        ) values
+        ( #{req.mbrsId}
+        , #{req.mbrsSvcModDt}
+        , lpad(nvl(max(#{req.mbrsSvcModSno}),0) + 1),10,'0')
+        , #{req.mbrsSvcJoinDt}
+        , #{req.tpwSvcId}
+        , #{req.tpwSvcTypId}
+        , #{req.tpwMbrsSvcStaCd}
+        , #{req.atflMngNo}
+        , #{req.mbrsSvcCncnDt}
+        , #{req.rgsrId}
+        , #{req.rgtDtm}
+        , #{req.updrId}
+        , #{req.updDtm}
+        )
+    </insert>
+</mapper>

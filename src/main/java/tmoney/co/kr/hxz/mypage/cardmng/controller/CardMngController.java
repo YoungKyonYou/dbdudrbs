@@ -1,0 +1,75 @@
+package tmoney.co.kr.hxz.mypage.cardmng.controller;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import tmoney.co.kr.hxz.common.PageData;
+import tmoney.co.kr.hxz.mypage.acntmng.vo.AcntMngInstReqVO;
+import tmoney.co.kr.hxz.mypage.acntmng.vo.AcntMngReqVO;
+import tmoney.co.kr.hxz.mypage.acntmng.vo.AcntMngRspVO;
+import tmoney.co.kr.hxz.mypage.cardmng.service.CardMngService;
+import tmoney.co.kr.hxz.mypage.cardmng.vo.CardMngInstReqVO;
+import tmoney.co.kr.hxz.mypage.cardmng.vo.CardMngReqVO;
+import tmoney.co.kr.hxz.mypage.cardmng.vo.CardMngRspVO;
+
+import javax.validation.Valid;
+
+@RequiredArgsConstructor
+@Controller
+@RequestMapping("/mypage")
+public class CardMngController {
+    private final CardMngService cardMngService;
+    /**
+     * 카드 관리 조회
+     * tbhxzh105 계좌변경이력
+     *
+     * [process]
+     * 1. 현재 가입한 서비스에서 계좌 변경 이력 조회
+     *
+     * @param
+     * @param model
+     * @return
+     */
+    @GetMapping("/cardMng.do")
+    public String readCardMngPaging(
+            @ModelAttribute @Valid CardMngReqVO req,
+            Model model
+    ) {
+        String mbrsId = "tmoney002";
+        PageData<CardMngRspVO> contents = cardMngService.readCardMngPaging(req, mbrsId);
+
+        model.addAttribute("pageData", contents);
+        return "/hxz/mypage/cardmng/cardMng";
+    }
+
+    /**
+     * 계좌 변경 등록
+     * tbhxzh105 계좌변경이력
+     * tbhxzm102 회원서비스정보
+     * tbhxzh102 회원서비스정보이력
+     *
+     * [process]
+     * 1. 현재 가입한 회원서비스의 계좌변경이력 추가
+     * 1. 회원서비스정보의 계좌 정보 update
+     * 2. 회원서비스정보이력 추가
+     * 3.
+     *
+     * @param
+     * @param
+     * @return
+     */
+    @PostMapping("/cardMng.do")
+    public ResponseEntity<?> cardMng(
+            @ModelAttribute @Valid CardMngInstReqVO req
+    ) {
+        String mbrsId = "tmoney002";
+        cardMngService.cardMng(req, mbrsId);
+
+        return ResponseEntity.ok().build();
+    }
+}
