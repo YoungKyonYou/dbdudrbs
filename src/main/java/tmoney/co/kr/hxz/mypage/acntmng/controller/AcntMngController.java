@@ -13,14 +13,18 @@ import tmoney.co.kr.hxz.mypage.acntmng.service.AcntMngService;
 import tmoney.co.kr.hxz.mypage.acntmng.vo.AcntMngInstReqVO;
 import tmoney.co.kr.hxz.mypage.acntmng.vo.AcntMngReqVO;
 import tmoney.co.kr.hxz.mypage.acntmng.vo.AcntMngRspVO;
+import tmoney.co.kr.hxz.svcjoin.service.SvcJoinService;
+import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.BankCdRspVO;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/mypage")
 public class AcntMngController {
     private final AcntMngService acntMngService;
+    private final SvcJoinService svcJoinService;
     /**
      * 카드 관리 조회
      * tbhxzh105 계좌변경이력
@@ -40,9 +44,11 @@ public class AcntMngController {
         String mbrsId = "tmoney002";
         PageData<AcntMngRspVO> contents = acntMngService.readAcntMngPaging(req, mbrsId);
         AcntMngRspVO result = acntMngService.readPrsAcntMng(req, mbrsId);
+        List<BankCdRspVO> bankList = svcJoinService.readCmnBankCdList();
 
         model.addAttribute("pageData", contents);
         model.addAttribute("result", result);
+        model.addAttribute("bankList", bankList);
         return "/hxz/mypage/acntmng/acntMng";
     }
 

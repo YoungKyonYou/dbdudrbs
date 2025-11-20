@@ -13,6 +13,7 @@ import tmoney.co.kr.hxz.mypage.cardmng.service.CardMngService;
 import tmoney.co.kr.hxz.mypage.cardmng.vo.CardMngInstReqVO;
 import tmoney.co.kr.hxz.mypage.cardmng.vo.CardMngReqVO;
 import tmoney.co.kr.hxz.mypage.cardmng.vo.CardMngRspVO;
+import tmoney.co.kr.hxz.svcjoin.vo.svcjoin.BankCdRspVO;
 
 import java.util.List;
 
@@ -64,14 +65,18 @@ public class CardMngServiceImpl implements CardMngService {
                     vo.getMvinDt(), vo.getMvotDt(), vo.getTpwMbrsSvcStaCd(), vo.getAtflMngNo(), vo.getMbrsSvcCncnDt()
             );
 
-            // 회원 서비스 계좌 이력 정보 변경
+            // 회원 서비스 카드 이력 정보 변경
             acntMngService.updateMbrsSvc(reqVO, mbrsId);
             // 회원 서비스 변경 이력 등록
             acntMngService.insertMbrsSvcHist(reqVO, mbrsId);
-        }
 
-        // 계좌 변경 이력 추가
-        insertCardMng(req, mbrsId);
+            CardMngInstReqVO cardMngInstReqVO = new CardMngInstReqVO(
+                    vo.getTpwSvcId(), vo.getTpwSvcTypId(), req.getCardSttDt(), req.getCardEndDt(),
+                    req.getCardNo()
+            );
+            // 카드 변경 이력 추가
+            insertCardMng(cardMngInstReqVO, mbrsId);
+        }
     }
 
     @Transactional

@@ -58,4 +58,48 @@
         and m201.tpw_svc_id = #{req.tpwSvcId}
         and m201.use_yn = upper('y')
     </select>
+
+    <insert id="insertCardMng" parameterType="tmoney.co.kr.hxz.mypage.cardmng.vo.CardMngInstReqVO">
+        /* sql_id : insertCardMng */
+        /*
+        * 1. 파일 : CardMngMapper_SQL.xml
+        * 2. 기능 : 카드 변경 이력 추가
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.20 - 최중혁 : 최초작성
+        */
+        insert into ohxzown.tbhxzh104
+        ( tpw_svc_id
+        , tpw_svc_typ_id
+        , mbrs_id
+        , card_mod_dt
+        , card_mod_sno
+        , card_stt_dt
+        , card_end_dt
+        , use_yn
+        , rgsr_id
+        , rgt_dtm
+        , updr_id
+        , upd_dtm
+        ) values
+        ( #{req.tpwSvcId}
+        , #{req.tpwSvcTypId}
+        , #{mbrsId}
+        , #{req.cardModDt}
+        , coalesce(
+        ( select max(card_mod_sno)
+        from ohxzown.tbhxzh104
+        where tpw_svc_id = #{req.tpwSvcId}
+        and tpw_svc_typ_id = #{req.tpwSvcTypId}
+        and mbrs_id = #{req.mbrsId}
+        ), 0 ) + 1
+        , #{req.cardSttDt}
+        , #{req.cardEndDt}
+        , 'Y'
+        , #{mbrsId}
+        , to_char(now(), 'yyyymmddhh24miss')
+        , #{mbrsId}
+        , to_char(now(), 'yyyymmddhh24miss')
+        );
+    </insert>
 </mapper>

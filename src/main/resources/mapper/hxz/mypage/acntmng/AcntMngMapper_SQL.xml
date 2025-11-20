@@ -14,10 +14,10 @@
         2025.11.20 - 최중혁 : 최초작성
         */
         select m201.tpw_svc_id         as tpwSvcId
-             , h105.acnt_rgt_dt as acntRgtDt
-             , h105.bnk_cd as bnkNm
+             , h105.acnt_rgt_dt        as acntRgtDt
+             , c002_now.cmn_dtl_cd_nm as bnkNm
              , h105.acnt_no as acntNo
-             , prev.bnk_cd as prevBnkNm
+             , c002_prev.cmn_dtl_cd_nm as prevBnkNm
              , prev.acnt_no as prevAcntNo
           from ohxzown.tbhxzm201 m201
           left join ohxzown.tbhxzm102 m102
@@ -31,6 +31,12 @@
            and prev.tpw_svc_typ_id = h105.tpw_svc_typ_id
            and prev.mbrs_id        = h105.mbrs_id
            and prev.acnt_sno       = h105.acnt_sno - 1
+        left join ohxzown.tbhxzc002 c002_now
+        on c002_now.cmn_grp_cd_id = '0041'
+        and c002_now.cmn_dtl_cd = h105.bnk_cd
+        left join ohxzown.tbhxzc002 c002_prev
+        on c002_prev.cmn_grp_cd_id = '0041'
+        and c002_prev.cmn_dtl_cd = prev.bnk_cd
          where 1 = 1
            and m201.tpw_svc_id = #{req.tpwSvcId}
            and m201.use_yn = upper('y')
@@ -61,6 +67,48 @@
         and m201.use_yn = upper('y')
     </select>
 
+    <insert id="insertAcntMng" parameterType="tmoney.co.kr.hxz.mypage.acntmng.vo.AcntMngInstReqVO">
+        /* sql_id : insertAcntMng */
+        /*
+        * 1. 파일 : AcntMngMapper_SQL.xml
+        * 2. 기능 : 계좌 변경 이력 추가
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        2025.11.20 - 최중혁 : 최초작성
+        */
+        insert into ohxzown.tbhxzh105
+        ( tpw_svc_id
+        , tpw_svc_typ_id
+        , mbrs_id
+        , acnt_rgt_dt
+        , acnt_sno
+        , bnk_cd
+        , acnt_no
+        , ooa_nm
+        , rgsr_id
+        , rgt_dtm
+        , updr_id
+        , upd_dtm
+        ) values
+        ( #{req.tpwSvcId}
+        , #{req.tpwSvcTypId}
+        , #{mbrsId}
+        , #{req.acntRgtDt}
+        , coalesce(
+        ( select max(acnt_sno)
+        from ohxzown.tbhxzh105
+        where tpw_svc_id = #{req.tpwSvcId}
+        and tpw_svc_typ_id = #{req.tpwSvcTypId}
+        and mbrs_id = #{req.mbrsId}
+        ), 0 ) + 1
+        , #{req.ooaNm}
+        , #{mbrsId}
+        , to_char(now(), 'yyyymmddhh24miss')
+        , #{mbrsId}
+        , to_char(now(), 'yyyymmddhh24miss')
+        );
+    </insert>
+
     <select id="readMbrsSvcList" parameterType="tmoney.co.kr.hxz.mypage.acntmng.vo.TpwMbrsSvcVO" resultType="tmoney.co.kr.hxz.mypage.acntmng.vo.TpwMbrsSvcVO">
         /* sql_id : readMbrsSvcList
         * 1. 소스파일명 : TpwSvcMapper_SQL.xml
@@ -88,7 +136,9 @@
         left join ohxzown.tbhxzm102 m102
         on m102.tpw_svc_id = m201.tpw_svc_id
         and m102.mbrs_id = #{mbrsId}
-        and m102.tpw_mbrs_svc_sta_cd #{tpwMbrsSvcStaCd}
+        <if test="tpwMbrsSvcStaCd != null">
+            and m102.tpw_mbrs_svc_sta_cd #{tpwMbrsSvcStaCd}
+        </if>
         where to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
         and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
         and m201.use_yn = upper('y')

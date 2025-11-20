@@ -10,6 +10,7 @@ import tmoney.co.kr.hxz.mypage.acntmng.service.AcntMngService;
 import tmoney.co.kr.hxz.mypage.acntmng.vo.AcntMngInstReqVO;
 import tmoney.co.kr.hxz.mypage.acntmng.vo.AcntMngReqVO;
 import tmoney.co.kr.hxz.mypage.acntmng.vo.AcntMngRspVO;
+import tmoney.co.kr.hxz.svcjoin.service.SvcJoinService;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ import java.util.List;
 @Service
 public class AcntServiceImpl implements AcntMngService {
     private final AcntMngMapper acntMngMapper;
+    private final SvcJoinService svcJoinService;
 
     @Override
     @Transactional(readOnly = true)
@@ -57,7 +59,7 @@ public class AcntServiceImpl implements AcntMngService {
         for (TpwMbrsSvcVO vo : tpwMbrsSvcVO) {
             TpwMbrsSvcVO reqVO = new TpwMbrsSvcVO(
                     vo.getMbrsId(), vo.getMbrsSvcJoinDt(), vo.getTpwSvcTypId(), vo.getTpwSvcId(),
-                    vo.getCardNo(), req.getBnkNm(), req.getAcntNo(), req.getOoaNm(), vo.getStdoCd(),
+                    vo.getCardNo(), req.getBnkCd(), req.getAcntNo(), req.getOoaNm(), vo.getStdoCd(),
                     vo.getMvinDt(), vo.getMvotDt(), vo.getTpwMbrsSvcStaCd(), vo.getAtflMngNo(), vo.getMbrsSvcCncnDt()
             );
 
@@ -65,10 +67,17 @@ public class AcntServiceImpl implements AcntMngService {
             updateMbrsSvc(reqVO, mbrsId);
             // 회원 서비스 변경 이력 등록
             insertMbrsSvcHist(reqVO, mbrsId);
+
+            AcntMngInstReqVO acntMngInstReqVO = new AcntMngInstReqVO(
+                    vo.getTpwSvcId(), vo.getTpwSvcTypId(), req.getBnkCd(),
+                    req.getAcntNo(), req.getOoaNm()
+            );
+
+            // 계좌 변경 이력 추가
+            insertAcntMng(acntMngInstReqVO, mbrsId);
         }
 
-        // 계좌 변경 이력 추가
-        insertAcntMng(req, mbrsId);
+
     }
 
     @Transactional
@@ -85,9 +94,9 @@ public class AcntServiceImpl implements AcntMngService {
         } else if (mbrsSvcSta.equals("해지")) {
             tpwMbrsSvcStaCd = "in ('98', '99')";
         } else if (mbrsSvcSta.equals("가입")) {
-            tpwMbrsSvcStaCd = "= 04";
+            tpwMbrsSvcStaCd = "= '04'";
         } else if (mbrsSvcSta.equals("신청")) {
-            tpwMbrsSvcStaCd = "= 01";
+            tpwMbrsSvcStaCd = "= '01'";
         } else {
             tpwMbrsSvcStaCd = "not in ('98', '99')";
         };
