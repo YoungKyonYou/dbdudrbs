@@ -66,13 +66,13 @@ public class CardMngServiceImpl implements CardMngService {
             );
 
             // 회원 서비스 카드 이력 정보 변경
-            acntMngService.updateMbrsSvc(reqVO, mbrsId);
+            acntMngService.updateMbrsSvc(reqVO);
             // 회원 서비스 변경 이력 등록
-            acntMngService.insertMbrsSvcHist(reqVO, mbrsId);
+            acntMngService.insertMbrsSvcHist(reqVO);
 
             CardMngInstReqVO cardMngInstReqVO = new CardMngInstReqVO(
-                    vo.getTpwSvcId(), vo.getTpwSvcTypId(), req.getCardSttDt(), req.getCardEndDt(),
-                    req.getCardNo()
+                    vo.getTpwSvcId(), vo.getTpwSvcTypId(),
+                    req.getCardSttDt(), req.getCardEndDt(), req.getCardNo()
             );
             // 카드 변경 이력 추가
             insertCardMng(cardMngInstReqVO, mbrsId);

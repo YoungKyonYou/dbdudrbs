@@ -93,14 +93,16 @@
         ( #{req.tpwSvcId}
         , #{req.tpwSvcTypId}
         , #{mbrsId}
-        , #{req.acntRgtDt}
+        , to_char(now(), 'yyyymmdd')
         , coalesce(
         ( select max(acnt_sno)
         from ohxzown.tbhxzh105
         where tpw_svc_id = #{req.tpwSvcId}
         and tpw_svc_typ_id = #{req.tpwSvcTypId}
-        and mbrs_id = #{req.mbrsId}
+        and mbrs_id = #{mbrsId}
         ), 0 ) + 1
+        , #{req.bnkCd}
+        , #{req.acntNo}
         , #{req.ooaNm}
         , #{mbrsId}
         , to_char(now(), 'yyyymmddhh24miss')
@@ -118,33 +120,40 @@
         *   2025.11.20 - 최중혁 : 최초작성
         */
         select m102.mbrs_id               as mbrsId
-        , m102.mbrs_svc_join_dt    as mbrsSvcJoinDt
-        , m102.tpw_svc_typ_id      as tpwSvcTypId
-        , m102.tpw_svc_id          as tpwSvcId
-        , m102.card_no             as cardNo
-        , m102.bnk_cd              as bnkCd
-        , m102.acnt_no             as acntNo
-        , m102.ooa_nm              as ooaNm
-        , m102.addo_cd             as addoCd
-        , m102.stdo_cd             as stdoCd
-        , m102.mvin_dt             as mvinDt
-        , m102.mvot_dt             as mvotDt
-        , m102.tpw_mbrs_svc_sta_cd as tpwMbrsSvcStaCd
-        , m102.atfl_mng_no         as atflMngNo
-        , m102.mbrs_svc_cncn_dt    as mbrsSvcCncnDt
-        from ohxzown.tbhxzm201 m201
-        left join ohxzown.tbhxzm102 m102
-        on m102.tpw_svc_id = m201.tpw_svc_id
-        and m102.mbrs_id = #{mbrsId}
-        <if test="tpwMbrsSvcStaCd != null">
-            and m102.tpw_mbrs_svc_sta_cd #{tpwMbrsSvcStaCd}
-        </if>
-        where to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
-        and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
-        and m201.use_yn = upper('y')
+             , m102.mbrs_svc_join_dt    as mbrsSvcJoinDt
+             , m102.tpw_svc_typ_id      as tpwSvcTypId
+             , m102.tpw_svc_id          as tpwSvcId
+             , m102.card_no             as cardNo
+             , m102.bnk_cd              as bnkCd
+             , m102.acnt_no             as acntNo
+             , m102.ooa_nm              as ooaNm
+             , m102.addo_cd             as addoCd
+             , m102.stdo_cd             as stdoCd
+             , m102.mvin_dt             as mvinDt
+             , m102.mvot_dt             as mvotDt
+             , m102.tpw_mbrs_svc_sta_cd as tpwMbrsSvcStaCd
+             , m102.atfl_mng_no         as atflMngNo
+             , m102.mbrs_svc_cncn_dt    as mbrsSvcCncnDt
+          from ohxzown.tbhxzm201 m201
+          join ohxzown.tbhxzm102 m102
+            on m102.tpw_svc_id = m201.tpw_svc_id
+           and m102.mbrs_id = #{mbrsId}
+          <if test="tpwMbrsSvcStaCd != null">
+           and m102.tpw_mbrs_svc_sta_cd ${tpwMbrsSvcStaCd}
+          </if>
+         where to_char(now(), 'yyyymmdd') &gt;= m201.tpw_svc_stt_dt
+           and to_char(now(), 'yyyymmdd') &lt;= m201.tpw_svc_end_dt
+           and m201.use_yn = upper('y')
     </select>
 
     <update id="updateMbrsSvc" parameterType="tmoney.co.kr.hxz.mypage.acntmng.vo.TpwMbrsSvcVO">
+        /* sql_id : readMbrsSvcList
+        * 1. 소스파일명 : TpwSvcMapper_SQL.xml
+        * 2. 기능 : 회원 서비스 수정
+        * 3. 작성자 : 최중혁
+        * 4. 변경이력 :
+        *   2025.11.20 - 최중혁 : 최초작성
+        */
         update tbhxzm102 m102
         <set>
             <if test="req.cardNo != null"> card_no = #{req.cardNo}, </if>
@@ -160,8 +169,8 @@
             <if test="req.mbrsSvcCncnDt != null"> mbrs_svc_cncn_dt = #{req.mbrsSvcCncnDt}, </if>
 
             <!-- 공통 영역 -->
-            <if test="req.updrId != null"> updr_id = #{req.updrId}, </if>
-            <if test="req.updDtm != null"> upd_dtm = #{req.updDtm}, </if>
+            updr_id = #{req.mbrsId}
+            , upd_dtm = to_char(now(), 'yyyymmddhh24miss')
         </set>
         where m102.mbrs_id = #{req.mbrsId}
         and m102.mbrs_svc_join_dt = #{req.mbrsSvcJoinDt}
@@ -178,7 +187,7 @@
         * 4. 변경이력
         *   2025.11.19 - 최중혁 : 최초작성
         */
-        insert into tbhxzh102 h102
+        insert into tbhxzh102
         ( mbrs_id
         , mbrs_svc_mod_dt
         , mbrs_svc_mod_sno
@@ -194,18 +203,24 @@
         , upd_dtm
         ) values
         ( #{req.mbrsId}
-        , #{req.mbrsSvcModDt}
-        , lpad(nvl(max(#{req.mbrsSvcModSno}),0) + 1),10,'0')
+        , to_char(now(), 'yyyymmdd')
+        , coalesce(
+        ( select max(mbrs_svc_mod_sno)
+        from ohxzown.tbhxzh102
+        where tpw_svc_id = #{req.tpwSvcId}
+        and tpw_svc_typ_id = #{req.tpwSvcTypId}
+        and mbrs_id = #{req.mbrsId}
+        ), 0 ) + 1
         , #{req.mbrsSvcJoinDt}
         , #{req.tpwSvcId}
         , #{req.tpwSvcTypId}
         , #{req.tpwMbrsSvcStaCd}
         , #{req.atflMngNo}
         , #{req.mbrsSvcCncnDt}
-        , #{req.rgsrId}
-        , #{req.rgtDtm}
-        , #{req.updrId}
-        , #{req.updDtm}
+        , #{req.mbrsId}
+        , to_char(now(), 'yyyymmddhh24miss')
+        , #{req.mbrsId}
+        , to_char(now(), 'yyyymmddhh24miss')
         )
     </insert>
 </mapper>

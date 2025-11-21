@@ -21,7 +21,7 @@ public interface AcntMngMapper {
 
     List<TpwMbrsSvcVO> readMbrsSvcList(@Param("tpwMbrsSvcStaCd") String tpwMbrsSvcStaCd, @Param("mbrsId") String mbrsId);
 
-    void updateMbrsSvc(@Param("req") TpwMbrsSvcVO req, @Param("mbrsId") String mbrsId);
+    void updateMbrsSvc(@Param("req") TpwMbrsSvcVO req);
 
-    void insertMbrsSvcHist(@Param("req") TpwMbrsSvcVO req, @Param("mbrsId") String mbrsId);
+    void insertMbrsSvcHist(@Param("req") TpwMbrsSvcVO req);
 }

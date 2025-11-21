@@ -74,6 +74,7 @@
         , mbrs_id
         , card_mod_dt
         , card_mod_sno
+        , card_no
         , card_stt_dt
         , card_end_dt
         , use_yn
@@ -85,14 +86,15 @@
         ( #{req.tpwSvcId}
         , #{req.tpwSvcTypId}
         , #{mbrsId}
-        , #{req.cardModDt}
+        , to_char(now(), 'yyyymmdd')
         , coalesce(
         ( select max(card_mod_sno)
         from ohxzown.tbhxzh104
         where tpw_svc_id = #{req.tpwSvcId}
         and tpw_svc_typ_id = #{req.tpwSvcTypId}
-        and mbrs_id = #{req.mbrsId}
+        and mbrs_id = #{mbrsId}
         ), 0 ) + 1
+        , #{req.cardNo}
         , #{req.cardSttDt}
         , #{req.cardEndDt}
         , 'Y'

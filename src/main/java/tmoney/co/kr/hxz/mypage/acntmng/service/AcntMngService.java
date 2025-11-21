@@ -17,7 +17,7 @@ public interface AcntMngService {
 
     List<TpwMbrsSvcVO> mbrsSvcList(String mbrsSvcSta, String mbrsId);
 
-    void updateMbrsSvc(TpwMbrsSvcVO req, String mbrsId);
+    void updateMbrsSvc(TpwMbrsSvcVO req);
 
-    void insertMbrsSvcHist(TpwMbrsSvcVO req, String mbrsId);
+    void insertMbrsSvcHist(TpwMbrsSvcVO req);
 }

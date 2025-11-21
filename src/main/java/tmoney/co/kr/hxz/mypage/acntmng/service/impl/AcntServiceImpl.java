@@ -64,13 +64,13 @@ public class AcntServiceImpl implements AcntMngService {
             );
 
             // 회원 서비스 계좌 이력 정보 변경
-            updateMbrsSvc(reqVO, mbrsId);
+            updateMbrsSvc(reqVO);
             // 회원 서비스 변경 이력 등록
-            insertMbrsSvcHist(reqVO, mbrsId);
+            insertMbrsSvcHist(reqVO);
 
             AcntMngInstReqVO acntMngInstReqVO = new AcntMngInstReqVO(
-                    vo.getTpwSvcId(), vo.getTpwSvcTypId(), req.getBnkCd(),
-                    req.getAcntNo(), req.getOoaNm()
+                    vo.getTpwSvcId(), vo.getTpwSvcTypId(),
+                    req.getBnkCd(), req.getAcntNo(), req.getOoaNm()
             );
 
             // 계좌 변경 이력 추가
@@ -111,13 +111,13 @@ public class AcntServiceImpl implements AcntMngService {
 
     @Override
     @Transactional
-    public void updateMbrsSvc(TpwMbrsSvcVO req, String mbrsId) {
-        acntMngMapper.updateMbrsSvc(req, mbrsId);
+    public void updateMbrsSvc(TpwMbrsSvcVO req) {
+        acntMngMapper.updateMbrsSvc(req);
     }
 
     @Override
     @Transactional
-    public void insertMbrsSvcHist(TpwMbrsSvcVO req, String mbrsId) {
-        acntMngMapper.insertMbrsSvcHist(req, mbrsId);
+    public void insertMbrsSvcHist(TpwMbrsSvcVO req) {
+        acntMngMapper.insertMbrsSvcHist(req);
     }
 }
