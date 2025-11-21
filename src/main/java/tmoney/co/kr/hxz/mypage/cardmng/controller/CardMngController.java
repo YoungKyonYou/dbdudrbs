@@ -44,6 +44,7 @@ public class CardMngController {
 
         model.addAttribute("pageData", contents);
         model.addAttribute("result", result);
+        model.addAttribute("req", req);
         return "/hxz/mypage/cardmng/cardMng";
     }
 

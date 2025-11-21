@@ -49,6 +49,7 @@ public class AcntMngController {
         model.addAttribute("pageData", contents);
         model.addAttribute("result", result);
         model.addAttribute("bankList", bankList);
+        model.addAttribute("req", req);
         return "/hxz/mypage/acntmng/acntMng";
     }
 
